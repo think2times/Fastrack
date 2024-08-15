@@ -141,7 +141,7 @@ Untitled.ipynb
 *.tmp
 
 # racket file
-compiled
+Learning/SICP/Modules
 
-# face-swap project
+# project
 Projects/swap-face/models
