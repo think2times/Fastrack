@@ -271,6 +271,25 @@ goodbad
   (iter 2 1 0 n))
 ```
 
+## Exercise 1.12
+> The following paern of numbers is called Pascal’s triangle.
+![Alt text](<images/exer 1.12.png>)
+> The numbers at the edge of the triangle are all 1, and each number inside the triangle is the sum of the two numbers above it. Write a procedure that computes elements of Pascal’s triangle by means of a recursive process.
+
+```
+(define (pascal row col)
+  (cond ((or (< row 1) (< col 1) (< row col)) 0)     ; 排除非法参数
+        ((or (= col 1) (= row col)) 1)               ; 当该位置在两边时,值都为1
+        (else (+ (pascal (- row 1) (- col 1))        ; 其他位置的数都等于上一行“肩膀”2数之和
+                 (pascal (- row 1) col)))))
+```
+
+## Exercise 1.13
+> Prove that $Fib(n)$ is the closest integer to $\frac{ϕ^n}{\sqrt5}$, where $ϕ = \frac{1 + \sqrt5}{2}$. Hint: Let $\psi=\frac{1 - \sqrt5}{2}$. Use induction and the definition of the Fibonacci numbers (see Section 1.2.2) to prove that $Fib(n)=\frac{ϕ^n-\psi^n}{\sqrt5}$.
+
+> Proof: 
+![Alt text](<images/exer 1.13.png>)
+
 ## Exercise 1.14
 > changing an amount a using n kinds of coins:  
 > The space required by the process is the height of the tree: $R(a, n) = \theta(a)$  
