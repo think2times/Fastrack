@@ -1,7 +1,8 @@
 #lang racket
-(require racket/trace)
 
-(define (cube x) (* x x x))
+(require racket/trace)
+(require "../Modules/base.rkt")
+
 
 (define (p x) (- (* 3 x) (* 4 (cube x))))
 
@@ -10,5 +11,7 @@
         angle
         (p (sine (/ angle 3.0)))))
 
+
+(trace sine)
 (trace p)
-(sine 90)
+(sine 12.15)
