@@ -1,5 +1,7 @@
 #lang racket
+
 (require racket/trace)
+(require "../Modules/base.rkt")
 
 (define (expt-recur b n)
   (if (= n 0)
@@ -13,7 +15,6 @@
         (iter (* now b) (- count 1))))
   (iter 1 n))
 
-(define (square x) (* x x))
 (define (even? n)
   (= (remainder n 2) 0))
 
