@@ -1,14 +1,8 @@
 #lang racket
+
 (require racket/trace)
+(require "../Modules/base.rkt")
 
-(define (double a)
-  (* a 2))
-
-(define (halve a)
-  (/ a 2))
-
-(define (even? n)
-  (= (remainder n 2) 0))
 
 (define (multiply-iter a b)
   (define (iter a b answer)

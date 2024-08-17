@@ -15,9 +15,6 @@
         (iter (* now b) (- count 1))))
   (iter 1 n))
 
-(define (even? n)
-  (= (remainder n 2) 0))
-
 (define (expt-recur-by-square b n)
   (cond ((= n 0) 1)
         ((even? n) (square (expt-recur-by-square b (/ n 2))))
@@ -33,6 +30,7 @@
                       (- n 1)
                       (* a b)))))
   (iter b n 1))
+
 
 (trace expt-recur)
 (expt-recur 2 10)

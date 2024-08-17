@@ -334,3 +334,94 @@ goodbad
 - sine 90, 7 times
 
 ![Alt text](<images/exer 1.15-sine 90.png>)
+
+## Exercise 1.16
+> Design a procedure that evolves an iterative exponentiation process that uses successive squaring and uses a logarithmic number of steps, as does fast-expt.
+(Hint: Using the observation that $(b^{\frac{n}2})^2=(b^2)^{\frac{n}2}$, keep,along with the exponent $n$ and the base $b$, an additionalstate variable $a$, and define the state transformation in such a way that the product $ab^n$ is unchanged from state to state. At the beginning of the process a is taken to be 1, and the answer is given by the value of $a$ at the end of the process. In general, the technique of defining an invariant quantity that remains unchanged from state to state is a powerful way to think about the design of iterative algorithms.)
+
+```
+(define (expt-iter-by-square b n)
+  (define (iter b n a)
+    (cond ((= n 0) a)
+          ((even? n) (iter (square b)
+                           (/ n 2)
+                           a))
+          (else (iter b
+                      (- n 1)
+                      (* a b)))))
+  (iter b n 1))
+```
+
+## Exercise 1.17
+> The exponentiation algorithms in this section are based on performing exponentiation by means of repeated multiplication. In a similar way, one can perform integer multiplication by means of repeated addition. The following multiplication procedure (in which it is assumed that our language can only add, not multiply) is analogous to the expt procedure:
+```
+(define (* a b)
+  (if (= b 0)
+      0
+      (+ a (* a (- b 1)))))
+```
+> This algorithm takes a number of steps that is linear in b. Now suppose we include, together with addition, operations double, which doubles an integer, and halve, which divides an (even) integer by 2. Using these, design a multiplication procedure analogous to fast-expt that uses a logarithmic number of steps.
+
+```
+(define (multiply-recur a b)
+  (cond ((= b 0) 0)
+        ((even? b) (multiply-recur (double a) (halve b)))
+        (else (+ a (multiply-recur a (- b 1))))))
+```
+
+## Exercise 1.18
+> Using the results of Exercise 1.16 and Exercise 1.17, devise a procedure that generates an iterative process for multiplying two integers in terms of adding, doubling, and halving and uses a logarithmic number of steps.
+
+```
+(define (multiply-iter a b)
+  (define (iter a b answer)
+    (cond ((= b 0) answer)
+          ((even? b) (iter (double a) (halve b) answer))
+          (else (iter a (- b 1) (+ answer a)))))
+  (iter a b 0))
+```
+
+## Exercise 1.19
+> There is a clever algorithm for computing the Fibonacci numbers in a logarithmic number of steps. Recall the transformation of the state variables $a$ and $b$ in the fib-iter process of Section 1.2.2: $a ← a + b$ and $b ← a$. Call this transformation $T$, and observe that applying $T$ over and over again $n$ times, starting with 1 and 0, produces the pair $Fib(n + 1)$ and $Fib(n)$. In other words, the Fibonacci numbers are produced by applying $T^n$, the $n^{th}$ power of the transformationT , starting with the pair (1, 0). Now consider $T$ to be the special case of $p = 0$ and $q = 1$ in a family of transformations $T_{pq}$ , where $T_{pq}$ transforms the pair $(a, b)$ according to $a ← bq + aq + ap$ and $b ← bp + aq$. Show that if we apply such a transformation $T_{pq}$ twice, the effect is the same as using a single transformation $T_{p'q'}$ of the same form, and compute $p′$ and $q′$ in terms of $p$ and $q$. This gives us an explicit way to square these transformations, and thus we can compute $T^n$ using successive squaring, as in the fast-expt procedure. Put this all together to complete the following procedure, which runs in a logarithmic number of steps:
+
+```
+(define (fib n)
+  (fib-iter 1 0 0 1 n))
+(define (fib-iter a b p q count)
+  (cond ((= count 0) b)
+        ((even? count)
+         (fib-iter a
+                   b
+                    ; compute p′
+                    ; compute q′
+                   (/ count 2)))
+        (else (fib-iter (+ (* b q) (* a q) (* a p))
+                        (+ (* b p) (* a q))
+                        p
+                        q
+                        (- count 1)))))
+```
+
+> answer: 
+```
+(define (fib n)
+  (fib-iter 1 0 0 1 n))
+(define (fib-iter a b p q count)
+  (cond ((= count 0) b)
+        ((even? count)
+         ; count为偶数且不为0时，可以连续进行两次转换
+         ; 通过简单的代数计算和化简，可以得到经过两次转换后
+         ; a = b(q^2+2pq) + a(q^2+2pq) + a(p^2+q^2)
+         ; b = b(p^2+q^2) + a(q^2+2pq)
+         ; 所以 q' = (q^2+2pq), p' = (p^2+q^2)
+         (fib-iter a
+                   b
+                   (+ (square p) (square q))
+                   (+ (square q) (* 2 p q))
+                   (/ count 2)))
+         (else (fib-iter (+ (* b q) (* a q) (* a p))
+                         (+ (* b p) (* a q))
+                         p
+                         q
+                         (- count 1)))))
+```
