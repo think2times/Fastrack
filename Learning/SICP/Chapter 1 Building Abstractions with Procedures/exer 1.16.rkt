@@ -1,9 +1,8 @@
 #lang racket
-(require racket/trace)
 
-(define (square x) (* x x))
-(define (even? n)
-  (= (remainder n 2) 0))
+(require racket/trace)
+(require "../Modules/base.rkt")
+
 
 (define (expt-iter-by-square b n)
   (define (iter b n a)
