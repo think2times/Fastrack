@@ -1,10 +1,16 @@
 #lang racket
 
+(provide runtime)
+
 (provide square)
 (provide cube)
 (provide even?)
 (provide double)
 (provide halve)
+
+; returns a guaranteed-to-increase floating point number which represent the current millisecond count from the system
+(define (runtime)
+  (current-inexact-milliseconds))
 
 (define (square x)
   (* x x))
