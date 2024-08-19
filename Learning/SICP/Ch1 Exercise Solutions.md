@@ -471,5 +471,43 @@ goodbad
  2 
  ```
 
+## Exercise1.21
+> Use the smallest-divisor procedure to find the smallest divisor of each of the following numbers: 199, 1999, 19999.
 
- 
+- 199: 199
+- 1999: 1999
+- 19999: 7
+
+## Exercise 1.22
+> Most Lisp implementations include a primitive called runtime that returns an integer that specifies the amount of time the system has been running (measured, for example, in microseconds). The following $timed-prime-test$ procedure, when called with an integer $n$, prints $n$ and checks to see if $n$ is prime. If $n$ is prime, the procedure prints three asterisks followed by the amount of time used in performing the test.
+
+```
+(define (timed-prime-test n)
+  (newline)
+  (display n)
+  (start-prime-test n (runtime)))
+(define (start-prime-test n start-time)
+  (if (prime? n)
+      (report-prime (- (runtime) start-time))))
+(define (report-prime elapsed-time)
+  (display " *** ")
+  (display elapsed-time))
+```
+
+> Using this procedure, write a procedure $search-for-primes$ that checks the primality of consecutive odd integers in a specified range. Use your procedure to find the three smallest primes larger than 1000; larger than 10,000; larger than 100,000; larger than 1,000,000. Note the time needed to test each prime. Since the testing algorithm has order of growth of $\Theta(\sqrt n)$, you should expect that testing for primes around 10,000 should take about $\sqrt 10$ times as long as testing for primes around 1000. Do your timing data bear this out? How well do the data for 100,000 and 1,000,000 support the $\Theta(\sqrt n)$ prediction? Is your result compatible with the notion that programs on your machine run in time proportional to the number of steps required for the computation?
+
+> answer:
+```
+(define (search-for-primes n count)
+  (cond ((and (< count 3) (prime? n)) (and (timed-prime-test n) (search-for-primes (+ n 1) (+ count 1))))
+        ((< count 3) (search-for-primes (+ n 1) count))))
+```
+![Alt text](<images/exer 1.22-1000.png>)
+![Alt text](<images/exer 1.22-10000.png>)
+![Alt text](<images/exer 1.22-100000.png>)
+![Alt text](<images/exer 1.22-1000000.png>)
+
+> 从1000到10000，执行时间只有2倍左右的差距，但是从10000到100000，从100000到1000000确实差不多是$\sqrt 10$倍的差距。这可能跟我们追踪的时间只是其中部分代码有关，当执行次数较少时，那些“无关”代码的执行时间占比比较大，所以从1000到10000执行时间只有2倍的差距；随着执行次数增多，“无关”代码的执行时间占比越来越少，执行时间的关系就逐渐符合数学分析的结果了。
+
+
+
