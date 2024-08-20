@@ -1,6 +1,5 @@
 #lang racket
 
-(require racket/trace)
 (require "../modules/base.rkt")
 
 (define (timed-prime-test n)
@@ -37,3 +36,11 @@
       
 
 (search-for-primes 1000 0)
+(newline)
+(search-for-primes 10000 0)
+(newline)
+(search-for-primes 100000 0)
+(newline)
+(search-for-primes 1000000 0)
+(newline)
+
