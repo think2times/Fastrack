@@ -501,13 +501,40 @@ goodbad
 (define (search-for-primes n count)
   (cond ((and (< count 3) (prime? n)) (and (timed-prime-test n) (search-for-primes (+ n 1) (+ count 1))))
         ((< count 3) (search-for-primes (+ n 1) count))))
+
+; 由于这里已经判断了是否为质数，所以打印的时候就不用判断了
+(define (start-prime-test n start-time)
+  (report-prime (- (runtime) start-time)))
 ```
+- 这是修改start-prime-test前的执行时间
 ![Alt text](<images/exer 1.22-1000.png>)
 ![Alt text](<images/exer 1.22-10000.png>)
 ![Alt text](<images/exer 1.22-100000.png>)
 ![Alt text](<images/exer 1.22-1000000.png>)
-
 > 从1000到10000，执行时间只有2倍左右的差距，但是从10000到100000，从100000到1000000确实差不多是$\sqrt 10$倍的差距。这可能跟我们追踪的时间只是其中部分代码有关，当执行次数较少时，那些“无关”代码的执行时间占比比较大，所以从1000到10000执行时间只有2倍的差距；随着执行次数增多，“无关”代码的执行时间占比越来越少，执行时间的关系就逐渐符合数学分析的结果了。
 
+- 这是修改start-prime-test后的执行时间，可以发现时间急剧降低，但是代价是没法监测$prime?$的执行时间了。。
+![Alt text](<images/exer 1.22-new.png>)
+
+## Exercise 1.23
+> The smallest-divisor procedure shown at the start of this section does lots of needless testing: After it checks toseeif thenumberisdivisibleby2thereisnopoint in checking to see if it is divisible by any larger even numbers. is suggests that the values used for test-divisor should not be 2, 3, 4, 5, 6, ..., but rather 2, 3, 5, 7, 9, ....
+> To implement this change, define a procedure next that returns 3 if its input is equal to 2 and otherwise returns its input plus 2. Modify the smallest-divisor procedure to use (next test-divisor) instead of (+ test-divisor 1). With timed-prime-test incorporating this modified version of smallest-divisor, run the test for each of the 12 primesfoundinExercise1.22. Since this modification halves the number of test steps, you should expect it to run about twice as fast. Is this expectation confirmed? If not, what is the observed ratio of the speeds of the two algorithms, and how do you explain the fact that it is different from 2?
+
+> answer:
+```
+(define (next n)
+  (if (= n 2) 3 (+ n 2)))
+```
+> 根据上道题目的教训，当n太小时执行时间的差距可能不会跟数学分析相同，这次我特意选了比较大的数字：1000000000000000，但是执行时间的差距也还是达不到2倍的差距，只有差不多1.5倍。原因主要是因为$next$里有有个$if$判断，虽然输入的检测少了一半，但是每次都要额外做一次$if$检查，然后再+2，而原来是直接进行+1操作，所以执行的操作其实并没有减少。执行时间的降低大概是因为$if$所对应的机器步骤比加法要少，所以虽然算法操作没有变，但是机器步骤却变少了，所以执行时间还是降低了。
+- 1.22
+![Alt text](<images/exer 1.23-old.png>)
+- 1.23
+![Alt text](<images/exer 1.23-new.png>)
+
+## Exercise1.24
+> Modify the $timed-prime-test$ procedure of Exercise 1.22 to use fast-prime? (the Fermat method), and test each of the 12 primes you found in that exercise. Since the Fermat test has $\Theta(\log{n})$ growth, how would you expect the time to test primes near 1,000,000 to compare with the  time needed to test primes near 1000? Do your data bear this out? Can you explain any discrepancy you find?
+
+> 由于$fast-prime?$的时间复杂度是$\Theta(\log{n})$，为了便于计算，取10为底，则$\log_{10}^{1000}=3, \log_{10}^{1000000}=6$，所以执行时间应该有2倍左右的差距，由下图可以看出，实际情况跟数学分析很接近。
+![Alt text](<images/exer 1.24.png>)
 
 
