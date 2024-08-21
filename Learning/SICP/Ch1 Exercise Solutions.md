@@ -537,4 +537,93 @@ goodbad
 > 由于$fast-prime?$的时间复杂度是$\Theta(\log{n})$，为了便于计算，取10为底，则$\log_{10}^{1000}=3, \log_{10}^{1000000}=6$，所以执行时间应该有2倍左右的差距，由下图可以看出，实际情况跟数学分析很接近。
 ![Alt text](<images/exer 1.24.png>)
 
+## Exercise 1.25
+> Alyssa P. Hacker complains that we went to a lot of extra work in writing expmod. Aer all, she says, since we already know how to compute exponentials, we could have simply written
+```
+(define (expmod base exp m)
+  (remainder (fast-expt base exp) m))
+ ```
+Is she correct? Would this procedure serve as well for our fast prime tester? Explain.
+
+> 这个写法是可以实现功能的，但是速度会变慢，用下面的代码来演示一下：
+```
+; The Fermat Test
+; calculate the remainder of base^exp modulo m
+(define (expmod base exp m) 
+  (cond ((= exp 0) 1) 
+        ((even? exp) 
+          (remainder 
+            (square (expmod base (/ exp 2) m)) ; (1) 
+            m)) 
+        (else 
+          (remainder 
+            (* base (expmod base (- exp 1) m)) 
+            m))))
+
+; The modified procedures 
+(define (modified-expmod base exp m) 
+  (remainder (fast-expt base exp) m))
+
+; Helper procedures 
+(define (fast-expt b n) 
+  (cond ((= n 0) 1) 
+        ((even? n) (square (fast-expt b (/ n 2)))) 
+        (else (* b (fast-expt b (- n 1)))))) 
+
+; calculate run time of a procedure
+(define (report-elapsed-time start-time) 
+  (display " *** ") 
+  (display (- (runtime) start-time)))
+
+
+; Test the speed 
+(define start-time1 (runtime)) 
+(expmod 999999 1000000 1000000) 
+(report-elapsed-time start-time1)
+(newline)
+
+(define start-time2 (runtime)) 
+(modified-expmod 999999 1000000 1000000) 
+(report-elapsed-time start-time2)
+```
+![Alt text](<images/exer 1.25.png>)
+
+## Exercise 1.26
+> Louis Reasoner is having great difficulty doing Exercise 1.24. His $fast-prime?$ test seems to run more slowly than his $prime?$ test. Louis calls his friend Eva Lu Ator over to help. When they examine Louis’s code, they f ind that he has rewrien the expmod procedure to use an explicit multiplication, rather than calling $square$:
+```
+(define (expmod base exp m)
+  (cond ((= exp 0) 1)
+        ((even? exp)
+         (remainder (* (expmod base (/ exp 2) m)
+                       (expmod base (/ exp 2) m))
+                    m))
+        (else
+         (remainder (* base
+                       (expmod base (- exp 1) m))
+                    m))))
+ ```
+> “I don’t see what difference that could make,” says Louis. 
+> “I do.” says Eva. “By writing the procedure like that, you have transformed the $\Theta(\log n)$ process into a $\Theta n$ process.” Explain.
+
+> Instead of a linear recursion, the rewritten $expmod$ generates a tree recursion,whose execution time grows exponentially with the depth of the tree, which is the logarithm of $N$. Therefore, the execution time is linear with $N$.
+
+## Exercise 1.27
+> Demonstrate that the Carmichael numbers listed in Footnote 1.47 really do fool the Fermat test. That is, write a procedure that takes an integer $n$ and tests whether $a^n$ is congruent to a modulo $n$ for every $a < n$,and try your procedure on the given Carmichael numbers.
+
+> 修改后的$fast-prime?$如下，$n$表示要检测的数，$a$表示$2\le a \lt n$的任意整数，结果也确实检查不出来那些Carmichael numbers是质数。
+```
+(define (fast-prime? n a)
+  (cond ((= a n) true)
+        ((= (expmod a n n) a) (fast-prime? n (+ a 1)))
+        (else false)))
+
+(fast-prime? 561 2)      ; 能被3整除
+(fast-prime? 1105 2)     ; 能被5整除
+(fast-prime? 1729 2)     ; 能被7整除
+(fast-prime? 2465 2)     ; 能被5整除
+(fast-prime? 2821 2)     ; 能被7整除
+(fast-prime? 6601 2)     ; 能被7整除
+```
+![Alt text](<images/exer 1.27.png>)
+
 
