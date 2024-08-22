@@ -33,7 +33,7 @@
 (define (fermat-test n)
   (define (try-it a)
     (= (expmod a n n) a))
-  (try-it (+ 1 (random (- n 1)))))           ; random returns a nonnegative integer less than its integer input.
+  (try-it (+ 1 (random (- n 1)))))           ; random returns a nonnegative integer less than its integer input(from 1 to n).
 
 ; runs the test a given number of times, as specified by a parameter
 (define (fast-prime? n times)
