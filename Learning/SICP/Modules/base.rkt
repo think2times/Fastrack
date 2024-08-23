@@ -7,6 +7,7 @@
 (provide even?)
 (provide double)
 (provide halve)
+(provide inc)
 
 ; returns a guaranteed-to-increase floating point number which represent the current millisecond count from the system
 (define (runtime)
@@ -26,3 +27,6 @@
 
 (define (halve a)
   (/ a 2))
+
+(define (inc a)
+  (+ a 1))
