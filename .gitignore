@@ -143,6 +143,78 @@ Untitled.ipynb
 # racket file
 Learning/SICP/Modules
 
-# project
+# swap-face
 Projects/swap-face/models
 Projects/voice-changer
+
+# voice-changer
+Projects/voice-changer/tmp
+Projects/voice-changer/dummy
+Projects/voice-changer/node_modules
+
+Projects/voice-changer/server/upload_dir/
+Projects/voice-changer/server/MMVC_Client_v13/
+Projects/voice-changer/server/MMVC_Client_v15/
+Projects/voice-changer/server/so-vits-svc-40/
+Projects/voice-changer/server/so-vits-svc-40v2/
+Projects/voice-changer/server/DDSP-SVC/
+Projects/voice-changer/server/RVC/
+Projects/voice-changer/server/keys
+Projects/voice-changer/server/info
+Projects/voice-changer/server/in.wav
+Projects/voice-changer/server/out.wav
+Projects/voice-changer/server/G_*.pth
+Projects/voice-changer/server/train_config.json
+Projects/voice-changer/server/stored_setting.json
+
+# v.1.3.xテスト用モデルフォルダ
+Projects/voice-changer/server/v13
+Projects/voice-changer/server/model_hubert
+Projects/voice-changer/server/model_so-vits-svc-40v2_tsukuyomi/
+Projects/voice-changer/server/model_so-vits-svc-40v2_amitaro/
+Projects/voice-changer/server/model_so-vits-svc-40/
+Projects/voice-changer/server/model_so-vits-svc-40_mahiro/
+Projects/voice-changer/server/model_so-vits-svc-40_amitaro/
+Projects/voice-changer/server/model_so-vits-svc-40_tsukuyomi/
+Projects/voice-changer/server/model_so-vits-svc-40_kikotokurage
+Projects/voice-changer/server/model_sovits
+Projects/voice-changer/server/test 
+Projects/voice-changer/server/memo.md
+
+Projects/voice-changer/model_DDSP-SVC/
+
+Projects/voice-changer/client/lib/dist
+Projects/voice-changer/client/lib/worklet/dist
+Projects/voice-changer/client/demo/public/models
+Projects/voice-changer/client/demo/public/models_
+Projects/voice-changer/client/demo/dist/models
+Projects/voice-changer/client/demo/dist_web
+Projects/voice-changer/client/demo/src/001_provider/backup
+# client/demo/dist/ # demo用に残す
+
+Projects/voice-changer/docker/cudnn/
+Projects/voice-changer/server/pretrain/
+Projects/voice-changer/server/weights/
+Projects/voice-changer/server/model_dir/
+Projects/voice-changer/server/model_dir2/
+Projects/voice-changer/server/weights_/
+Projects/voice-changer/server/weights__/
+Projects/voice-changer/server/models/
+Projects/voice-changer/server/samples.json
+Projects/voice-changer/server/samples_0003_t.json
+Projects/voice-changer/server/samples_0003_o.json
+Projects/voice-changer/server/samples_0003_t2.json
+Projects/voice-changer/server/samples_0003_o2.json
+Projects/voice-changer/server/samples_0003_d2.json
+Projects/voice-changer/server/samples_0004_t.json
+Projects/voice-changer/server/samples_0004_o.json
+Projects/voice-changer/server/samples_0004_d.json
+Projects/voice-changer/server/test_official_v1_v2.json
+Projects/voice-changer/server/test_ddpn_v1_v2.json
+Projects/voice-changer/server/vcclient.log
+Projects/voice-changer/start_trainer.sh
+
+Projects/voice-changer/beatrice_internal_api.cp310-win_amd64.pyd
+Projects/voice-changer/108_average_110b_10.bin
+
+Projects/voice-changer/server/model_dir_static/Beatrice-JVS
