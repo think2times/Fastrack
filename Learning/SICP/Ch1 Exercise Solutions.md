@@ -691,3 +691,39 @@ Is she correct? Would this procedure serve as well for our fast prime tester? Ex
 ```
 
 ![Alt text](<images/exer 1.28.png>)
+
+## Exercise 1.29
+> Simpson’s Rule is a more accurate methodof numerical integration than the method illustrated above. Using Simpson’s Rule, the integral of a function $f$ between $a$ and $b$ is approximated as 
+$\frac{h}{3}(y_0+4y_1+2y_2+4y_3+2y_4+...+2y_{n-2}+4y_{n-1}+y_n)$, 
+where $h = \frac{b − a}n$, for some even integer $n$, and $y_k = f(a + kh)$. (Increasing $n$ increases the accuracy of the approximation.) Define a procedure that takes as arguments $f, a, b$, and $n$ and returns the value of the integral, computed using Simpson’s Rule. Use your procedure to integrate cube between 0 and 1 (with $n = 100$ and $n = 1000$), and compare the results to those of the integral procedure shown above.
+
+```
+; template of "summation according to Simpson’s Rule".
+(define (simpson-sum term a next b n)
+  ; 由于n取得是偶数，所以得到的factor会是2, 4, 2, 4, ... , 1
+  ; 与Simpson’s Rule相比，第一项加了2遍，最后需要把第一项减掉一次
+  (define factor (cond ((= n 0) 1)
+                       ((even? n) 2)
+                       (else 4)))
+  (if (> a b)
+      0
+      (+ (* factor (term a))
+         (simpson-sum term (next a) next b (- n 1)))))
+
+
+(define (integral f a b n)
+  (define h (/ (- b a) n))
+  (define (integral-next x)
+    (+ x h))
+  (* (/ h 3.0)
+     ; 把第一项减掉一次
+     (- (simpson-sum f a integral-next b n) (f a))))
+
+
+(integral cube 0 1 100)
+(integral cube 0 1 1000)
+
+; 输出
+0.25
+0.25
+```
