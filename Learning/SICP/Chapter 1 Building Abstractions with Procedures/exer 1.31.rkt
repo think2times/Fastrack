@@ -2,43 +2,29 @@
 
 (require "../modules/base.rkt")
 
-; template of "summation of a series".
+; template of "production of a series".
+; use recursive
+(define (product-recur term a next b)
+  (if (> a b)
+      1
+      (* (term a)
+         (product-recur term (next a) next b))))
+
 ; use iter
-(define (sum term a next b)
+(define (product-iter term a next b)
   (define (iter a result)
     (if (> a b)
         result
-        (iter (next a) (+ (term a) result))))
-  (iter a 0))
+        (iter (next a) (* (term a) result))))
+  (iter a 1))
 
-; computes the sum of the cubes of the integers in the given range.
-(define (sum-cubes a b)
-  (sum cube a inc b))
-
-; computes the sum of the integers in the given range.
-(define (identity x) x)
-(define (sum-int a b)
-  (sum identity a inc b))
-
-; computes the sum of a sequence of terms in the series
-;  1/(1*3)+1/(5*7)+1/(9*11)+...,
-(define (pi-sum a b)
-  (define (pi-term a)
-    (/ 1.0 (* a (+ a 2))))
-  (define (pi-next a)
-    (+ a 4))
-  (sum pi-term a pi-next b))
-
-; computes the definite integral of a function f between the limits a and b
-(define (integral f a b dx)
-  (define (add-dx x)
-    (+ x dx))
-  (* (sum f (+ a (/ dx 2.0)) add-dx b)
-     dx))
+; computes the factorial of the integers in the given number.
+(define (factorial n)
+  (define (identity x) x)
+  (product-recur identity 1 inc n))
 
 
-(sum-cubes 3 5)
-(sum-int 1 10)
-(* 8 (pi-sum 1 1000))
-(integral cube 0 1 0.01)
-(integral cube 0 1 0.001)
+(factorial 0)
+(factorial 1)
+(factorial 2)
+(factorial 3)

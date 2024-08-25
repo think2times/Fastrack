@@ -739,7 +739,7 @@ where $h = \frac{b − a}n$, for some even integer $n$, and $y_k = f(a + kh)$. (
   (iter ⟨??⟩ ⟨??⟩))
 ```
 
-> answer:
+> answer :
 ```
 (define (sum term a next b)
   (define (iter a result)
@@ -754,7 +754,7 @@ where $h = \frac{b − a}n$, for some even integer $n$, and $y_k = f(a + kh)$. (
 $\frac{\pi}4=\frac{2\cdot4\cdot4\cdot6\cdot6\cdot8...}{3\cdot3\cdot5\cdot5\cdot7\cdot7...}$
 - b. If your product procedure generates a recursive process, write one that generates an iterative process. If it generates an iterative process, write one that generates a recursive process.
 
-> answer:
+> answer :
 - a
 ```
 (define (product-iter term a next b)
