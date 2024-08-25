@@ -727,3 +727,81 @@ where $h = \frac{b − a}n$, for some even integer $n$, and $y_k = f(a + kh)$. (
 0.25
 0.25
 ```
+
+## Exercise 1.30
+> The sum procedure above generates a linear recursion. The procedure can be rewrien so that the sum is performed iteratively. Show how to do this by filling in the missing expressions in the following definition:
+```
+(define (sum term a next b)
+  (define (iter a result)
+    (if ⟨??⟩
+        ⟨??⟩
+        (iter ⟨??⟩ ⟨??⟩)))
+  (iter ⟨??⟩ ⟨??⟩))
+```
+
+> answer:
+```
+(define (sum term a next b)
+  (define (iter a result)
+    (if (> a b)
+        result
+        (iter (next a) (+ (term a) result))))
+  (iter a 0))
+```
+
+## Exercise 1.31
+- a. The sum procedure is only the simplest of a vast number of similar abstractions that can be captured as higher order procedures.51 Write an analogous procedure called product that returns the product of the values of a function at points over a given range. Show how to define factorial in terms of product. Also use product to compute approximations to π using the formula
+$\frac{\pi}4=\frac{2\cdot4\cdot4\cdot6\cdot6\cdot8...}{3\cdot3\cdot5\cdot5\cdot7\cdot7...}$
+- b. If your product procedure generates a recursive process, write one that generates an iterative process. If it generates an iterative process, write one that generates a recursive process.
+
+> answer:
+- a
+```
+(define (product-iter term a next b)
+  (define (iter a result)
+    (if (> a b)
+        result
+        (iter (next a) (* (term a) result))))
+  (iter a 1))
+
+(define (factorial n)
+  (define (identity x) x)
+  (product-iter identity 1 inc n))
+
+(factorial 0)
+(factorial 1)
+(factorial 2)
+(factorial 3)
+
+> result
+1
+1
+2
+6
+```
+
+- b
+```
+(define (product-recur term a next b)
+  (if (> a b)
+      1
+      (* (term a)
+         (product-recur term (next a) next b))))
+
+(define (factorial n)
+  (define (identity x) x)
+  (product-recur identity 1 inc n))
+
+(factorial 0)
+(factorial 1)
+(factorial 2)
+(factorial 3)
+
+> result
+1
+1
+2
+6
+```
+
+## 
