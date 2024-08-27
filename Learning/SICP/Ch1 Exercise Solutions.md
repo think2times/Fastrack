@@ -855,4 +855,62 @@ $\frac{\pi}4=\frac{2\cdot4\cdot4\cdot6\cdot6\cdot8...}{3\cdot3\cdot5\cdot5\cdot7
 (product 3 5)
 ```
 
+## Exercise 1.33
+> You can obtain an even more general version of $accumulate$ (Exercise 1.32) by introducing the notion of a $filter$ on the terms to be combined. That is,combine only those terms derived from values in the range that satisfy a specified condition. The resulting $filtered-accumulate$ abstraction takes the same arguments as accumulate, together with an additional predicate of one argument that specifies the filter. Write $filtered-accumulate$ as a procedure. Show how to express the following using $filtered-accumulate$:
+- a. the sum of the squares of the prime numbers in the interval $a$ to $b$ (assuming that you have a $prime?$ predicate already written)
+- b. the product of all the positive integers less thann that are relatively prime to $n$ (i.e., all positive integers $i < n$ such that $GCD(i, n) = 1$).
+
+> answer :
+```
+; recursive implementation
+(define (filtered-accumulate-recur combiner null-value term a next b filter)
+  (if (> a b)
+      null-value
+      (if (filter a)
+          (combiner (term a) (filtered-accumulate-recur combiner null-value term (next a) next b filter))
+          (combiner null-value (filtered-accumulate-recur combiner null-value term (next a) next b filter)))))
+
+; for a
+; computes the summation of the squares of the prime numbers in the interval a to b
+(define (sum-prime-square a b)
+  (filtered-accumulate-recur + 0 square a inc b prime?))
+
+; for b
+; computers the production of all the positive integers less thann that are relatively prime to n
+(define (product-prime n)
+  (filtered-accumulate-recur * 1 identity 1 inc n prime?))
+
+(sum-prime-square 0 10)
+(product-prime 10)
+> result
+87
+210
+
+
+; iterative implementation
+(define (filtered-accumulate-iter combiner null-value term a next b filter)
+  (define (iter a result)
+    (if (> a b)
+        result
+        (if (filter a)
+            (iter (next a) (combiner (term a) result))
+            (iter (next a) result))))
+  (iter a null-value))
+
+; for a
+; computes the summation of the squares of the prime numbers in the interval a to b
+(define (sum-prime-square a b)
+  (filtered-accumulate-iter + 0 square a inc b prime?))
+
+; for b
+; computers the production of all the positive integers less thann that are relatively prime to n
+(define (product-prime n)
+  (filtered-accumulate-iter * 1 identity 1 inc n prime?))
+
+(sum-prime-square 0 10)
+(product-prime 10)
+> result
+87
+210
+```
 
