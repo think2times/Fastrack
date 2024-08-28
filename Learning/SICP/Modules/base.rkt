@@ -1,13 +1,16 @@
 #lang racket
 
 (provide runtime)
-
 (provide square)
 (provide cube)
 (provide even?)
 (provide double)
 (provide halve)
 (provide inc)
+(provide average)
+(provide positive?)
+(provide negative?)
+
 
 ; returns a guaranteed-to-increase floating point number which represent the current millisecond count from the system
 (define (runtime)
@@ -30,3 +33,12 @@
 
 (define (inc a)
   (+ a 1))
+
+(define (average a b)
+  (/ (+ a b) 2))
+
+(define (positive? x)
+  (if (> x 0) true false))
+
+(define (negative? x)
+  (if (< x 0) true false))
