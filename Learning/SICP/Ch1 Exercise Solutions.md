@@ -914,3 +914,45 @@ $\frac{\pi}4=\frac{2\cdot4\cdot4\cdot6\cdot6\cdot8...}{3\cdot3\cdot5\cdot5\cdot7
 210
 ```
 
+## Exercise 1.34
+> Suppose we define the procedure
+`(define (f g) (g 2))`
+> Then we have
+```
+(f square)
+4
+(f (lambda (z) (* z (+ z 1))))
+6
+```
+> What happens if we(perversely) ask the interpreter to evaluate the combination $(f f)$? Explain.
+
+> answer: 执行之后报错了，因为$f$需要一个程序来作为参数，而我们传了个数字2给它
+![Alt text](<images/exer 1.34.png>)
+
+## Exercise 1.35
+> Show that the golden ratio $ϕ$ (Section 1.2.2) is a fixed point of the transformation $x = 1 + \frac{1}{x}$, and use this fact to compute $ϕ$ by means of the fixed-point procedure.
+
+> answer: 证明$x = 1 + \frac{1}{x}$的解是黄金分割比例就是简单的一元二次方程求解，这里就不说明了，利用$fixed-point$程序求解也很简单，直接把书上1.3.3部分的程序拿来用就行
+```
+(define tolerance 0.001)
+
+(define (close-enough? x y tolerance)
+  (< (abs (- x y)) tolerance))
+
+(define (fixed-point f first-guess)
+  (define (close-enough? v1 v2 tolerance)
+    (< (abs (- v1 v2))
+       tolerance))
+  (define (try guess)
+    (let ((next (f guess)))
+      (if (close-enough? guess next tolerance)
+          next
+          (try next))))
+  (try first-guess))
+
+; calculate the golden ratio φ by solve the equation: x = 1 + 1/x
+(fixed-point (lambda (x) (+ 1 (/ 1 x)))
+             1.0)
+
+; result: 1.6181818181818182
+```
