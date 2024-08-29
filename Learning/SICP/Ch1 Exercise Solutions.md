@@ -956,3 +956,44 @@ $\frac{\pi}4=\frac{2\cdot4\cdot4\cdot6\cdot6\cdot8...}{3\cdot3\cdot5\cdot5\cdot7
 
 ; result: 1.6181818181818182
 ```
+
+## Exercise 1.36
+> Modify fixed-point so that it prints the sequenceofapproximationsitgenerates using the $newline$ and $display$ primitives shown in Exercise 1.22. Then find a solution to $x^x = 1000$ by finding a fixed point of $x = log(1000)/log(x)$. (Use Scheme’s primitive log procedure, which computes natural logarithms.) Compare the number of steps this takes with and without average damping.(Note that you cannot start fixed-point with a guess of 1, as this would cause division by $log(1) = 0.)$
+
+> 这道题目难度不大，计算部分直接修改书上 1.3.3 的公式就行，然后把每次的猜测值打印出来就行。
+```
+(define (fixed-point f first-guess)
+  (define (close-enough? v1 v2 tolerance)
+    (< (abs (- v1 v2))
+       tolerance))
+  (define (try guess count)
+    (let ((next (f guess)))
+      (display count)
+      (display " *** ")
+      (display guess)
+      (newline)
+      (if (close-enough? guess next tolerance)
+          (and (display (+ count 1))
+               (display " *** ")
+               (display next))
+          (try next (+ count 1)))))
+  (try first-guess 1))
+
+
+; with average damping
+(newline)
+(display "with average damping")
+(newline)
+(fixed-point (lambda (x) (average x (/ (log 1000) (log x))))
+             1.1)
+(newline)
+
+; without average damping
+(newline)
+(display "without average damping")
+(newline)
+(fixed-point (lambda (x) (/ (log 1000) (log x)))
+             1.1)
+```
+> 由下图可以看出，使用 average damping 只需要11次就可以找到符合要求的答案，而不用则要27次，使不使用 average damping 的差距还是挺大的。
+![Alt text](<images/exer 1.36.png>)
