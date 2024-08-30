@@ -997,3 +997,67 @@ $\frac{\pi}4=\frac{2\cdot4\cdot4\cdot6\cdot6\cdot8...}{3\cdot3\cdot5\cdot5\cdot7
 ```
 > 由下图可以看出，使用 average damping 只需要11次就可以找到符合要求的答案，而不用则要27次，使不使用 average damping 的差距还是挺大的。
 ![Alt text](<images/exer 1.36.png>)
+
+## Exercise 1.37
+> a. An infinite continued fraction is an expression of the form
+$f=\frac{N_1}{D_1+\frac{N_2}{D_2+\frac{N_3}{D_3+...}}}$
+> As an example, one can show that the infinite continued fraction expansion with the $N_i$ and the $D_i$ all equal to 1 produces $\frac{1}{\phi}$, where $ϕ$ is the golden ratio  (described in Section 1.2.2). One way to approximate an infinite continued fraction is to truncate the expansion after a given number of terms Such a truncation — a so-called $k-term\ finite\ continued\ fraction$ — has the form
+$\frac{N_1}{D_1+\frac{N_2}{...+\frac{N_k}{D_k}}}$
+> Suppose that $n$ and $d$ are procedures of one argument (the term index $i$) that return the $N_i$ and $D_i$ of the terms of the continued fraction. Define a procedure $cont-frac$ such that evaluating $(cont-frac\ n\ d\ k)$ computes the value of the $k$-term finite continued fraction. Check your procedure by approximating $\frac{1}{\phi}$ using
+```
+(cont-frac (lambda (i) 1.0)
+           (lambda (i) 1.0)
+           k)
+```
+> for successive values of $k$. How large must you make $k$ in order to get an approximation that is accurate to 4 decimal places?
+
+>  b. If your cont-frac procedure generates a recursive process, write one that generates an iterative process. If it generates an iterative process, write one that generates a recursive process.
+
+> 这道题题干比较长，理解起来有点费劲，其实就是设计一个函数来计算题目中有限项的公式的结果。a 和 b 要求分别用迭代和递归的方法来实现，并找出满足条件的最小 k 值。为了便于展示，用 display 函数把 k 和 算出的近似值一起打印出来
+```
+(define (close-enough? x y tolerance)
+  (< (abs (- x y)) tolerance))
+
+; 黄金分割比例是 φ = (1+√5)/2,倒数 1/φ ≈ 0.61803398875
+; 保留4位有效数字就是 0.6180,所以结果需要在 0.6175 ~ 0.6184 之间
+; 取 0.6175 和 0.6184 的中间值 0.61795,只要与其差值不大于 0.00045 即可
+(define tolerance 0.00045)
+(define midterm 0.61795)
+
+; 注意 n 和 d 都是 procedure 而不是数字，k 表示要计算的项数
+; 他们都是常数函数，接受一个参数 i，但是无论 i 是多少，都返回 1.0
+(define (cont-frac n d k)
+  ; iterative implementation
+  (define (frac-iter k pre)
+    (if (= k 1)
+        pre
+        (frac-iter (- k 1) (/ (n k) (+ (d k) pre)))))
+
+  ; recurative implementation
+  (define (frac-recur k)
+    (if (= k 1)
+        (/ (n k) (d k))
+        (/ (n k) (+ (d k) (frac-recur (- k 1))))))
+
+  ; 找到满足要求的最小k值
+  (define (find k)
+    (let ((temp (frac-iter k 1.0)))
+    ;(let ((temp (frac-recur k)))
+      (if (close-enough? temp midterm tolerance)
+          (and (display k)
+               (display " *** ")
+               (display temp))
+          (find (+ k 1)))))
+
+  (find 1))
+
+
+(cont-frac (lambda (i) 1.0)
+           (lambda (i) 1.0)
+           10)
+
+; 两种实现方法的结果都是相同的
+8 *** 0.6176470588235294
+```
+
+
