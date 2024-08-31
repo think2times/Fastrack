@@ -1,5 +1,6 @@
 #lang racket
 
+(provide pi)
 (provide runtime)
 (provide square)
 (provide cube)
@@ -11,6 +12,8 @@
 (provide positive?)
 (provide negative?)
 
+
+(define pi 3.141592653589793)
 
 ; returns a guaranteed-to-increase floating point number which represent the current millisecond count from the system
 (define (runtime)

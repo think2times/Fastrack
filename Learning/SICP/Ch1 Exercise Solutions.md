@@ -1060,4 +1060,100 @@ $\frac{N_1}{D_1+\frac{N_2}{...+\frac{N_k}{D_k}}}$
 8 *** 0.6176470588235294
 ```
 
+## Exercise 1.38
+> In 1737, the Swiss mathematician Leonhard Euler published a memoir $De\ Fractionibus\ Continuis$, which included a continued fraction expansion for $e − 2$, where $e$ is the base of the natural logarithms. In this fraction, the $N_i$ are all 1, and the $D_i$ are successively 1, 2, 1, 1, 4, 1, 1, 6, 1, 1, 8, . . .. Write a program that uses your cont-frac procedure from Exercise 1.37 to approximate $e$, based on Euler’s expansion.
 
+> 这道题本来很简单，只要实现$D_i$就可以了，但是当我使用 1.37 的程序时，却发现算出的结果跟 $e$ 有很大差距，最后把 1.37 的程序也做了修改才得到满意的近似值。
+> 首先是去掉了寻找满足条件的最小$k$值的部分，另外迭代和递归实现也都做了一定的调整。
+```
+; 注意 n 和 d 都是 procedure 而不是数字,k 表示要计算的项数
+(define (cont-frac n d k)
+  ; iterative implementation
+  (define (frac-iter k pre)
+    (if (= k 0)
+        pre
+        (frac-iter (- k 1) (/ (n k) (+ (d k) pre)))))
+
+  ; recurative implementation
+  (define (frac-recur i)
+    (if (= i k)
+        (/ (n i) (d i))
+        (/ (n i) (+ (d i) (frac-recur (+ i 1))))))
+
+  (frac-iter k 0))
+  ;(frac-recur 1))
+
+(define (e-euler k)
+   (+ 2.0 (cont-frac (lambda (i) 1)
+                     ; 观察 Di 序列,发现每 3 个一组,
+                     ; 从 1 开始计数的话,在每一组的 3 个数中,只有除以 3 余数为 2 的那个不是 1
+                     (lambda (i) 
+                       (if (= (remainder i 3) 2) 
+                           (/ (+ i 1) 1.5)          ; 先除3向下取整再加1最后乘2,等同于先加1再除1.5
+                           1)) 
+                     k))) 
+
+
+; e 的近似值为 2.71828
+(e-euler 100)
+
+; 输出结果为
+2.7182818284590455
+```
+
+## Exercise 1.39
+> A continued fraction representation of the tangent function was published in 1770 by the German mathematician J.H. Lambert:
+---
+$\tan x = \frac{x}{1-\frac{x^2}{3-\frac{x^2}{5-...}}}$
+
+---
+> where $x$ is in radians. Define a procedure $(tan-cf\ x\ k)$ that computes an approximation to the tangent function based on Lambert’s formula. $k$ specifies the number of terms to compute, as in Exercise 1.37.
+---
+
+> 1.38难度不大，再加上今天周末，时间充足，我决定再做一道😀
+> 1.39乍一看，并不很难，但是我想了半天也没做出来。直到我忽然发现
+---
+ $\tan x = \frac{x}{1-\frac{x^2}{3-\frac{x^2}{5-...}}}$ 其实等价于 $\frac{x^2}{1-\frac{x^2}{3-\frac{x^2}{5-...}}} \div x$
+ ---
+
+ > 然后题目就变得简单了，只要把最后的结果除以 $x$ 即可
+
+```
+; 注意 n 和 d 都是 procedure 而不是数字,k 表示要计算的项数
+(define (cont-frac n d radians k)
+  ; iterative implementation
+  (define (frac-iter i pre)
+    (if (= i 1)
+        pre
+        ; 这里要注意计算的是 (d (- i 1))，而不是 (d i)，否则会漏掉 1-... 这一项
+        (frac-iter (- i 1) (/ (n i) (- (d (- i 1)) pre)))))      
+
+  ; recurative implementation
+  (define (frac-recur i)
+    (if (= i k)
+        (/ (n i) (d i))
+        (/ (n i) (- (d i) (frac-recur (+ i 1))))))
+
+  (frac-iter k (square radians)))         ; 注意初始值是 x^2
+  ;(frac-recur 1))
+
+; 注意到原式最上面的分子其实可以写成 x^2 / x，这样它的结构就可以保持一致，只要在最后把结果除以 x 即可
+(define (tan-cf x k)
+  (let ((radians (/ (* pi x) 180)))
+    (/ (cont-frac (lambda (i) (square radians))
+                  (lambda (i) (- (* 2 i) 1))
+                  radians
+                  k)
+       radians)))
+
+
+; tan 30° ≈ 0.577，tan 45° = 1，tan 60° ≈ 1.732
+(tan-cf 30 10)
+(tan-cf 45 10)
+(tan-cf 60 10)
+
+; result
+0.5773502691896257
+1.0
+1.7320508075688845
+```
