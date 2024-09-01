@@ -1157,3 +1157,24 @@ $\tan x = \frac{x}{1-\frac{x^2}{3-\frac{x^2}{5-...}}}$
 1.0
 1.7320508075688845
 ```
+
+## Exercise 1.40
+> Define a procedure cubic that can be used together with the newtons-method procedure in expressions of the form
+
+`(newtons-method (cubic a b c) 1)`
+
+> to approximate zeros of the cubic $x^3 + ax^2 + bx + c$.
+
+> 这道题很简单，把 `(cubic a b c)` 实现就行了。
+```
+(define (cubic a b c)
+  (lambda (x) (+ (cube x)
+                 (* a (square x))
+                 (* b x)
+                 c)))
+
+; 求 x^3 + x^2 + x + 1 = 0 的解
+(newtons-method (cubic 1 1 1) 1)
+
+; 答案：-1.000000022096024，也就是 -1
+```
