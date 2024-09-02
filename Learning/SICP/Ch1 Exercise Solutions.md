@@ -1178,3 +1178,31 @@ $\tan x = \frac{x}{1-\frac{x^2}{3-\frac{x^2}{5-...}}}$
 
 ; 答案：-1.000000022096024，也就是 -1
 ```
+
+##  Exercise 1.41
+> Define a procedure $double$ that takes a procedure of one argument as argument and returns a procedure that applies the original procedure twice. For example, if $inc$ is a procedure that adds 1 to its argument, then `(double inc)` should be a procedure that adds 2. What value is returned by
+
+`(((double (double double)) inc) 5)`
+
+---
+
+> 理解了可以把过程(procedure)作为返回值的概念之后，这道题就变得非常简单，$double$过程只需要将传进来的参数过程连续执行2次就行
+```
+(define (double f)
+  (lambda (x) (f (f x))))
+
+(define (inc a)
+  (+ a 1))
+
+(define (halve a)
+  (/ a 2))
+
+
+(((double (double double)) inc) 5)
+
+(((double double) halve) 1024)
+
+; 执行结果：
+21
+64
+```
