@@ -1206,3 +1206,49 @@ $\tan x = \frac{x}{1-\frac{x^2}{3-\frac{x^2}{5-...}}}$
 21
 64
 ```
+
+## Exercise 1.42
+> Let $f$ and $g$ be two one-argument functions. The $composition$ $f$ after $g$ is defined to be the function $x->f(g(x))$. Define a procedure compose that implements composition. For example, if $inc$ is a procedure that adds 1 to its argument,
+```
+ ((compose square inc) 6)
+ 49
+ ```
+---
+> 这道题也非常简单，跟上一题几乎一模一样，只是把 double 换成一个通用的单参数函数而已。
+```
+(define (compose f g)
+  (lambda (x) (f (g x))))
+
+
+((compose square inc) 6)
+((compose inc square) 6)
+
+; 执行结果
+49
+37
+```
+
+## Exercise 1.43
+> If $f$ is a numerical function and $n$ is a positive integer, then we can form the $n^{th}$ repeated application of $f$, which is defined to be the function whose value at $x$ is $f (f (...(f (x)). . .))$. For example, if $f$ is the function $x\rightarrow x + 1$, then the $n^th$ repeated application of $f$ is the function $x\rightarrow x+n$. If $f$ is the operation of squaring a number, then the $n^{th}$ repeated application of $f$ is the function that raises its argument to the $2^n$-th power. Write a procedure that takes as inputs a procedure that computes $f$ and a positive integer $n$ and returns the procedure that computes the $n^{th}$ repeated application of $f$. Your procedure should be able to be used as follows:
+```
+((repeated square 2) 5)
+625
+```
+> Hint: You may find it convenient to use compose from Exercise 1.42.
+---
+> 这道题稍微复杂一点，要用一个循环来实现重复调用目标函数 $n$ 次。
+```
+; f 表示函数，参数只有一个且为数值；n 表示要嵌套执行多少次 f 函数
+(define (repeated f n)
+  (if (= n 1)
+      (lambda (x) (f x))
+      (compose f (repeated f (- n 1)))))
+      
+      
+((repeated square 2) 5)
+((repeated inc 10) 5)
+
+; 执行结果
+625
+15
+```
