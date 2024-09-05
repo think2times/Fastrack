@@ -4,6 +4,7 @@
 (provide runtime)
 (provide square)
 (provide cube)
+(provide expt)
 (provide even?)
 (provide double)
 (provide halve)
@@ -24,6 +25,11 @@
 
 (define (cube x)
   (* x x x))
+
+(define (expt b n) 
+  (cond ((= n 0) 1) 
+        ((even? n) (square (expt b (/ n 2)))) 
+        (else (* b (expt b (- n 1)))))) 
 
 (define (even? n)
   (= (remainder n 2) 0))
