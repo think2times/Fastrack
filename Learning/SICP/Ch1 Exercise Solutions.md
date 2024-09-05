@@ -1282,3 +1282,36 @@ $\tan x = \frac{x}{1-\frac{x^2}{3-\frac{x^2}{5-...}}}$
 625
 15
 ```
+
+## Exercise 1.45
+> We saw in Section 1.3.3 that attempting to compute square roots by naively finding a fixed point of $y\rightarrow \frac{x}{y}$ does not converge, and that this can be fixed by  average damping. The same method works for finding cube roots as fixed points of the average-dampedy $\frac{x}{y^2}$. Unfortunately, the process does not work for fourth roots—a single average damp is not enough to make a fixed-point search for $y\rightarrow \frac{x}{y^3}$ converge. On the other hand, if we average damp twice (i.e., use the average damp of the average damp of $y\rightarrow \frac{x}{y^3}$) the fixed-point search does converge. Do some experiments to determine how many average damps are required to compute $n^{th}$ roots as a fixed point search based upon repeated average damping of $y\rightarrow \frac{x}{y^{n-1}}$. Use this to implement a simple procedure for computing $n^{th}$ roots using $fixed-point, average-damp$,and the $repeated$ procedure of Exercise1.43. Assume that any arithmetic operations you need are available as primitives.
+---
+> 这道题难度太难了，我最后也没能靠自己做出来。一个是怎么找到要执行几次$average-damp$，我一开始以为是 $n-2$，试了几个发现明显不是，又猜测是不是 $\frac{n}{2}$，结果还是不对，最后上网搜了一下才知道是 $log_2^n$，感兴趣的可以参考知乎的[这个回答](https://www.zhihu.com/question/28838814)；知道了重复执行的次数，在编写代码的时候再次遇到了问题，我对于“把一个过程作为另一个过程的返回值”这个概念理解的还是不到位，没有理解`(repeated average-damp n)`之后还要给它传一个过程作为 $average-damp$ 的参数，最后上网看了别人的答案才明白过来。下面是我的答案：
+```
+; 求 x 和 f(x) 的平均值
+(define (average-damp f)
+  (lambda (x) (average x (f x))))
+
+; 对于任意正整数 n，求使得 2^k < n 的最大 k 值
+(define (max-expt n)
+  (define (iter k pre)
+    (if (< n pre)
+        (- k 1)
+        (iter (+ k 1) (* 2 pre))))
+  (iter 1 2))
+
+(define (nth-root x n)
+  (fixed-point ((repeated average-damp (max-expt n))
+                (lambda (y) (/ x (expt y (- n 1)))))
+               1.0))
+
+
+(display (nth-root 2 2))
+(newline)
+(display (nth-root 32 5))
+(newline)
+
+; 结果
+1.4142135623746899
+2.000001512995761
+```
