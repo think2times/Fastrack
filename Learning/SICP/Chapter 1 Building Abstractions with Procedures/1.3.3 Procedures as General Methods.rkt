@@ -2,7 +2,7 @@
 
 (require "../modules/base.rkt")
 
-(define tolerance 0.001)
+(define tolerance 0.00001)
 
 ; The half-interval method for finding roots of an equation f (x) = 0, where f is a continuous function.
 ; if we are given points a and b such that f (a) < 0 < f (b),
