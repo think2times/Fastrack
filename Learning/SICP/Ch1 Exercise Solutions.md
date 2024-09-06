@@ -1315,3 +1315,49 @@ $\tan x = \frac{x}{1-\frac{x^2}{3-\frac{x^2}{5-...}}}$
 1.4142135623746899
 2.000001512995761
 ```
+
+## Exercise 1.46
+> Several of the numerical methods described in this chapter are instances of an extremely general computational strategy known as $iterative improvement$. Iterative improvement says that to compute something, we start with aninitial guess for the answer, test if the guess is good enough, and otherwise improve the guess and continue the process using the improved guess as the new guess. Write a procedure $iterative-improve$ that takes two procedures as arguments: a method for telling whether a guess is good enough and a method for improving a guess. $iterative-improve$ should return as its value a procedure that takes a guess as argument and keeps improving the guess until it is good enough. Rewrite the $sqrt$ procedure of Section 1.1.7 and the $fixed-point$ procedure of Section 1.3.3 in terms of $iterative-improve$.
+---
+```
+(define tolerance 0.00001)
+
+(define (good-enough? guess target tolerance)
+  (< (abs (- guess target)) tolerance))
+
+; 注意：这个函数的两个参数以及返回值都是函数，所以调用的语句外还要传一个参数作为 first-guess
+(define (iterative-improve good-enough? improve-guess)
+  (lambda (first-guess)
+    (define (iter guess)
+      (if (good-enough? guess)
+          guess
+          (iter (improve-guess guess))))
+    (iter first-guess)))
+
+; Rewrite Version
+; 1.1.7 Square Roots by Newton's Method
+(define (sqrt x)
+  ((iterative-improve (lambda (guess) (good-enough? (square guess) x tolerance))
+                      (lambda (guess) (average guess (/ x guess))))
+   1.0))
+
+; 1.3.3 Procedures as General Methods
+(define (fixed-point f first-guess)
+  ((iterative-improve (lambda (guess) (good-enough? guess (f guess) tolerance))
+                      f)
+   first-guess))
+
+
+(sqrt 2)
+(sqrt 10)
+
+(fixed-point cos 1.0)
+(fixed-point (lambda (x) (+ (sin x) (cos x))) 1.0)
+
+
+; 执行结果
+1.4142156862745097
+3.162277665175675
+0.7390893414033927
+1.2587228743052672
+```
