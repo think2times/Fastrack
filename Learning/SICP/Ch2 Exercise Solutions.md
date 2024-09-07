@@ -79,3 +79,53 @@
 > 可以看出这里还是有改进空间，-1/1 写成 -1 就行，利用 $gcd$ 就可以实现，不过我暂时不改了，也许后面有道题目会让做这个事情，到时候再说。
 
 ## 2.1.2 Abstraction Barriers
+
+### Exercise 2.2
+> Consider the problem of representing line segments in a plane. Each segment is represented as a pair of points: a starting point and an ending point. Define a constructor make-segment and selectors start-segment and end-segment that define the representation of segments in terms of points. Furthermore, a point can be represented as a pair of numbers: the x coordinate and the y coordinate. Accordingly, specify a constructor make-point and selectors x-point and y-point that define this representation. Finally, using your selectors and constructors, define a procedure midpoint-segment that takes a line segment as argument and returns its midpoint (the point whose coordinates are the average of the coordinates of the endpoints). To try your procedures, you’ll need a way to print points:
+```
+(define (print-point p)
+  (newline)
+  (display "(")
+  (display (x-point p))
+  (display ",")
+  (display (y-point p))
+  (display ")"))
+```
+---
+> 这道题目很简单，主要是为了检查我们是否理解了嵌套使用抽象数据结构的概念，有点像 Python 里的列表，每个列表元素也可以是列表。
+```
+(define (make-point x y)
+  (cons x y))
+
+(define (x-point p) (car p))
+
+(define (y-point p) (cdr p))
+
+(define (make-segment start end)
+  (cons start end))
+
+(define (start-segment segment)
+  (car segment))
+
+(define (end-segment segment)
+  (cdr segment))
+
+; 线段中点坐标就是起点和终点横纵坐标的平均值
+(define (midpoint-segment segment)
+  (let ((start (start-segment segment))
+        (end (end-segment segment)))
+    (make-point (average (x-point start) (x-point end))
+                (average (y-point start) (y-point end)))))
+
+
+; 设置线段起点为(3, 5)，终点为(7, 7)，中点应该为(5, 6)
+(define start (make-point 3 5))
+(define end (make-point 7 7))
+(define line (make-segment start end))
+(print-point (midpoint-segment line))
+
+; 执行结果
+(5, 6)
+```
+
+### 
