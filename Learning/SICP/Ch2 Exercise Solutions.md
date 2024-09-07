@@ -1,8 +1,10 @@
 [Building Abstractions with Data]()
 
-# 1. Introduction to Data Abstraction
+# 2.1 Introduction to Data Abstraction
 
-## Exercise 2.1
+## 2.1.1 Example: Arithmetic Operations for Rational Numbers
+
+### Exercise 2.1
 > Exercise 2.1: Define a better version of $make-rat$ that handles both positive and negative arguments. $make-rat$ should normalize the sign so that if the rational number is positive, both the numerator and denominator are positive, and if the rational number is negative, only the numerator is negative.
 ---
 > 第一章学完了，今天开始学习第二章，目前还没有遇到什么问题，这道题也比较简单，只要注意到“分子分母同时为正，或者分子为负，分母为正，不需要改变符号；分子分母同时为负,或者分子为正,分母为负,分子分母都需要改变符号”这一点，就可以很容易地实现题目要求。
@@ -75,3 +77,5 @@
 -3/2
 ```
 > 可以看出这里还是有改进空间，-1/1 写成 -1 就行，利用 $gcd$ 就可以实现，不过我暂时不改了，也许后面有道题目会让做这个事情，到时候再说。
+
+## 2.1.2 Abstraction Barriers
