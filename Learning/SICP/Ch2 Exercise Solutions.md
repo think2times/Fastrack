@@ -131,5 +131,142 @@
 ### Exercise 2.3
 > Implement a representation for rectangles in a plane. (Hint: You may want to make use of Exercise 2.2.) In terms of your constructors and selectors, create procedures that compute the perimeter and the area of a given rectangle. Now implement a different representation for rectangles. Can you design your system with suitable abstraction barriers, so that the same perimeter and area procedures will work using either representation?
 ---
-> 首先借用 Exercise 2.2 的函数来表示矩形，我们已经有了线段的表示方法，那矩形就是2组平行且相等的线段，且邻边垂直。为了简单起见，把矩形左下角的顶点坐标设为(0, 0)，且一条边落在 x 轴上。
+> 首先借用 Exercise 2.2 的函数来表示矩形，我们已经有了线段的表示方法，那矩形就是2组平行且相等的线段，且邻边垂直。为了简单起见，把矩形左下角的顶点坐标设为(0, 0)，且一条边落在 x 轴上。然后采用矩形左边的那条边和对角线交点坐标来确定一个矩形，同样为了简便起见，把交点坐标设为(0, 0)。可以看出 $make-point, x-point, y-point$; $make-segment, start-segment, end-segment$; $make-rect, make-rect-by-meeting-point$; $get-line-length, get-perimeter, get-area$ 是四层不同的函数，某一层的函数实现逻辑的改变，不会影响到其他层的调用。
+```
+; 用左下的顶点和经过该顶点的两条邻边来确定一个矩形，为简单起见，左下的顶点坐标设为(0, 0)
+; length, width 分别表示矩形的长和宽
+(define (make-rect length width)
+  (let ((left-bottom (make-point 0 0)))
+    (cons (make-segment left-bottom (make-point (car left-bottom) (+ (cdr left-bottom) width)))    ; 竖直的那条边
+          (make-segment left-bottom (make-point (+ (car left-bottom) length) (cdr left-bottom))))))    ; 水平的那条边
+
+; 用矩形的对角线交点和左边的边来确定一个矩形,为简单起见,对角线交点坐标设为(0, 0)
+; left-line 表示左边的边
+(define (make-rect-by-meeting-point left-line)
+  (cons left-line (make-segment (start-segment left-line) (make-point (- 0 (x-point (start-segment left-line)))
+                                                                      (y-point (start-segment left-line))))))
+
+; 用两点间距离公式 d = sqrt(x^2 + y^2) 计算线段的长度
+(define (get-line-length segment)
+  (sqrt (+ (square (- (x-point (end-segment segment))
+                      (x-point (start-segment segment))))
+           (square (- (y-point (end-segment segment))
+                      (y-point (start-segment segment)))))))
+
+; 计算矩形的周长
+(define (get-perimeter rect)
+  (* 2 (+ (get-line-length (car rect))
+          (get-line-length (cdr rect)))))
+
+; 计算矩形的面积
+(define (get-area rect)
+  (* (get-line-length (car rect))
+     (get-line-length (cdr rect))))
+
+
+; 设置一个长为7宽为5的矩形
+(define test-rect1 (make-rect 7 5))
+
+(display "矩形test-rect1周长为：")
+(display (get-perimeter test-rect1))
+(newline)
+(display "矩形test-rect1面积为:")
+(display (get-area test-rect1))
+(newline)
+
+; 设置一个长为7宽为5的矩形
+(define A (make-point -3.5 -2.5))
+(define B (make-point -3.5 2.5))
+(define left-line (make-segment A B))
+(define test-rect2 (make-rect-by-meeting-point left-line))
+(display "矩形test-rect2周长为:")
+(display (get-perimeter test-rect2))
+(newline)
+(display "矩形test-rect2面积为:")
+(display (get-area test-rect2))
+(newline)
+
+; 执行结果
+矩形test-rect1周长为：24.000000282646763
+矩形test-rect1面积为:35.00000070672435
+矩形test-rect2周长为:24.000000282646763
+矩形test-rect2面积为:35.00000070672435
+```
+
+## 2.1.3 What Is Meant by Data?
+
+### Exercise 2.4
+> Here is an alternative procedural representation of pairs. Forthisrepresentation, verify that $(car\ (cons\ x\ y))$ yields $x$ for any objects $x$ and $y$.
+ ```
+ (define (cons x y)
+  (lambda (m) (m x y)))
+ (define (car z)
+  (z (lambda (p q) p)))
+```
+> Whatisthe corresponding definition of $cdr$? (Hint: To verify that this works, make use of the substitution model of Section 1.1.5.)
+---
+> 这道题很简单，只需要把 $car$ 改一个字母就行。
+```
+; 返回值是一个单参数的函数，它会把 cons 函数的两个数传给返回值函数
+(define (cons x y)
+  (lambda (m) (m x y)))
+
+; 如果 z 是由 cons 函数创建的数据对，则 z 会把 (lambda (p q) p)) 作为参数
+(define (car z)
+  (z (lambda (p q) p)))
+
+(define (cdr z)
+  (z (lambda (p q) q)))
+
+
+(define z (cons 3 4)) 
+(car z) 
+(cdr z) 
+
+; 执行结果
+3
+4
+
+; applicative-order
+; (car (cons x y)) 
+; (car (lambda (m) (m x y))) 
+; ((lambda (m) (m x y)) (lambda (p q) p)) 
+; ((lambda (p q) p) x y) 
+; x 
+```
+
+### Exercise 2.5
+> Show that we can represent pairs of nonnegative integers using only numbers and arithmetic operations if we represent the pair a and b as the integer that is the product 2a3b. Give the corresponding definitions of the procedures cons, car, and cdr.
+---
+> 这道题目难度也不大，只要实现一个辅助函数来计算结果中包含了几个 $base$ 的乘积即可。
+```
+; 计算 n 中最多包含几个 base 的积
+(define (get-power n base)
+  (define (iter k last)
+    (if (= (remainder last base) 0)      ; 如果余数为0，说明能够被base整除，则次数 +1
+        (iter (+ k 1) (/ last base))
+        k))
+  (iter 0 n))
+
+(define (cons a b)
+  (* (expt 2 a) (expt 3 b)))
+
+(define (car z)
+  (get-power z 2))
+
+(define (cdr z)
+  (get-power z 3))
+
+
+(define p (cons 3 2))
+(display p)
+(newline)
+(car p)
+(cdr p)
+
+; 执行结果
+72
+3
+2
+```
 
