@@ -309,7 +309,7 @@
 ; 4. (lambda (x) x) 函数会返回传入的参数，也就是0
 ((zero (lambda (x) (+ x 1))) 0)    ; 输出是 0
 
-; 1. 把 zero 作为参数传入，得到 (lambda (f) (lambda (x) (f ((zero f) x)))))
+; 1. 把 zero 作为参数传入，得到 (lambda (f) (lambda (x) (f ((zero f) x))))
 ; 2. 先处理 (zero f)，根据上面我们对 zero 函数的分析，无论传入什么函数作为参数，它都返回 (lambda (x) x)
 ; 3. 则 ((zero f) x) 就是 x，(lambda (f) (lambda (x) (f x)))，也就是无论传入什么 f 和 x，都会返回 (f x)
 (define one (add-1 zero))
@@ -317,7 +317,7 @@
 ; 根据上面的分析，下面的程序相当于执行 ((lambda (x) (+ x 1)) 0), 也就是 0 + 1
 ((one (lambda (x) (+ x 1))) 0)    ; 输出是 1
 
-; 1. 把 one 作为参数传入，得到 (lambda (f) (lambda (x) (f ((one f) x)))))
+; 1. 把 one 作为参数传入，得到 (lambda (f) (lambda (x) (f ((one f) x))))
 ; 2. 根据上面的分析，((one f) x) 会返回 (f x)
 ; 3. 所以下面的函数无论传入什么 f 和 x，都会返回 (f (f x))
 (define two (add-1 one))
@@ -350,4 +350,48 @@
 
 ## 2.1.4 Extended Exercise: Interval Arithmetic
 
-### 
+### 2.7
+> Alyssa’s program is incomplete because she has not specified the implementation of the interval abstraction. Here is a definition of the interval constructor:
+` (define (make-interval a b) (cons a b))`
+> Define selector $supper-bound$ and $lower-bound$ to complete the implementation.
+---
+> 这道题目难度不大，比起前面的选择函数，就是多了一个取最小值为下界，最大值为上界的步骤，直接利用现成的 $min, max$ 即可。
+```
+; x 表示某个区间
+(define (lower-bound x) (min (car x) (cdr x)))
+
+(define (upper-bound x) (max (car x) (cdr x)))
+
+(define helper (make-interval 1.0 1.0))
+(define r1 (make-interval 6.12 7.48))
+(define r2 (make-interval 4.465 4.935))
+
+; 计算并联电路的电阻，注意这里不能化简成 r1*r2/(r1+r2) 的形式
+(define (parallel-resistance r1 r2)
+  (div-interval helper (add-interval (div-interval helper r1)
+                                     (div-interval helper r2))))
+                                     
+(display (parallel-resistance r1 r2))
+
+; 执行结果
+[2.581558809636278, 2.97332259363673]
+```
+
+### Exercise 2.8
+＞ Using reasoning analogous to Alyssa’s, describe how the difference of two intervals may be computed. Define a corresponding subtraction procedure, called $sub-interval$.
+---
+> 这道题目也比较简单，只要注意到区间之差的下界是被减区间的下界减去另一个区间的上界，上界是被减区间的上界减去另一个区间的下界即可。
+```
+; 计算 x-y 的结果
+(define (sub-interval x y)
+  (make-interval (- (lower-bound x) (upper-bound y))
+                 (- (upper-bound x) (lower-bound y))))
+
+(define r1 (make-interval 6.12 7.48))
+(define r2 (make-interval 4.465 4.935))
+
+(display (sub-interval r1 r2))
+
+; 执行结果
+[1.1850000000000005, 3.0150000000000006]
+```

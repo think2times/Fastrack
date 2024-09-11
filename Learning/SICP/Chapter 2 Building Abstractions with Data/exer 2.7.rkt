@@ -26,7 +26,6 @@
 
 (define (upper-bound x) (max (car x) (cdr x)))
 
-
 (define helper (make-interval 1.0 1.0))
 (define r1 (make-interval 6.12 7.48))
 (define r2 (make-interval 4.465 4.935))
@@ -35,5 +34,13 @@
 (define (parallel-resistance r1 r2)
   (div-interval helper (add-interval (div-interval helper r1)
                                      (div-interval helper r2))))
-                                     
-(display (parallel-resistance r1 r2))
+
+(define (display-interval i) 
+  (newline) 
+  (display "[") 
+  (display (lower-bound i)) 
+  (display ", ") 
+  (display (upper-bound i)) 
+  (display "]"))
+
+(display-interval (parallel-resistance r1 r2))
