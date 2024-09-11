@@ -347,3 +347,7 @@
 2
 256
 ```
+
+## 2.1.4 Extended Exercise: Interval Arithmetic
+
+### 
