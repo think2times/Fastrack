@@ -395,3 +395,61 @@
 ; 执行结果
 [1.1850000000000005, 3.0150000000000006]
 ```
+
+### Exercise 2.9
+> The $width$ of an interval is half of the difference between its upper and lower bounds. The width is a measure of the uncertainty of the number specified by the interval. For some arithmetic operations the width of the result of combining two intervals is a function only of the widths of the argument intervals, whereas for others the width of the combination is not a function of the widths of the argument intervals. Show that the width of the sum (or difference) of two intervals is a function only of the widths of the intervals being added (or subtracted). Give examples to show that this is not true for multiplication or division.
+---
+> 这道题目没有任何难度，只要把原来的区间宽度和经过加减之后的区间宽度表示出来，它们的关系也就一目了然了。
+```
+; 计算区间的宽度
+(define (get-width x)
+  (/ (- (upper-bound x) (lower-bound x)) 2))
+
+
+(define r1 (make-interval 6.12 7.48))
+(define r2 (make-interval 4.465 4.935))
+
+(display (get-width r1))
+(newline)
+(display (get-width r2))
+(newline)
+(display (get-width (add-interval r1 r2)))
+(newline)
+(display (get-width (sub-interval r1 r2)))
+(newline)
+
+; 执行结果
+0.6800000000000002
+0.23499999999999988
+0.9149999999999991
+0.915
+```
+> 根据执行结果可以看出，加减之后的区间宽度等于原来两个区间宽度之和。
+
+### Exercise 2.10
+> Ben Bitdiddle, an expert systems programmer, looks over Alyssa’s shoulder and comments that it is not clear what it means to divide by an interval that spans zero. Modify Alyssa’s code to check for this condition and to signal an error if it occurs.
+---
+> 这道题目也很简单，只要加一个区间内是否包含0的判断就行了
+```
+(define (div-interval x y)
+  (if (and (<= (lower-bound y) 0) (>= (upper-bound x) 0))
+      (error "被除区间包含0！")
+      (mul-interval
+       x
+       (make-interval (/ 1.0 (upper-bound y))
+                      (/ 1.0 (lower-bound y))))))
+
+
+(define r1 (make-interval 6.12 7.48))
+(define r2 (make-interval 4.465 4.935))
+(display-interval (div-interval r1 r2))
+(newline)
+
+(define a (make-interval 6.12 7.48))
+(define b (make-interval -4.465 4.935))
+(display-interval (div-interval a b))
+```
+> 执行结果
+![Alt text](<images/exer 2.10.png>)
+
+### 
