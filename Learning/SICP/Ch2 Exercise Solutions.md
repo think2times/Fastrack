@@ -452,4 +452,79 @@
 > 执行结果
 ![Alt text](<images/exer 2.10.png>)
 
-### 
+### Exercise 2.11
+> In passing, Ben also cryptically comments: “By testing the signs of the endpoints of the intervals, it is possible to break $mul-interval$ into nine cases, only one of which requires more than two multiplications.” Rewrite this procedure using Ben’s suggestion.
+> After debugging her program, Alyssa shows it to a potential user, who complains that her program solves the wrong problem. He wants a program that can deal with numbers represented as a center value and an additive tolerance; for example, he wants to work with intervals such as 3.5±0.15 rather than [3.35, 3.65]. Alyssa returns to her desk and fixes this problem by supplying an alternate constructor and alternate selectors:
+```
+(define (make-center-width c w)
+  (make-interval (- c w) (+ c w)))
+(define (center i)
+  (/ (+ (lower-bound i) (upper-bound i)) 2))
+(define (width i)
+  (/ (- (upper-bound i) (lower-bound i)) 2))
+```
+> Unfortunately, most of Alyssa’s users are engineers. Real engineering situations usually involve measurements with only a small uncertainty, measured as the ratio of the width of the interval to the midpoint of the interval. Engineers usually specify percentage tolerances on the parameters of devices, as in the resistor specifications given earlier.
+---
+> 这道题目难度并不大，就是有点麻烦，要把每一种情况的上界和下界都分析出来。至于区间采用置信区间的表示方法，只要用宽度的一半除以中间值就行了。
+```
+; 把 w 改为百分比形式
+(define (make-center-width c w)
+  (let ((tolerance (* c w)))
+    (make-interval (- c tolerance) (+ c tolerance))))
+
+(define (center i)
+  (average (lower-bound i) (upper-bound i)))
+
+(define (width i)
+  (* (/ (/ (- (upper-bound i) (lower-bound i)) 2)
+        (center i))
+     100))
+
+(define (display-interval-tolerance i) 
+  (newline)
+  (display (center i))
+  (display " ± ")
+  (display (width i))
+  (display "%"))
+
+; 记 x 的下界为 x1，上界为 x2；记 y 的下界为 y1，上界为 y2
+; 将他们按 x1 x2 y1 y2 从左到右排序，并按位置记为 1, 2, 3, 4
+; 则按照 x 和 y 的区间端点数字的符号，可以分成以下9种情况：
+; - - - -   min: 2*4, max: 1*3
+; - - - +   min: 1*4, max: 1*3
+; - - + +   min: 1*4, max: 2*3
+; - + - -   min: 2*3, max: 1*3
+; - + - +   min: min(1*4, 2*3), max: max(1*3, 2*4)
+; - + + +   min: 1*4, max: 2*4
+; + + - -   min: 2*3, max: 1*4
+; + + - +   min: 2*3, max: 2*4
+; + + + +   min: 1*3, max: 2*4
+(define (mul-interval x y)
+  (let ((x1 (lower-bound x))
+        (x2 (upper-bound x))
+        (y1 (lower-bound y))
+        (y2 (upper-bound y))
+        (p1 (* (lower-bound x) (lower-bound y)))    ; 即 1*3
+        (p2 (* (lower-bound x) (upper-bound y)))    ; 即 1*4
+        (p3 (* (upper-bound x) (lower-bound y)))    ; 即 2*3
+        (p4 (* (upper-bound x) (upper-bound y))))   ; 即 2*4
+    (cond ((and (negative? x2) (negative? y2)) (make-interval p4 p1))
+          ((and (negative? x2) (negative? y1) (positive? y2)) (make-interval p2 p1))
+          ((and (negative? x2) (positive? y1)) (make-interval p2 p3))
+          ((and (negative? x1) (positive? x2) (negative? y2)) (make-interval p3 p1))
+          ((and (negative? x1) (positive? x2) (negative? y1) (positive? y2)) (make-interval (min p2 p3) (max p1 p4)))
+          ((and (negative? x1) (positive? x2) (positive? y1)) (make-interval p2 p4))
+          ((and (positive? x1) (negative? y2)) (make-interval p3 p2))
+          ((and (positive? x1) (negative? y1) (positive? y2)) (make-interval p3 p4))
+          ((and (positive? x1) (positive? y1)) (make-interval p1 p4)))))
+
+
+(define a (make-interval -6.12 7.48))
+(define b (make-interval -4.465 4.935))
+(display-interval (mul-interval a b))
+(display-interval-tolerance (mul-interval a b))
+
+; 执行结果
+[-33.3982, 36.9138]
+1.7577999999999996 ± 2000.0000000000007%
+```
