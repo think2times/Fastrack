@@ -19,14 +19,14 @@
   (display "]"))
 
 ; 把 w 改为百分比形式
-(define (make-center-width c w)
-  (let ((tolerance (* c w)))
-    (make-interval (- c tolerance) (+ c tolerance))))
+(define (make-center-width center percent)
+  (let ((tolerance (* center (/ percent 100))))
+    (make-interval (- center tolerance) (+ center tolerance))))
 
 (define (center i)
   (average (lower-bound i) (upper-bound i)))
 
-(define (width i)
+(define (percent i)
   (* (/ (/ (- (upper-bound i) (lower-bound i)) 2)
         (center i))
      100))
@@ -35,7 +35,7 @@
   (newline)
   (display (center i))
   (display " ± ")
-  (display (width i))
+  (display (percent i))
   (display "%"))
 
 ; 记 x 的下界为 x1，上界为 x2；记 y 的下界为 y1，上界为 y2

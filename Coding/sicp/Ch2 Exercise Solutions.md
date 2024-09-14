@@ -468,14 +468,14 @@
 > 这道题目难度并不大，就是有点麻烦，要把每一种情况的上界和下界都分析出来。至于区间采用置信区间的表示方法，只要用宽度的一半除以中间值就行了。
 ```
 ; 把 w 改为百分比形式
-(define (make-center-width c w)
-  (let ((tolerance (* c w)))
-    (make-interval (- c tolerance) (+ c tolerance))))
+(define (make-center-width center percent)
+  (let ((tolerance (* center (/ percent 100))))
+    (make-interval (- center tolerance) (+ center tolerance))))
 
 (define (center i)
   (average (lower-bound i) (upper-bound i)))
 
-(define (width i)
+(define (percent i)
   (* (/ (/ (- (upper-bound i) (lower-bound i)) 2)
         (center i))
      100))
@@ -484,7 +484,7 @@
   (newline)
   (display (center i))
   (display " ± ")
-  (display (width i))
+  (display (percent i))
   (display "%"))
 
 ; 记 x 的下界为 x1，上界为 x2；记 y 的下界为 y1，上界为 y2
@@ -527,4 +527,79 @@
 ; 执行结果
 [-33.3982, 36.9138]
 1.7577999999999996 ± 2000.0000000000007%
+```
+
+### Exercise 2.12 Defineaconstructor $make-center-percent$ that takes a center and a percentage tolerance and produces the desired interval. You must also define a selector $percent$ that produces the percentage tolerance for a given interval. The $center$ selector is the same as the one shown above.
+---
+> 我以为这是上道题的要求，已经实现了。。
+```
+; 把 w 改为百分比形式
+(define (make-center-width c w)
+  (let ((tolerance (* c w)))
+    (make-interval (- c tolerance) (+ c tolerance))))
+
+(define (center i)
+  (average (lower-bound i) (upper-bound i)))
+
+(define (percent i)
+  (* (/ (/ (- (upper-bound i) (lower-bound i)) 2)
+        (center i))
+     100))
+
+(define (display-interval-tolerance i) 
+  (newline)
+  (display (center i))
+  (display " ± ")
+  (display (percent i))
+  (display "%"))
+
+(define a (make-interval 6.12 7.48))
+(define b (make-interval 4.465 4.935))
+
+
+(display-interval-tolerance a)
+(display-interval-tolerance b)
+
+; 执行结果
+6.800000000000001 ± 10.000000000000002%
+4.699999999999999 ± 4.999999999999998%
+```
+
+### Exercise 2.13
+> Show that under the assumption of small percentage tolerances there is a simple formula for the approximate percentage tolerance of the product of two intervals in terms of the tolerances of the factors. You may simplify the problem by assumingthat all numbers are positive.
+> After considerable work, Alyssa P. Hacker delivers her finished system. Several years later, after she has forgotten all about it, she gets a frenzied call from an irate user, Lem E.  Tweakit. It seems that Lem has noticed that the formula for parallel resistors can be wrien in two algebraically equivalent ways:
+$\frac{R_1 R_2}{R_1+R_2}$ and $\frac{1}{\frac{1}{R_1}+\frac{1}{R_2}}$
+> He has written the following two programs, each of which computes the parallel-resistors formula differently:
+```
+(define (par1 r1 r2)
+  (div-interval (mul-interval r1 r2)
+                (add-interval r1 r2)))
+
+(define (par2 r1 r2)
+  (let ((one (make-interval 1 1)))
+    (div-interval
+     one (add-interval (div-interval one r1)
+                       (div-interval one r2)))))
+```
+> Lem complains that Alyssa’s program gives different answers for the two ways of computing. This is a serious complaint.
+---
+> 这道题跟下道题是关联的，这道题一是要修改乘法函数，二是要演示两种计算并联电阻的方法计算的结果不一致，这个问题在做练习 2.7 时就发现了，至于原因，下道题的要求就是说明哪个答案是对的，所以下道题再说。
+```
+(define (mul-interval x y)
+  (let ((cx (center x))
+        (cy (center y))
+        (px (/ (percent x) 100))
+        (py (/ (percent y) 100)))
+    (make-interval (* (- cx (* cx px)) (- cy (* cy py)))
+                   (* (+ cx (* cx px)) (+ cy (* cy py))))))
+
+(define r1 (make-interval 6.12 7.48))
+(define r2 (make-interval 4.465 4.935))
+
+(display-interval-tolerance (par1 r1 r2))
+(display-interval-tolerance (par2 r1 r2))
+
+; 执行结果
+2.844199964577264 ± 22.613352145193332%
+2.777440701636504 ± 7.05260392723452%
 ```
