@@ -583,7 +583,7 @@ $\frac{R_1 R_2}{R_1+R_2}$ and $\frac{1}{\frac{1}{R_1}+\frac{1}{R_2}}$
 ```
 > Lem complains that Alyssa’s program gives different answers for the two ways of computing. This is a serious complaint.
 ---
-> 这道题跟下道题是关联的，这道题一是要修改乘法函数，二是要演示两种计算并联电阻的方法计算的结果不一致，这个问题在做练习 2.7 时就发现了，至于原因，下道题的要求就是说明哪个答案是对的，所以下道题再说。
+> 这道题跟下道题是关联的，这道题一是要修改乘法函数，二是要演示两种计算并联电阻的方法计算的结果不一致。
 ```
 (define (mul-interval x y)
   (let ((cx (center x))
@@ -603,3 +603,55 @@ $\frac{R_1 R_2}{R_1+R_2}$ and $\frac{1}{\frac{1}{R_1}+\frac{1}{R_2}}$
 2.844199964577264 ± 22.613352145193332%
 2.777440701636504 ± 7.05260392723452%
 ```
+
+### Exercise 2.14
+> Demonstrate that Lem is right. Investigate the behavior of the system on a variety of arithmetic expressions. Make some intervals A and B, and use them in computing the expressions A/A and A/B. You will get the most insight by using intervals whose width is a small percentage of the center value. Examine the results of the computation in center-percent form (see Exercise 2.12).
+---
+```
+(define r1 (make-interval 6.12 7.48))
+(define r2 (make-interval 4.465 4.935))
+
+(display-interval (div-interval r1 r1))
+(display-interval (div-interval r1 r2))
+(newline)
+(display-interval-tolerance (div-interval r1 r1))
+(display-interval-tolerance (div-interval r1 r2))
+
+; 执行结果
+[0.8181818181818182, 1.222222222222222]
+[1.2401215805471126, 1.6752519596864504]
+
+1.02020202020202 ± 19.801980198019795%
+1.4576867701167815 ± 14.925373134328357%
+```
+> 根据执行结果来看，Lem显然是对的，对于 A/A，答案显然应该是 1 才对，但是程序计算出来的却是一个相对很大的范围，这是因为计算区间除法时，我们并没有定义“相等”这个概念，所以计算 A/A 时，它也按照通用的方法去计算了。
+
+### Exercise 2.15
+> Eva Lu Ator, another user, has also noticed the different intervals computed by different but algebraically equivalent expressions. She says that a formula to compute with intervals using Alyssa’s system will produce tighter error bounds if it can be written in such a form that no variable that represents an uncertain number is repeated. Thus, she says, par2 is a “better” program for parallel resistances than par1. Is she right? Why?
+---
+> Eva 说的是对的，对于练习 2.13 计算出的两个答案，par2 更准确，跟书上给出的答案是一致的，至于原因我觉得应该是区间之间的运算每次都会增加不确定性，par2 其实只有相加那一步是两个区间进行运算，其他的都可以看作确定数字与区间的运算，没有增加额外的不确定性；而 par1 进行了3次区间之间的运算————乘法、加法和除法，乘法和除法都会使结果变得不确定。
+
+### Exercise 2.16
+> Explain, in general, why equivalent algebraic expressions may lead to different answers. Can you devise an interval-arithmetic package that does not have this shortcoming, or is this task impossible? (Warning: This problem is very difficult.)
+---
+```
+(define a (make-interval 2 4))
+ 
+(define b (make-interval -2 0))
+ 
+(define c (make-interval 3 8))
+ 
+(define x (mul-interval a (add-interval b c)))
+ 
+(define y (add-interval (mul-interval a b)
+                        (mul-interval a c)))
+
+
+(display-interval x)
+(display-interval y)
+
+; 执行结果
+[2, 32]
+[-2, 32]
+```
+> 根据上面的结果可以看到，区间运算连乘法分配律都无法保证。至于有没有无缺陷的区间运算规则，我大概想了一下，没有什么头绪，就没继续想了。。
