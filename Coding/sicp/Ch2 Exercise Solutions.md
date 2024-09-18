@@ -567,7 +567,7 @@
 
 ### Exercise 2.13
 > Show that under the assumption of small percentage tolerances there is a simple formula for the approximate percentage tolerance of the product of two intervals in terms of the tolerances of the factors. You may simplify the problem by assumingthat all numbers are positive.
-> After considerable work, Alyssa P. Hacker delivers her finished system. Several years later, after she has forgotten all about it, she gets a frenzied call from an irate user, Lem E.  Tweakit. It seems that Lem has noticed that the formula for parallel resistors can be wrien in two algebraically equivalent ways:
+> After considerable work, Alyssa P. Hacker delivers her finished system. Several years later, after she has forgotten all about it, she gets a frenzied call from an irate user, Lem E.  Tweakit. It seems that Lem has noticed that the formula for parallel resistors can be written in two algebraically equivalent ways:
 $\frac{R_1 R_2}{R_1+R_2}$ and $\frac{1}{\frac{1}{R_1}+\frac{1}{R_2}}$
 > He has written the following two programs, each of which computes the parallel-resistors formula differently:
 ```
@@ -583,7 +583,7 @@ $\frac{R_1 R_2}{R_1+R_2}$ and $\frac{1}{\frac{1}{R_1}+\frac{1}{R_2}}$
 ```
 > Lem complains that Alyssa’s program gives different answers for the two ways of computing. This is a serious complaint.
 ---
-> 这道题跟下道题是关联的，这道题一是要修改乘法函数，二是要演示两种计算并联电阻的方法计算的结果不一致。
+> 这道题一是要修改乘法函数，二是要演示两种计算并联电阻的方法计算的结果不一致。
 ```
 (define (mul-interval x y)
   (let ((cx (center x))
@@ -655,3 +655,29 @@ $\frac{R_1 R_2}{R_1+R_2}$ and $\frac{1}{\frac{1}{R_1}+\frac{1}{R_2}}$
 [-2, 32]
 ```
 > 根据上面的结果可以看到，区间运算连乘法分配律都无法保证。至于有没有无缺陷的区间运算规则，我大概想了一下，没有什么头绪，就没继续想了。。
+
+# 2.2 Hierarchical Data and the Closure Property
+
+## 2.2.1 Representing Sequences
+
+### Exercise 2.17
+> Define a procedure last-pair that returns the list that contains only the last element of a given (nonempty) list:
+```
+(last-pair (list 23 72 149 34))
+(34)
+```
+---
+> 这道题难度不大，而且借用之前的 length 和 list-ref 可以很轻松的完成这道题目的要求，不过我还是选择不用这两个函数，通过判断 list 最后一个元素是否为空来做。
+```
+(define (last-pair list1)
+  (let ((last (car list1)))
+    (if (null? (cdr list1))
+        last
+        (last-pair (cdr list1)))))
+
+
+(last-pair (list 23 72 149 34))
+
+; 执行结果
+34
+```
