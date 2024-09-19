@@ -681,3 +681,30 @@ $\frac{R_1 R_2}{R_1+R_2}$ and $\frac{1}{\frac{1}{R_1}+\frac{1}{R_2}}$
 ; 执行结果
 34
 ```
+
+### Exercise 2.18
+> Define a procedure reverse that takes a list as argument and returns a list of the same elements in reverse order:
+```
+(reverse (list 1 4 9 16 25))
+(25 16 9 4 1)
+```
+---
+> 可能是因为前两天发高烧脑子不好使，看到这道题我才忽然反应过来，这一节不就是在实现“链表”这个数据结构吗？乍一看，这道题利用 length 和 list-ref 很容易实现，但是我想了半天也没有做出来。最后想到了每次读取列表中的第一个元素，构造一个新的列表，不过也没有实现出来，还是上网查了资料，才明白怎么做。
+```
+(define (reverse items) 
+  (define (iter items result) 
+    (if (null? items) 
+        result 
+        (iter (cdr items) (cons (car items) result)))) 
+  
+  (iter items nil)) 
+  
+  
+(reverse (list 1 4 9 16 25))
+
+; 执行结果
+'(25 16 9 4 1)
+
+; 如果 nil 没有定义的话，可以用下面的语句自己定义
+(define nil '())
+```
