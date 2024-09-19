@@ -1,5 +1,6 @@
 #lang racket
 
+(provide nil)
 (provide pi)
 (provide runtime)
 (provide square)
@@ -14,6 +15,8 @@
 (provide negative?)
 (provide sqrt)
 
+
+(define nil '())
 
 (define pi 3.141592653589793)
 
