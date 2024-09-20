@@ -708,3 +708,60 @@ $\frac{R_1 R_2}{R_1+R_2}$ and $\frac{1}{\frac{1}{R_1}+\frac{1}{R_2}}$
 ; 如果 nil 没有定义的话，可以用下面的语句自己定义
 (define nil '())
 ```
+
+### Exercise 2.19
+> Consider the change-counting program of Section 1.2.2. It would be nice to be able to easily change the currency used by the program, so that we could compute the number of ways to change a British pound, for example. As the program is written, the knowledge of the currency is distributed partly into the procedure $first-denomination$ and partly into the procedure $count-change$ (which knows that there are five kinds of U.S. coins). It would be nicer to be able to supply a list of coins to be used for making change.
+> We want to rewrite the procedure $cc$ so that its second argument is a list of the values of the coins to use rather than an integer specifying which coins to use. We could then have lists that defined each kind of currency:
+```
+(define us-coins (list 50 25 10 5 1))
+(define uk-coins (list 100 50 20 10 5 2 1 0.5))
+```
+> We could then call $cc$ as follows:
+```
+(cc 100 us-coins)
+292
+```
+> To do this will require changing the program $cc$ somewhat. It will still have the same form, but it will access its second argument differently, as follows:
+```
+(define (cc amount coin-values)
+  (cond ((= amount 0) 1)
+        ((or (< amount 0) (no-more? coin-values)) 0)
+        (else
+         (+ (cc amount
+                (except-first-denomination
+                 coin-values))
+            (cc (- amount
+                   (first-denomination
+                    coin-values))
+                coin-values)))))
+```
+> Define the procedures $first-denomination$, $except-firstdenomination$, and $no-more?$ in terms of primitive operations on list structures. Does the order of the list $coin-values$ affect the answer produced by $cc$? Why or why not?
+---
+> 这道题题目很长，看着挺唬人的，但实际上非常简单，只要把 coin-values 当作列表来处理就行了。
+```
+(define (no-more? items)
+  (null? items))
+
+(define (except-first-denomination items)
+  (cdr items))
+
+(define (first-denomination items)
+  (car items))
+
+(define us-coins (list 50 25 10 5 1))
+(define uk-coins (list 100 50 20 10 5 2 1 0.5))
+
+(cc 100 us-coins)
+(cc 100 uk-coins)
+
+; 借用上道题的列表翻转函数
+(cc 100 (reverse us-coins))
+(cc 100 (reverse uk-coins))
+
+; 执行结果
+292
+104561
+292
+104561
+```
+> 从执行结果来看，零钱币值的顺序是不影响兑换的方法数的，这是因为 cc 算法覆盖了所有可能的情况，无论从哪种币值先开始兑换，都不会影响总的结果。
