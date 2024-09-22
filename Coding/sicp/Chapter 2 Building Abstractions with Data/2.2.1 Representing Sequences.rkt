@@ -1,8 +1,9 @@
 #lang racket
 
+(require "../Modules/base.rkt")
+
 
 (define one-through-four (list 1 2 3 4))
-
 
 one-through-four
 (car one-through-four)
@@ -39,10 +40,9 @@ one-through-four
 (define squares (list 1 4 9 16 25))
 (define odds (list 1 3 5 7 9 11))
 
-
 (list-ref squares 0)
 (list-ref squares 3)
-(list-ref squares 5)
+(list-ref squares 4)
 
 (length-iter squares)
 
@@ -50,3 +50,26 @@ one-through-four
 
 (append odds squares)
 (append squares odds)
+
+
+; Mapping over lists
+(define (scale-list items factor)
+  (if (null? items)
+      nil
+      (cons (* (car items) factor)
+            (scale-list (cdr items)
+                        factor))))
+
+(define (map proc items)
+  (if (null? items)
+      nil
+      (cons (proc (car items))
+            (map proc (cdr items)))))
+            
+(define (scale-list-by-map items factor)
+  (map (lambda (x) (* x factor))
+       items))
+
+
+(scale-list (list 1 2 3 4 5) 10)
+(scale-list-by-map (list 1 2 3 4 5) 10)

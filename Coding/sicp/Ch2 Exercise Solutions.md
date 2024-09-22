@@ -765,3 +765,80 @@ $\frac{R_1 R_2}{R_1+R_2}$ and $\frac{1}{\frac{1}{R_1}+\frac{1}{R_2}}$
 104561
 ```
 > 从执行结果来看，零钱币值的顺序是不影响兑换的方法数的，这是因为 cc 算法覆盖了所有可能的情况，无论从哪种币值先开始兑换，都不会影响总的结果。
+
+### Exercise 2.20
+> The procedures +, *, and list take arbitrary numbers of arguments. One way to define such procedures is to use $define$ with $dotted-tail notation$. In a procedure definition, a parameter list that has a dot before the last parameter name indicates that, when the procedure is called, the initial parameters (if any) will have as values the initial arguments, as usual, but the final parameter’s value will be a list of any remaining arguments. For instance, given the definition
+`(define (f x y . z) ⟨body⟩)`
+> the procedure f can be called with two or more arguments. If we evaluate
+`(f 1 2 3 4 5 6)`
+> then in the body of f, x will be 1, y will be 2, and z will be the list (3 4 5 6). Given the definition
+`(define (g . w) ⟨body⟩)`
+> the procedure g can be called with zero or more arguments. If we evaluate
+`(g 1 2 3 4 5 6)`
+> then in the body of g, w will be the list (1 2 3 4 5 6).
+> Use this notation to write a procedure $same-parity$ that takes one or more integers and returns a list of all the arguments that have the same even-odd parity as the first argument. For example,
+
+```
+(same-parity 1 2 3 4 5 6 7)
+(1 3 5 7)
+(same-parity 2 3 4 5 6 7)
+(2 4 6)
+```
+---
+> 这道题也是看着唬人，题干挺长，但是主要在介绍如何定义参数个数不定的函数，真正的题目就最后一段，就是要根据第一个参数的奇偶性，把后面参数中跟第一个参数奇偶性相同的找出来。
+```
+(define (same-parity x . y)
+  (define (iter items r result)
+    (cond ((null? items) result)
+          ((= r (remainder (car items) 2)) (iter (cdr items) r (cons (car items) result)))
+          (else (iter (cdr items) r result))))
+  (let ((r (remainder x 2)))
+    (reverse (iter y r (cons x nil)))))
+
+
+(same-parity 1 2 3 4 5 6 7)
+(same-parity 2 3 4 5 6 7)
+(same-parity 2)
+
+; 执行结果
+'(1 3 5 7)
+'(2 4 6)
+'(2)
+```
+
+### Exercise 2.21 
+> The procedure square-list takes a list of numbers as argument and returns a list of the squares of those numbers.
+```
+(square-list (list 1 2 3 4))
+(1 4 9 16)
+```
+> Here are two different definitions of square-list. Complete both of them by filling in the missing expressions:
+```
+(define (square-list items)
+  (if (null? items)
+      nil
+      (cons <??> <??>)))
+
+(define (square-list-by-map items)
+  (map <??> <??>))
+```
+---
+> 这道题目很简单，只要把例子里的程序稍微修改就行，对比之下更显得 map 的强大。
+```
+(define (square-list items)
+  (if (null? items)
+      nil
+      (cons (square (car items))
+            (square-list (cdr items)))))
+
+(define (square-list-by-map items)
+  (map square items))
+
+
+(square-list (list 1 2 3 4))
+(square-list-by-map (list 1 2 3 4))
+
+; 执行结果
+'(1 4 9 16)
+'(1 4 9 16)
+```
