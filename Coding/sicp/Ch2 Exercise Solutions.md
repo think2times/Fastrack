@@ -911,3 +911,91 @@ $\frac{R_1 R_2}{R_1+R_2}$ and $\frac{1}{\frac{1}{R_1}+\frac{1}{R_2}}$
 103041
 7744
 ```
+
+## 2.2.2 Hierarchical Structures
+
+### Exercise 2.24
+> Suppose we evaluate the expression `(list 1 (list 2 (list 3 4)))`. Give the result printed by the interpreter, the corresponding box-and-pointer structure, and the interpretation of this as a tree (as in Figure 2.6).
+---
+> 解释器执行结果为：'(1 (2 (3 4)))
+> 另外两种表示方法见下图：
+![Alt text](<images/exer 2.24-tree.png>)
+
+![Alt text](<images/exer 2.24-box-and-pointer.png>)
+
+### Exercise 2.25
+> Give combinations of cars and cdrs that will pick 7 from each of the following lists:
+```
+(1 3 (5 7) 9)
+((7))
+(1 (2 (3 (4 (5 (6 7))))))
+```
+---
+> 纯看耐心。。
+```
+; 先创建这些要求的列表
+(list 1 3 (list 5 7) 9)
+(list (list 7))
+(list 1 (list 2 (list 3 (list 4 (list 5 (list 6 7))))))
+
+; 根据它们的结构依次定位到 7
+(car (cdr (car (cdr (cdr (list 1 3 (list 5 7) 9))))))
+(car (car (list (list 7))))
+(car (cdr (car (cdr (car (cdr (car (cdr (car (cdr (car (cdr (list 1 (list 2 (list 3 (list 4 (list 5 (list 6 7))))))))))))))))))
+
+; 执行结果
+'(1 3 (5 7) 9)
+'((7))
+'(1 (2 (3 (4 (5 (6 7))))))
+7
+7
+7
+```
+
+### Exercise 2.26
+> Suppose we define x and y to be two lists:
+```
+(define x (list 1 2 3))
+(define y (list 4 5 6))
+```
+> What result is printed by the interpreter in response to evaluating each of the following expressions:
+```
+(append x y)
+(cons x y)
+(list x y)
+```
+---
+> 结果如下所示：
+```
+'(1 2 3 4 5 6)
+'((1 2 3) 4 5 6)
+'((1 2 3) (4 5 6))
+```
+
+### Exercise 2.27
+> Modify your reverse procedure of Exercise 2.18 to produce a deep-reverse procedure that takes a list as argument and returns as its value the list with its elements reversed and with all sublists deep-reversed as well. For example,
+```
+(define x (list (list 1 2) (list 3 4)))
+x
+((1 2) (3 4))
+(reverse x)
+((3 4) (1 2))
+(deep-reverse x)
+((4 3) (2 1))
+```
+---
+> 这道题难度还是挺大的，
+```
+(define (deep-reverse items)
+  (if (pair? items)
+      (append (deep-reverse (cdr items))
+              (list (deep-reverse (car items))))
+      items))
+
+
+(define x (list (list 1 2) (list 3 4)))
+
+x
+(reverse x)
+(deep-reverse x)
+```
