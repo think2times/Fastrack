@@ -842,3 +842,72 @@ $\frac{R_1 R_2}{R_1+R_2}$ and $\frac{1}{\frac{1}{R_1}+\frac{1}{R_2}}$
 '(1 4 9 16)
 '(1 4 9 16)
 ```
+
+### Exercise2.22
+> Louis Reasoner tries to rewrite the first $square-list$ procedure of Exercise 2.21 so that it evolves an iterative process:
+```
+(define (square-list items)
+  (define (iter things answer)
+    (if (null? things)
+        answer
+        (iter (cdr things)
+              (cons (square (car things))
+                    answer))))
+  (iter items nil))
+```
+> Unfortunately, defining $square-list$ this way produces the answer list in the reverse order of the one desired. Why?
+> Louis then tries to fix his bug by interchanging the arguments to $cons$:
+```
+(define (square-list items)
+  (define (iter things answer)
+    (if (null? things)
+        answer
+        (iter (cdr things)
+              (cons answer
+                    (square (car things))))))
+  (iter items nil))
+```
+> This doesn’t work either. Explain.
+---
+> 第一部分的代码得到的答案是倒序的，这个是因为程序里每次都把新加入的元素放到结果列表的开头；第二部分得到的答案是这样的：'(((((() . 1) . 9) . 25) . 49) . 81)，虽然顺序对了，这并不是我们想要的列表，其实只要在调用第一部分代码后再次调用之前练习里的 reverse 函数就可以得到顺序正确的列表了。
+
+### Exercise2.23
+> The procedure for-each is similar to map. It takes as arguments a procedure and a list of elements. How ever, rather than forming a list of the results, for-each just  applies the procedure to each of the elements in turn, from left to right. The values returned by applying the procedure to the elements are not used at all—$for-each$ is used with  procedures that perform an action, such as printing. For example,
+```
+(for-each(lambda(x)
+           (newline)
+           (display x))
+         (list5732188))
+
+57
+321
+88
+```
+> The value returned by the call to $for-each$ (not illustrated above) can be something arbitrary, such as true. Give an implementation of $for-each$.
+---
+> 这道题开始我不知道怎么连续执行 2 条程序，所以不知道怎么处理，后来上网查了一下，发现 $cond$ 可以直接把多条语句放到一起执行，然后这道题就没有什么难度了。
+```
+(define (for-each f items)
+  (cond ((not (null? items))
+         (f (car items))
+         (for-each f (cdr items)))))
+
+
+(define test (list 57 321 88))
+(for-each (lambda(x) (newline) (display x))
+          test)
+
+(newline)
+
+(for-each (lambda(x) (newline) (display (square x)))
+          test)
+
+; 执行结果
+57
+321
+88
+
+3249
+103041
+7744
+```
