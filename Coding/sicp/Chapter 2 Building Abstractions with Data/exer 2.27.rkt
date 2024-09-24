@@ -3,19 +3,15 @@
 (require "../Modules/base.rkt")
 
 
-(define (append list1 list2)
-  (if (null? list1)
-      list2
-      (cons (car list1)
-            (append (cdr list1) list2))))
-
-(define (reverse items) 
+(define (deep-reverse-by-reverse items) 
   (define (iter items result) 
     (if (null? items) 
         result 
-        (iter (cdr items) (cons (car items) result)))) 
-  
-  (iter items nil)) 
+        (if (pair? (car items)) 
+            (let ((x (iter (car items) nil))) 
+              (iter (cdr items) (cons x result))) 
+            (iter (cdr items) (cons (car items) result))))) 
+  (iter items nil))
 
 (define (deep-reverse items)
   (if (pair? items)
@@ -29,4 +25,5 @@
 x
 (reverse x)
 (deep-reverse x)
-  
+
+(deep-reverse '(1 2 (3 4) 5 (6 (7 8) 9) 10)) 
