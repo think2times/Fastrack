@@ -984,8 +984,18 @@ x
 ((4 3) (2 1))
 ```
 ---
-> 这道题难度还是挺大的，
+> 这道题难度还是挺大的，我开始想用 reverse 实现，比起原来的 reverse 函数，deep-reverse 需要在 items 不为空的情况下，额外判断 `(car items)` 是否为 pair，虽然也能做，但是步骤有点麻烦，最后在网上发现一个使用 append 的版本，程序非常简单，而且逻辑也很清楚。
 ```
+(define (deep-reverse-by-reverse items) 
+  (define (iter items result) 
+    (if (null? items) 
+        result 
+        (if (pair? (car items)) 
+            (let ((x (iter (car items) nil))) 
+              (iter (cdr items) (cons x result))) 
+            (iter (cdr items) (cons (car items) result))))) 
+  (iter items nil))
+
 (define (deep-reverse items)
   (if (pair? items)
       (append (deep-reverse (cdr items))
@@ -998,4 +1008,36 @@ x
 x
 (reverse x)
 (deep-reverse x)
+```
+
+### Exercise2.28
+> Write a procedure fringe that takes as argument a tree (represented as a list) and returns a list whose elements are all the leaves of the tree arranged in left-to-right order. For example,
+```
+(define x (list (list 1 2) (list 3 4)))
+(fringe x)
+(1 2 3 4)
+(fringe (list x x))
+ (1 2 3 4 1 2 3 4)
+```
+---
+> 这道题我参考了 count-leaves 和 练习 2.27，其中比较难处理的可能是 tree 的第一部分，要注意这里的 result 应该是空的，其他地方逻辑跟 2.27 就没什么区别了。
+```
+(define (fringe tree)
+  (define (iter tree result)
+    (cond ((null? tree) result)
+          ((not (pair? tree)) (cons tree result))
+          (else (append (iter (car tree) nil)
+                        (iter (cdr tree) result)))))
+
+  (iter tree nil))
+
+
+(define x (list (list 1 2) (list 3 4)))
+
+(fringe x)
+(fringe (list x x))
+
+; 执行结果
+'(1 2 3 4)
+'(1 2 3 4 1 2 3 4)
 ```
