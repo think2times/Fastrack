@@ -1129,3 +1129,94 @@ x
 (define (branch-structure branch)
   (cdr branch))
 ```
+
+### Exercise 2.30
+> Define a procedure $square-tree$ analogous to the $square-list$ procedure of Exercise 2.21. That is, $square-tree$ should behave as follows:
+```
+(square-tree
+ (list 1
+       (list 2 (list 3 4) 5)
+       (list 6 7)))
+(1 (4 (9 16) 25) (36 49))
+```
+> Define $square-tree$ both directly (i.e., without using any higher-order procedures) and also by using map and recursion.
+---
+> 这个题目没啥难度，直接仿照 scale-tree 函数，修改一下函数名就行了。
+```
+(define (square-tree tree)
+  (cond ((null? tree) nil)
+        ((not (pair? tree)) (square tree))
+        (else (cons (square-tree (car tree))
+                    (square-tree (cdr tree))))))
+
+(define (square-tree-by-map tree)
+  (map (lambda (sub-tree)
+         (if (pair? sub-tree)
+             (square-tree-by-map sub-tree)
+             (square sub-tree)))
+       tree))
+
+
+(define test (list 1
+                   (list 2 (list 3 4) 5)
+                   (list 6 7)))
+
+(square-tree test)
+(square-tree-by-map test)
+
+; 执行结果
+'(1 (4 (9 16) 25) (36 49))
+'(1 (4 (9 16) 25) (36 49))
+```
+
+### Exercise 2.31
+> Abstract your answer to Exercise 2.30 to produce a procedure $tree-map$ with the property that $square-tree$ could be defined as
+```
+(define (square-tree tree) (tree-map square tree))
+```
+---
+> 这道题跟上面一道的 map 实现几乎一模一样，我还以为我理解错题目了，上网搜了一下，发现别人也是这么写的，那就这样吧。
+```
+(define (tree-map f tree)
+  (map (lambda (sub-tree)
+         (if (pair? sub-tree)
+             (tree-map f sub-tree)
+             (f sub-tree)))
+       tree))
+
+(define (square-tree tree) (tree-map square tree))
+
+
+(square-tree
+ (list 1
+       (list 2 (list 3 4) 5)
+       (list 6 7)))
+
+; 执行结果
+'(1 (4 (9 16) 25) (36 49))
+```
+
+### Exercise 2.32
+> We can represent a set as a list of distinct elements, and we can represent the set of all subsets of the set as a list of lists. For example, if the set is (1 2 3), then the set of all subsets is (() (3) (2) (2 3) (1) (1 3) (1 2) (1 2 3)). Complete the following definition of a procedure that generates the set of subsets of a set and give a clear explanation of why it works:
+```
+(define (subsets s)
+  (if (null? s)
+      (list nil)
+      (let ((rest (subsets (cdr s))))
+        (append rest (map <??> rest)))))
+```
+---
+> 这道题有一定难度，要注意到题目里面缺少对 `(car s)` 的处理，我们每次求 `(cdr s)` 的子集后要跟 `(car s)` 拼一下。
+```
+(define (subsets s)
+  (if (null? s)
+      (list nil)
+      (let ((rest (subsets (cdr s))))
+        (append rest (map (lambda (x) (cons (car s) x)) rest)))))
+
+
+(subsets (list 1 2 3))
+
+; 执行结果
+'(() (3) (2) (2 3) (1) (1 3) (1 2) (1 2 3))
+```
