@@ -1220,3 +1220,53 @@ x
 ; 执行结果
 '(() (3) (2) (2 3) (1) (1 3) (1 2) (1 2 3))
 ```
+
+## 2.2.3 Sequences as Conventional Interfaces
+
+### Exercise 2.33
+> Fill in the missing expressions to complete the following definitions of some basic list-manipulation operations as accumulations:
+```
+; p 表示一个函数，sequence 表示一个列表
+; 这个函数将对列表中每一个元素进行 p 操作
+(define (map p sequence)
+  (accumulate (lambda (x y) <??>) nil sequence))
+
+(define (append seq1 seq2)
+  (accumulate cons <??> <??>))
+
+(define (length sequence)
+  (accumulate <??> 0 sequence))
+```
+---
+> 这道题还是有一定难度的，尤其是第一个 `(map p sequence)`，我开始没明白它的意思，不知道 lambda 两个参数要干嘛，所以先做的后面2个，做到第三个的时候才发现是 accumulate 函数中 op 函数需要2个参数，明白了这一点，剩下的就比较好处理了，x 就表示当前要处理的项，y 就是原函数中的递归项。
+```
+(define (map p sequence)
+  (accumulate
+   (lambda (x y) (if (null? x) y (cons (p x) y)))
+   nil
+   sequence))
+
+(define (append seq1 seq2)
+  (accumulate cons seq2 seq1))
+
+(define (length sequence)
+  (accumulate
+   (lambda (x y) (if (null? x) y (+ y 1)))
+   0
+   sequence))
+
+
+(define odds (list 1 3 5 7 9))
+(define evens (list 2 4 6 8 10))
+
+(map square odds)
+(map sqrt evens)
+(append odds evens)
+(length odds)
+
+; 执行结果
+'(1 9 25 49 81)
+'(1.4142156862745097 2.0000000929222947 2.4494897427875517 2.8284271250498643 3.162277665175675)
+'(1 3 5 7 9 2 4 6 8 10)
+5
+```
