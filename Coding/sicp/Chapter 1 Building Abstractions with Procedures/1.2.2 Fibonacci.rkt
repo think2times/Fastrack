@@ -1,5 +1,5 @@
 #lang racket
-(define (fibonacci n)
+(define (fib n)
   ; 递归写法
   (define (fib-recur n)
     (cond ((= n 0) 0)
@@ -22,4 +22,4 @@
 
   (fib-iter n))
 
-(fibonacci 40)
+(fib 40)
