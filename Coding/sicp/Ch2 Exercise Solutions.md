@@ -1270,3 +1270,63 @@ x
 '(1 3 5 7 9 2 4 6 8 10)
 5
 ```
+
+### Exercise 2.34
+> Evaluating a polynomial in x at a given value of x can be formulated as an accumulation. We evaluate the polynomial
+
+$a_nx^n+a_{n-1}x^{n-1}+...+a_1x+a_0$
+> using a well-known algorithm called $Horner’s\ rule$, which structures the computation as
+
+$(...(a_nx+a_{n-1})x+...+a_1)x+a_0.$
+> In other words, we start with $a_n$, multiply by x, add $a_{n−1}$, multiply by x, and so on, until we reach $a_0$.
+
+> Fill in the following template to produce a procedure that evaluates a polynomial using Horner’s rule. Assume that the coefficients of the polynomial are arranged in a sequence, from $a_0$ through $a_n$.
+```
+(define (horner-eval x coefficient-sequence)
+  (accumulate (lambda (this-coeff higher-terms) <??>)
+              0
+              coefficient-sequence))
+```
+> For example, to compute $1+3x+5x^3+x^5$ at $x = 2$ you would evaluate
+```
+(horner-eval 2 (list 1 3 0 5 0 1))
+```
+> 这道题挺简单的，主要是题目里给的参数名起的太好了，本来我还不知道咋写的，一看 this-coeff 和 higher-terms 这俩参数，瞬间就明白了。
+```
+(define (horner-eval x coefficient-sequence)
+  (accumulate (lambda (this-coeff higher-terms) (+ (* higher-terms x) this-coeff))
+              0
+              coefficient-sequence))
+
+
+(horner-eval 2 (list 1 3 0 5 0 1))
+
+; 执行结果
+79
+```
+
+### Exercise 2.35
+> Redefine count-leaves from Section 2.2.2 as an accumulation:
+```
+(define (count-leaves t)
+  (accumulate ⟨??⟩ ⟨??⟩ (map ⟨??⟩ ⟨??⟩)))
+```
+---
+> 这道题难度不大，利用 enumerate-tree 和 accumulate 很容易就能实现。
+```
+(define (count-leaves t)
+  (accumulate
+   +
+   0
+   (map (lambda (x) (if (null? x) 0 1)) 
+        (enumerate-tree t))))
+
+
+(define x (cons (list 1 2) (list 1 3 0 5 0 1)))
+(count-leaves x)
+(count-leaves (list x x))
+
+; 执行结果
+10
+20
+```
