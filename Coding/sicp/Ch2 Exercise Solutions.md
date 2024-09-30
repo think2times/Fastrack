@@ -1291,6 +1291,7 @@ $(...(a_nx+a_{n-1})x+...+a_1)x+a_0.$
 ```
 (horner-eval 2 (list 1 3 0 5 0 1))
 ```
+---
 > 这道题挺简单的，主要是题目里给的参数名起的太好了，本来我还不知道咋写的，一看 this-coeff 和 higher-terms 这俩参数，瞬间就明白了。
 ```
 (define (horner-eval x coefficient-sequence)
