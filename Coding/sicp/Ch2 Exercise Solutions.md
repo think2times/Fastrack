@@ -1356,3 +1356,63 @@ $(...(a_nx+a_{n-1})x+...+a_1)x+a_0.$
 ; 执行结果
 '(22 26 30)
 ```
+
+### Exercise 2.37
+> Suppose we represent vectors $\boldsymbol v = (v_i)$ as sequences of numbers, and matrices $\boldsymbol m = (m_{ij})$ as sequences of vectors (the rows of the matrix). For example, the matrix
+$\begin{pmatrix} 1 & 2 & 3 & 4 \\ 4 & 5 & 6 & 6 \\ 6 & 7 & 8 & 9 \end{pmatrix}$
+> is represented as the sequence ((1 2 3 4) (4 5 6 6) (6 7 8 9)). With this representation, we can use sequence operations to concisely express the basic matrix and vector operations. These operations (which are described in any book on matrix algebra) are the following:
+$(dot-product\ v\ w)\ returns\ the\ sum\ \Sigma_i v_i w_i;$
+$(matrix-*-vector\ m\ v)\ returns\ the\ vector\ \boldsymbol t, where\ t_i= \Sigma_j m_{ij} v_j;$
+$(matrix-*-matrix\ m\ n)\ returns\ the\ matrix\ \boldsymbol p, where\ p_{ij} = \Sigma_k m_{ik}n_{kj};$
+$(transpose\ m)\ returns\ the\ matrix\ \boldsymbol n, where\ n_{ij} = m_{ji}.$
+> We can define the do tproduct as
+```
+(define (dot-product v w)
+  (accumulate + 0 (map * v w)))
+```
+> Fill in the missing expressions in the following procedures for computing the other matrix operations. (The procedure $accumulate-n$ is defined in Exercise 2.36.)
+```
+(define (matrix-*-vector mv)
+  (map ⟨??⟩ m))
+
+(define (transpose mat)
+  (accumulate-n ⟨??⟩ ⟨??⟩ mat))
+
+(define (matrix-*-matrix m n)
+  (let ((cols (transpose n)))
+    (map ⟨??⟩ m)))
+```
+---
+> 这道题目还是挺难的，第一个矩阵乘向量比较简单，让向量依次跟矩阵的每一行点乘即可；第二个其实我不会做，我就是随便把 cons 和 nil 填到了空出的位置，没想到一执行恰好就是我要的结果，然后我回过头去看了一下 accumulate-n 的代码，发现它其实实现的就是转置的功能；第三个首先要理解它对 n 进行转置的目的，其实 m x n 就等价于用 m 的每一行跟 n 的每一列依次做点乘，现在对 n 做了转置之后，就相当于让 m 的每一行和 n 的每一行做点乘，明白了这一点这道题就可以很容易地实现了。
+```
+; m 表示矩阵，v 表示向量，m 的行数必须等于 v 中元素的个数
+; 矩阵乘向量，相当于用矩阵的每一行跟向量做点乘
+(define (matrix-*-vector m v)
+  (map (lambda (x) (dot-product x v)) m))
+
+; mat 表示矩阵
+(define (transpose mat)
+  (accumulate-n cons nil mat))
+
+; m, n 都表示矩阵，m 的列数必须等于 n 的行数
+; 最后的结果矩阵行数等于 m 的行数，列数等于 n 的列数
+(define (matrix-*-matrix m n)
+  (let ((cols (transpose n)))
+    (map (lambda (mat) (matrix-*-vector cols mat)) m)))
+
+
+(define mat (list (list 1 2 3 4) (list 4 5 6 6) (list 6 7 8 9)))
+(define mat2 (list (list 1 2 3 4) (list 4 5 6 6) (list 6 7 8 9) (list 1 2 3 4)))
+(define v (list 1 3 3 1))
+
+(dot-product v (list 2 3 5 7))
+(matrix-*-vector mat v)
+(transpose mat)
+(matrix-*-matrix mat mat2)
+
+; 执行结果
+33
+'(20 43 60)
+'((1 4 6) (2 5 7) (3 6 8) (4 6 9))
+'((31 41 51 59) (66 87 108 124) (91 121 151 174))
+```
