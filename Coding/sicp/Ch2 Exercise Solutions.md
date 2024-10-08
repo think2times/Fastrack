@@ -1333,7 +1333,7 @@ $(...(a_nx+a_{n-1})x+...+a_1)x+a_0.$
 ```
 
 ### Exercise 2.36
-> The procedure $accumulate-n$ is similar to $accumulate$ except that it takes as its third argument a sequence of sequences, which are all assumed to have the same number of elements. It applies the designated accumulation procedure to combine all the first elements of the sequences, all the second elements of the sequences, and so on, and returns a sequence of the results. For instance, if s is a sequence containing four sequences, ((1 2 3) (4 5 6) (7 8 9) (10 11 12)),thenthevalueof `(accumulate-n + 0 s)` should be the sequence(22 26 30). Fill in the missing expressions in the following definition of $accumulate-n$:
+> The procedure $accumulate-n$ is similar to $accumulate$ except that it takes as its third argument a sequence of sequences, which are all assumed to have the same number of elements. It applies the designated accumulation procedure to combine all the first elements of the sequences, all the second elements of the sequences, and so on, and returns a sequence of the results. For instance, if s is a sequence containing four sequences, ((1 2 3) (4 5 6) (7 8 9) (10 11 12)),then the value of `(accumulate-n + 0 s)` should be the sequence (22 26 30). Fill in the missing expressions in the following definition of $accumulate-n$:
 ```
 (define (accumulate-n op init seqs)
   (if (null? (car seqs))
@@ -1342,7 +1342,7 @@ $(...(a_nx+a_{n-1})x+...+a_1)x+a_0.$
             (accumulate-n op init ⟨??⟩))))
 ```
 ---
-> 这道题没做出来，看完答案才发现原来这么简单。。
+> 这道题我自己没做出来，搜了一下别人的答案才发现原来这么简单。。
 ```
 (define (accumulate-n op init seqs)
   (if (null? (car seqs))
@@ -1416,4 +1416,77 @@ $(transpose\ m)\ returns\ the\ matrix\ \boldsymbol n, where\ n_{ij} = m_{ji}.$
 '(20 43 60)
 '((1 4 6) (2 5 7) (3 6 8) (4 6 9))
 '((31 41 51 59) (66 87 108 124) (91 121 151 174))
+```
+
+### Exercise 2.38
+> The $accumulate$ procedure is also known as $fold-right$, because it combines the first element of the sequence with the result of combining all the elements to the right. There is also a $fold-left$, which is similar to $fold-right$, except that it combines elements working in the opposite direction:
+```
+(define (fold-left op initial sequence)
+  (define (iter result rest)
+    (if (null? rest)
+        result
+        (iter (op result (car rest))
+              (cdr rest))))
+  (iter initial sequence))
+```
+> What are the values of
+```
+(fold-right / 1 (list 1 2 3))
+(fold-left / 1 (list 1 2 3))
+(fold-right list nil (list 1 2 3))
+(fold-left list nil (list 1 2 3))
+```
+> Give a property that op should satisfy to guarantee that $fold-right$ and $fold-left$ will produce the same values for any sequence.
+---
+> 这道题还是挺简单的，题目给的2组例子都是结果不一样的，所以很容易就会想到跟顺序无关的操作，比如加法和乘法。
+```
+(fold-right / 1 (list 1 2 3))
+(fold-left / 1 (list 1 2 3))
+
+(fold-right list nil (list 1 2 3))
+(fold-left list nil (list 1 2 3))
+
+
+(fold-right + 1 (list 1 2 3))
+(fold-left + 1 (list 1 2 3))
+
+(fold-right * 1 (list 1 2 3))
+(fold-left * 1 (list 1 2 3))
+
+; 执行结果
+1 1/2
+1/6
+'(1 (2 (3 ())))
+'(((() 1) 2) 3)
+7
+7
+6
+6
+```
+
+### Exercise2.39
+> Complete the following definitions of $reverse$ (Exercise 2.18) in terms of $fold-right$ and $fold-left$ from Exercise 2.38:
+```
+(define (reverse sequence)
+  (fold-right (lambda (x y) ⟨??⟩) nil sequence))
+
+(define (reverse sequence)
+  (fold-left (lambda (x y) ⟨??⟩) nil sequence))
+```
+---
+> 这道题还是有难度的，我只做出了用 $fold-left$ 实现的部分，用 $fold-right$ 实现的时候，开始用的 $cons$ 和 $list$，顺序虽然是对的，但是多了很多括号，最后我也想到了使用 $append$，但是一直报错，我试了一下没有找到解决办法，最后去搜了一下别人的答案。。
+```
+(define (reverse-by-right sequence)
+  (fold-right (lambda (x y) (append y (list x))) nil sequence))
+
+(define (reverse-by-left sequence)
+  (fold-left (lambda (x y) (cons y x)) nil sequence))
+
+(define odds (list 1 3 5 7 9))
+(reverse-by-right odds)
+(reverse-by-left odds)
+
+; 执行结果
+'(9 7 5 3 1)
+'(9 7 5 3 1)
 ```
