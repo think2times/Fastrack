@@ -167,4 +167,4 @@
           sequence))
 
 
-(permutations (list 1 2 3 6))
+(permutations (list 1 2 3))

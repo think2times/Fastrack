@@ -1490,3 +1490,26 @@ $(transpose\ m)\ returns\ the\ matrix\ \boldsymbol n, where\ n_{ij} = m_{ji}.$
 '(9 7 5 3 1)
 '(9 7 5 3 1)
 ```
+
+### Exercise2.40
+> Define a procedure $unique-pairs$ that, given an integer n, generates the sequence of pairs $(i, j)$ with $1 < j < i < n$. Use $unique-pairs$ to simplify the definition of $prime-sum-pairs$ given above.
+---
+> 这道题还是挺简单的，最难的部分书上已经实现了，我们只要理解了书上这部分的代码，然后再加个大小的判断即可。
+```
+(define (unique-pairs n)
+  (flatmap (lambda (i) (map (lambda (j) (cond ((> i j) (list i j))))
+                            (enumerate-interval 1 (- i 1))))
+           (enumerate-interval 1 n)))
+
+(unique-pairs 5)
+
+(define (prime-sum-pairs n)
+  (map make-pair-sum
+       (filter prime-sum? (unique-pairs n))))
+
+(prime-sum-pairs 10)
+
+; 执行结果
+'((2 1) (3 1) (3 2) (4 1) (4 2) (4 3) (5 1) (5 2) (5 3) (5 4))
+'((2 1 3) (3 2 5) (4 1 5) (4 3 7) (5 2 7) (6 1 7) (6 5 11) (7 4 11) (7 6 13) (8 3 11) (8 5 13) (9 2 11) (9 4 13) (9 8 17) (10 1 11) (10 3 13) (10 7 17) (10 9 19))
+```
