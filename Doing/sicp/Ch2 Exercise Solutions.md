@@ -1513,3 +1513,32 @@ $(transpose\ m)\ returns\ the\ matrix\ \boldsymbol n, where\ n_{ij} = m_{ji}.$
 '((2 1) (3 1) (3 2) (4 1) (4 2) (4 3) (5 1) (5 2) (5 3) (5 4))
 '((2 1 3) (3 2 5) (4 1 5) (4 3 7) (5 2 7) (6 1 7) (6 5 11) (7 4 11) (7 6 13) (8 3 11) (8 5 13) (9 2 11) (9 4 13) (9 8 17) (10 1 11) (10 3 13) (10 7 17) (10 9 19))
 ```
+
+### Exercise 2.41
+> Write a procedure to find all ordered triples of distinct positive integers i, j, and k less than or equal to a given integer n that sum to a given integer s.
+---
+> 这道题有一点难度，主要是要使用两次 flatmap 函数，仿照2元组的构造方式构造出3元组来，然后再筛选出和为s的。
+```
+; 获取不大于正整数n的1/3的最大整数
+(define (one-third-factor n)
+  (cond ((= (remainder n 3) 0) (/ n 3))
+        ((= (remainder n 3) 1) (/ (- n 1) 3))
+        (else (/ (- n 2) 3))))
+
+(define (ordered-triple-sum n s)
+  (if (or (< s 6) (> n (- s 3)))     ; 要找的是不同的3个正整数，所以s至少是6,且n至少比s小3
+      nil
+      (filter (lambda (seq) (= (accumulate + 0 seq) s))
+              (flatmap (lambda (i)
+                         (flatmap (lambda (j)
+                                    (map (lambda (k) (list i j k))
+                                         (enumerate-interval (+ j 1) n)))    ; 第三个数比第二个大
+                                    (enumerate-interval (+ i 1) (- n 1))))   ; 第二个数比第一个大
+                       (enumerate-interval 1 (one-third-factor n))))))       ; 需要的是有序3元组，所以第一个数最大也比n/3小
+
+
+(ordered-triple-sum 15 20)
+
+; 执行结果
+'((1 4 15) (1 5 14) (1 6 13) (1 7 12) (1 8 11) (1 9 10) (2 3 15) (2 4 14) (2 5 13) (2 6 12) (2 7 11) (2 8 10) (3 4 13) (3 5 12) (3 6 11) (3 7 10) (3 8 9) (4 5 11) (4 6 10) (4 7 9) (5 6 9) (5 7 8))
+```
