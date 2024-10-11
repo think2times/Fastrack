@@ -1526,7 +1526,7 @@ $(transpose\ m)\ returns\ the\ matrix\ \boldsymbol n, where\ n_{ij} = m_{ji}.$
         (else (/ (- n 2) 3))))
 
 (define (ordered-triple-sum n s)
-  (if (or (< s 6) (> n (- s 3)))     ; 要找的是不同的3个正整数，所以s至少是6,且n至少比s小3
+  (if (or (< s 6) (> n (- s 3)))     ; n是不同的3个正整数之和，所以s至少是6,且n至少比s小3
       nil
       (filter (lambda (seq) (= (accumulate + 0 seq) s))
               (flatmap (lambda (i)
