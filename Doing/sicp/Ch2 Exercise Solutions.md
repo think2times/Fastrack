@@ -1542,3 +1542,148 @@ $(transpose\ m)\ returns\ the\ matrix\ \boldsymbol n, where\ n_{ij} = m_{ji}.$
 ; 执行结果
 '((1 4 15) (1 5 14) (1 6 13) (1 7 12) (1 8 11) (1 9 10) (2 3 15) (2 4 14) (2 5 13) (2 6 12) (2 7 11) (2 8 10) (3 4 13) (3 5 12) (3 6 11) (3 7 10) (3 8 9) (4 5 11) (4 6 10) (4 7 9) (5 6 9) (5 7 8))
 ```
+
+### Exercise 2.42
+> The “eight-queens puzzle” asks how to place eight queens on a chessboard so that
+ no queen is in check from any other (i.e., no two queens are in the same row,
+ column, or diagonal). One possible solution is shown in Figure 2.8. One way to
+ solve the puzzle is to work across the board, placing a queen in each column.
+ Once we have placed $k-1$ queens, we must place the $k^{th}$ queen in a position
+ where it does not check any of the queens already on the board. We can formulate
+ this approach recursively: Assume that we have already generated the sequence of
+ all possible ways to place $k-1$ queens in the first $k-1$ columns of the board.
+ For each of these ways, generate an extended set of positions by placing a queen
+ in each row of the $k^{th}$ column. Now filter these, keeping only the positions
+ for which the queen in the $k^{th}$ column is safe with respect to the other queens.
+ This produces the sequence of all ways to place k queens in the first k columns.
+ By continuing this process, we will produce not only one solution, but all
+ solutions to the puzzle.
+
+![Alt text](<images/exer 2.42.png>)
+
+>  Weimplement this solution as a procedure $queens$, which returns a sequence of 
+all solutions to the problem of placing n queens on an $n × n$ chessboard. queens has 
+an internal procedure $queen-cols$ that returns the sequence of all ways to 
+place queens in the first k columns of the board.
+```
+(define (queens board-size)
+  (define (queen-cols k)
+    (if (= k 0)
+        (list empty-board)
+        (filter
+         (lambda (positions) (safe? k positions))
+         (flatmap
+          (lambda (rest-of-queens)
+            (map (lambda (new-row)
+                   (adjoin-position new-row k rest-of-queens))
+                 (enumerate-interval 1 board-size)))
+          (queen-cols (- k 1))))))
+  (queen-cols board-size))
+```
+> In this procedure $rest-of-queens$ is a way to place $k-1$ queens in the first 
+$k-1$ columns, and $new-row$ is a proposed row in which to place the queen 
+for the $k^{th}$ column. Complete the program by implementing the representation 
+for sets of board positions, including the procedure $adjoin-position$, which 
+adjoins a new row-column position to a set of positions, and $empty-board$, which 
+represents an empty set of positions. You must also write the procedure $safe?$, 
+which determines for a set of positions, whether the queen in the $k^{th}$ column 
+is safe with respect to the others. (Note that we need only check whether the 
+new queen is safe—the other queens are already guaranteed safe with respect to 
+each other.)
+---
+> 这道题太难了，我自己只完成了 $empty-board$ 这一个定义，其他的函数即使看了别人的答案
+也研究了半天才搞明白。。
+```
+; board-size 指的是正方形棋盘的长
+(define (queens board-size)
+  (define (queen-cols k)
+    (if (= k 0)
+        (list empty-board)
+        (filter
+         (lambda (positions) (safe? k positions))     ; 每组位置不冲突的皇后的位置构成一个位置的集合
+         (flatmap
+          (lambda (rest-of-queens)         ; rest-of-queens 表示已经被放置在安全位置的 k-1 个王后的位置的组合
+            (map (lambda (new-row)
+                   (adjoin-position new-row k rest-of-queens))
+                 (enumerate-interval 1 board-size)))             ; 把第 k 列的新位置加进之前的王后的位置组合
+          (queen-cols (- k 1))))))
+  (queen-cols board-size))
+
+(define empty-board nil)
+
+; 检查2个位置坐标是否冲突
+; 同行比较好判断,只要新王后位置的行跟前 k-1 个王后的行都不同就行,同列同理
+; 对角线比较复杂,分为从左上到右下和从左下到右上两类
+; 从左上到右下,在同一条对角线上的坐标,行与列坐标之差相同
+; 从左下到右上,在同一条对角线上的坐标,行与列坐标之和相同
+(define (check pos1 pos2)
+  (let ((x1 (car pos1))
+        (y1 (cadr pos1))
+        (x2 (car pos2))
+        (y2 (cadr pos2)))
+    (and (not (= x1 x2))
+         (not (= y1 y2))
+         (not (= (- x1 x2) (- y1 y2)))
+         (not (= (+ x1 x2) (+ y1 y2))))))
+
+; 检查新加入的王后的位置与其他王后的位置是否冲突
+; k 其实没有任何作用
+(define (safe? k positions)
+  (let ((new-queen (car positions))
+        (rest-of-queens (cdr positions)))
+    (accumulate (lambda (pos result)
+                  (and (check pos new-queen)
+                       result))
+                true
+                rest-of-queens)))
+         
+; 在已有前 k-1 个王后的位置组合的基础上，把某个位置坐标(row col)加到第一个位置
+(define (adjoin-position row col rest-of-queens)
+  (cons (list row col) rest-of-queens))
+ 
+
+(queens 1)
+(queens 2)
+(queens 3)
+(queens 4)
+(queens 8)
+
+
+; 执行结果
+'(((1 1)))
+'()
+'()
+'(((1 4) (3 3) (4 2) (2 1)) ((1 4) (4 3) (2 2) (3 1)) ((2 4) (3 3) (1 2) (4 1)) ((3 4) (1 3) (2 2) (4 1)))
+'(((1 8) (2 7) (6 6) (3 5) (5 4) (7 3) (8 2) (4 1))
+  ((1 8) (2 7) (4 6) (6 5) (7 4) (3 3) (8 2) (5 1))
+  ((1 8) (2 7) (6 6) (3 5) (7 4) (4 3) (8 2) (5 1))
+  ((1 8) (2 7) (7 6) (3 5) (4 4) (6 3) (8 2) (5 1))
+  ((1 8) (3 7) (4 6) (5 5) (7 4) (2 3) (8 2) (6 1))
+  ((1 8) (4 7) (2 6) (7 5) (5 4) (3 3) (8 2) (6 1))
+  ((1 8) (5 7) (2 6) (4 5) (7 4) (3 3) (8 2) (6 1))
+  ((1 8) (3 7) (7 6) (2 5) (4 4) (5 3) (8 2) (6 1))
+  ((1 8) (2 7) (4 6) (5 5) (8 4) (6 3) (3 2) (7 1))
+  ((1 8) (4 7) (2 6) (5 5) (6 4) (8 3) (3 2) (7 1))
+  ((1 8) (3 7) (6 6) (2 5) (5 4) (8 3) (4 2) (7 1))
+  ((1 8) (2 7) (4 6) (6 5) (8 4) (3 3) (5 2) (7 1))
+  ((1 8) (2 7) (6 6) (3 5) (8 4) (4 3) (5 2) (7 1))
+  ((1 8) (3 7) (6 6) (4 5) (2 4) (8 3) (5 2) (7 1))
+  ((1 8) (6 7) (2 6) (3 5) (4 4) (8 3) (5 2) (7 1))
+  ((1 8) (2 7) (4 6) (8 5) (5 4) (3 3) (6 2) (7 1))
+  ((2 8) (4 7) (1 6) (5 5) (6 4) (7 3) (3 2) (8 1))
+  ((3 8) (1 7) (6 6) (2 5) (5 4) (7 3) (4 2) (8 1))
+  ((3 8) (1 7) (6 6) (4 5) (2 4) (7 3) (5 2) (8 1))
+  ((2 8) (6 7) (1 6) (3 5) (4 4) (7 3) (5 2) (8 1))
+  ((3 8) (1 7) (4 6) (5 5) (7 4) (2 3) (6 2) (8 1))
+  ((2 8) (4 7) (1 6) (7 5) (5 4) (3 3) (6 2) (8 1))
+  ((2 8) (5 7) (1 6) (4 5) (7 4) (3 3) (6 2) (8 1))
+  ((3 8) (1 7) (7 6) (2 5) (4 4) (5 3) (6 2) (8 1))
+  ((4 8) (1 7) (3 6) (5 5) (6 4) (2 3) (7 2) (8 1))
+  ((2 8) (4 7) (5 6) (1 5) (6 4) (3 3) (7 2) (8 1))
+  ((4 8) (1 7) (5 6) (2 5) (6 4) (3 3) (7 2) (8 1))
+  ((5 8) (1 7) (2 6) (4 5) (6 4) (3 3) (7 2) (8 1))
+  ((2 8) (3 7) (6 6) (4 5) (1 4) (5 3) (7 2) (8 1))
+  ((2 8) (4 7) (6 6) (1 5) (3 4) (5 3) (7 2) (8 1))
+  ((4 8) (1 7) (6 6) (2 5) (3 4) (5 3) (7 2) (8 1))
+  ((2 8) (6 7) (3 6) (1 5) (4 4) (5 3) (7 2) (8 1)))
+```
