@@ -13,3 +13,7 @@
 ### 10th
 > I am reading a book named <The Wisdom of Buy and Sell Stock>, it's very helpful, I learned many fundemental knowledge of stock market.
 > AI revised edition: "The wisdom of stock trading" is a fantastic book that I'm currently reading. It's providing me with a solid foundation in stock market investing.
+
+### 11th
+> Today, I met a very diffcult question named 'Eight Queens Puzzle' which is too difficult to solve by myself. I seached other people's answer, and chose the best to modify.
+> AI revised edition: Today, I encountered a particularly challenging problem known as "Eight Queens Puzzle", which proved to be too complex for me to solve independently. I consulted the solutions provided by others and adapted the most optimal one.
