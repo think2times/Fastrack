@@ -1677,3 +1677,55 @@ $(transpose\ m)\ returns\ the\ matrix\ \boldsymbol n, where\ n_{ij} = m_{ji}.$
 > 慢的原因比较好理解，$Louis$ 的答案每一次都要把 $queen-cols$ 计算 `(enumerate-interval 1 board-size)` 遍，一共算了 $board-size^{board-size}$ 遍，对于八皇后问题就是 $8^8$ 遍；对于练习 2.42 的原方法，每次循环都会减一次，所以一共计算了 $n!$ 次，如果原方法时间为 $T$，那么 $Louis$ 的方法要用的时间是 $\frac{8^8}{8!}T$.
 
 ## 2.2.4 Example: A Picture Language
+> 我在这一章遇到了一个大问题，就是书上用的那些函数 $beside, wave, flip-vert$ 我统统用不了。我用的是 DrRacket 这个软件，在网上查了半天，终于找到了解决办法。
+> 首先是官方教程，在 DrRacket 中依次打开 File -> Package Manager...，在弹出的页面中 "Do What I Mean" 菜单页的输入：sicp，回车之后自动安装就行了。
+> 但是我试了好几次，总是因为网络问题没法下载成功，最后求助于 chatgpt 终于解决了。
+> 首先是手动下载 [sicp](https://github.com/sicp-lang/sicp.git) 包到 Racket 安装目录，然后打开 cmd 命令行，输入 `raco pkg install ./sicp` 即可用本地的 sicp 目录安装包。
+> 安装好之后，重启 DrRacket 软件，依次点击上方菜单栏的 Language -> Choose Language，在弹出的页面中，找到 Teaching Languages(ctl-T) 下选择 SICP(PLaneT 1.18)，点击 OK。
+> 再次回到代码编辑页面后，就不需要开头的 #lang racket 了，直接写代码就行。
+> 还有一点，安装的 sicp 包里也是没有 $wave, rogers$ 的，但是提供了 $einstein$，所以可以用 `(define wave einstein)` 替换掉或者把 书上所有代码里的 $wave$ 都用 $einstein$ 代替。不过直接在文件里输入 `einstein` 或者 `wave` 是看不到图象的，而是以以 #procedure 的形式存在的，需要用 `(paint einstein)` 显式地调用，这样就可以看到爱神的头像了。
+
+###  Exercise 2.44
+> Define the procedure $up-split$ used by $corner-split$. It is similar to $right-split$, except that it switches the roles of $below$ and $beside$.
+---
+> 这道题非常的简单，就像题目所说的那样，只要交换 $below$ 和 $beside$ 的位置就行。
+```
+(paint (right-split wave 1))
+
+(define (up-split painter n)
+  (if (= n 0)
+      painter
+      (let ((smaller (up-split painter (- n 1))))
+        (below painter (beside smaller smaller)))))
+
+(paint (up-split wave 1))
+
+(define (corner-split painter n)
+  (if (= n 0)
+      painter
+      (let ((up (up-split painter (- n 1)))
+            (right (right-split painter (- n 1))))
+        (let ((top-left (beside up up))
+              (bottom-right (below right right))
+              (corner (corner-split painter (- n 1))))
+          (beside (below painter top-left)
+                  (below bottom-right corner))))))
+
+(paint (corner-split wave 1))
+(paint (corner-split wave 2))
+```
+> 效果如下图：
+![Alt text](<images/exer 2.44-right-split.png>)
+![Alt text](<images/exer 2.44-up-split.png>)
+![Alt text](<images/exer 2.44-corner-split-1.png>)
+![Alt text](<images/exer 2.44-corner-split-2.png>)
+
+> 不过这是全新的内容，我觉得最好先理解 $below$ 和 $beside$ 的作用，其实就是字面意思，$beside$ 是把2个图形左右排列，第一个图形在左边；$below$ 是把2个图形上下排列，但是要注意它是把第二个图形放在上面，如下图所示：
+```
+(define wave einstein)
+
+(paint (beside wave (below wave wave)))
+(paint (below (beside wave wave) wave))
+```
+![Alt text](<images/exer 2.44-beside.png>)
+![Alt text](<images/exer 2.44-below.png>)

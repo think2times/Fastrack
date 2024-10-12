@@ -1,20 +1,7 @@
 (define wave einstein)
 
-(paint wave)
-
-(define wave2 (beside wave (flip-vert wave)))
-(define wave4 (below wave2 wave2))
-
-(paint wave2)
-(paint wave4)
-
-(define (flipped-pairs painter)
-  (let ((painter2 (beside painter (flip-vert painter))))
-    (below painter2 painter2)))
-
-(define wave4-by-flip (flipped-pairs wave))
-
-(paint wave4-by-flip)
+;(paint (beside wave (below wave wave)))
+;(paint (below (beside wave wave) wave))
 
 (define (right-split painter n)
   (if (= n 0)
@@ -22,13 +9,15 @@
       (let ((smaller (right-split painter (- n 1))))
         (beside painter (below smaller smaller)))))
 
-(paint (right-split wave 3))
+(paint (right-split wave 1))
 
 (define (up-split painter n)
   (if (= n 0)
       painter
       (let ((smaller (up-split painter (- n 1))))
-        (beside painter (below smaller smaller)))))
+        (below painter (beside smaller smaller)))))
+
+(paint (up-split wave 1))
 
 (define (corner-split painter n)
   (if (= n 0)
@@ -43,11 +32,3 @@
 
 (paint (corner-split wave 1))
 (paint (corner-split wave 2))
-
-(define (square-limit painter n)
-  (let ((quarter (corner-split painter n)))
-    (let ((half (beside (flip-horiz quarter) quarter)))
-      (below (flip-vert half) half))))
-
-(paint (square-limit wave 1))
-(paint (square-limit wave 2))
