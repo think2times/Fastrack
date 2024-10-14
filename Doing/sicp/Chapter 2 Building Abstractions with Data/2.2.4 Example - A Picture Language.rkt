@@ -58,13 +58,17 @@
           (bottom (beside (bl painter) (br painter))))
       (below bottom top))))
 
-(define (flipped-pairs-by-square painter)
+(define (flipped-pairs-2 painter)
   (let ((combine4 (square-of-four identity flip-vert
                                   identity flip-vert)))
     (combine4 painter)))
 
-(define (square-limit painter n)
+(paint (flipped-pairs-2 wave))
+
+(define (square-limit-2 painter n)
   (let ((combine4 (square-of-four flip-horiz identity
                                   rotate180 flip-vert)))
     (combine4 (corner-split painter n))))
 
+(paint (square-limit-2 wave 1))
+(paint (square-limit-2 wave 2))
