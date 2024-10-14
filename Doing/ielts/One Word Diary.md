@@ -27,3 +27,7 @@ or left-to-right. I'm eager to explore more about this topic and deenpen my unde
 ### 13th
 > Today, I worked as tutor for 3 students. I feel tired now, but I will get 730 RMB paid next month, that's really good.
 > AI revised edition: I've been tutoring three students today, and I'm feeling pretty worn out. It's worth it though, as I'll be getting paid 730 RMB next month.
+
+### 14th
+> My little brother didn't work well at recent exam, he only got 40th in his class. I should help him, but we had argued fiercely 4 monthes ago, we nearly haven't spoken a word since then. I don't know how to do.
+> AI revised edition: My little brother didn't do well on his recent exam, he ranked 40th in his class. I want to help him, but we had a fierce argument four monthes ago and have barely spoken since. I'm not sure what to do.
