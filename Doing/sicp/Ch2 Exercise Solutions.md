@@ -1776,4 +1776,12 @@ $(transpose\ m)\ returns\ the\ matrix\ \boldsymbol n, where\ n_{ij} = m_{ji}.$
 
 (paint (up-split-1 wave 1))
 ```
-> 效果如下图
+> 效果如下图所示：
+
+![Alt text](<images/exer 2.45-right-split-1.png>)
+
+![Alt text](<images/exer 2.45-right-split-2.png>)
+
+![Alt text](<images/exer 2.45-up-split-1.png>)
+
+![Alt text](<images/exer 2.45-up-split-2.png>)
