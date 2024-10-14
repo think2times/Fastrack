@@ -1734,3 +1734,46 @@ $(transpose\ m)\ returns\ the\ matrix\ \boldsymbol n, where\ n_{ij} = m_{ji}.$
 ![Alt text](<images/exer 2.44-beside.png>)
 
 ![Alt text](<images/exer 2.44-below.png>)
+
+### Exercise2.45
+> $right-split$ and $up-split$ can be expressed as instances of a general splitting operation. Define a procedure $split$ with the property that evaluating
+```
+(define right-split-2 (split beside below))
+(define up-split-2 (split below beside))
+```
+> produces procedures $right-split$ and $up-split$ with the same behaviors as the ones already defined.
+---
+> 这道题没什么难度，只要注意到 $split$ 的返回值也是一个函数，且它的两个参数分别为 $painter$ 和 $n$，至于实现，仿照原来的 $right-split$ 或 $up-split$ 即可。
+```
+(define wave einstein)
+
+(define (right-split-1 painter n)
+  (if (= n 0)
+      painter
+      (let ((smaller (right-split-1 painter (- n 1))))
+        (beside painter (below smaller smaller)))))
+
+(define (up-split-1 painter n)
+  (if (= n 0)
+      painter
+      (let ((smaller (up-split-1 painter (- n 1))))
+        (below painter (beside smaller smaller)))))
+
+(define (split op1 op2)
+  (define (iter painter n)
+    (if (= n 0)
+        painter
+        (let ((smaller (iter painter (- n 1))))
+          (op1 painter (op2 smaller smaller)))))
+  iter)
+
+(define right-split-2 (split beside below))
+(define up-split-2 (split below beside))
+
+
+(paint (right-split-1 wave 1))
+(paint (right-split-2 wave 1))
+
+(paint (up-split-1 wave 1))
+```
+> 效果如下图
