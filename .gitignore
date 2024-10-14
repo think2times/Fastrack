@@ -142,6 +142,8 @@ Untitled.ipynb
 
 # racket file
 Learning/SICP/Modules
+*.dep
+*.zo
 
 # swap-face
 Projects/swap-face/models

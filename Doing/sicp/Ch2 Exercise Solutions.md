@@ -1715,9 +1715,13 @@ $(transpose\ m)\ returns\ the\ matrix\ \boldsymbol n, where\ n_{ij} = m_{ji}.$
 (paint (corner-split wave 2))
 ```
 > 效果如下图：
+
 ![Alt text](<images/exer 2.44-right-split.png>)
+
 ![Alt text](<images/exer 2.44-up-split.png>)
+
 ![Alt text](<images/exer 2.44-corner-split-1.png>)
+
 ![Alt text](<images/exer 2.44-corner-split-2.png>)
 
 > 不过这是全新的内容，我觉得最好先理解 $below$ 和 $beside$ 的作用，其实就是字面意思，$beside$ 是把2个图形左右排列，第一个图形在左边；$below$ 是把2个图形上下排列，但是要注意它是把第二个图形放在上面，如下图所示：
@@ -1728,4 +1732,5 @@ $(transpose\ m)\ returns\ the\ matrix\ \boldsymbol n, where\ n_{ij} = m_{ji}.$
 (paint (below (beside wave wave) wave))
 ```
 ![Alt text](<images/exer 2.44-beside.png>)
+
 ![Alt text](<images/exer 2.44-below.png>)
