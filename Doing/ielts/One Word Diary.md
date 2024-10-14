@@ -23,3 +23,7 @@ I consulted the solutions provided by others and adapted the most optimal one.
 > I learned how to paint in Scheme known as a lisp-like language. It is particularly interesting, I know how to split a picture and put them together by top-bottom or left-right, I want to learn more about it.
 > AI revised edition: I have learned how to create drawings in Scheme, a Lisp-like programming language. It's particularly fascinating, as I know how to split an image and combine the pieces either top-to-bottom 
 or left-to-right. I'm eager to explore more about this topic and deenpen my understanding.
+
+### 13th
+> Today, I worked as tutor for 3 students. I feel tired now, but I will get 730 RMB paid next month, that's really good.
+> AI revised edition: I've been tutoring three students today, and I'm feeling pretty worn out. It's worth it though, as I'll be getting paid 730 RMB next month.
