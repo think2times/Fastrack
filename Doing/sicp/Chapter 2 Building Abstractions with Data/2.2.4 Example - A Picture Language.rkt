@@ -44,6 +44,8 @@
 (paint (corner-split wave 1))
 (paint (corner-split wave 2))
 
+
+; Higher-order operations
 (define (square-limit painter n)
   (let ((quarter (corner-split painter n)))
     (let ((half (beside (flip-horiz quarter) quarter)))
