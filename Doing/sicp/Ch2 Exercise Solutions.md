@@ -1743,7 +1743,8 @@ $(transpose\ m)\ returns\ the\ matrix\ \boldsymbol n, where\ n_{ij} = m_{ji}.$
 ```
 > produces procedures $right-split$ and $up-split$ with the same behaviors as the ones already defined.
 ---
-> 这道题没什么难度，只要注意到 $split$ 的返回值也是一个函数，且它的两个参数分别为 $painter$ 和 $n$，至于实现，仿照原来的 $right-split$ 或 $up-split$ 即可。
+> 这道题本身没什么难度，但是我再次遇到了环境问题。。之前在台式电脑上装的sicp包，用同样的步骤在笔记本上怎么都不行，卸载重装了好几次，最后参考[这篇文章](https://www.neilvandyke.org/racket/sicp/)终于找到了解决办法：方法其实也不复杂，随便打开一个窗口，输入 `#lang planet neil/sicp`，然后点击右上角的 run 等待安装完毕重启 DrRacket，再依次点击 Language -> Choose Language，就可以选择看到 SICP(PLaneT 1.18) 了。
+> 回到这道题，只要注意到 $split$ 的返回值也是一个函数，且它的两个参数分别为 $painter$ 和 $n$，至于实现，仿照原来的 $right-split$ 或 $up-split$ 即可。
 ```
 (define wave einstein)
 
