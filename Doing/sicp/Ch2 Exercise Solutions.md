@@ -1798,7 +1798,7 @@ $(x_1, y_1) + (x_2, y_2) = (x_1+x_2, y_1+y_2),$
 $(x_1, y_1) - (x_2, y_2) = (x_1-x_2, y_1-y_2),$
 $s \cdot (x, y) = (sx, sy).$
 ---
-> 这道题没啥说的，差不多是最简单的题目了
+> 这道题没啥说的，差不多是最简单的题目了。
 ```
 (define (make-vect x y)
   (cons x y))
@@ -1905,3 +1905,43 @@ $s \cdot (x, y) = (sx, sy).$
 (mcons 3 4)
 (mcons -4 3)
 ```
+
+### Exercise 2.48
+> A directed line segment in the plane can be represented as a pair of vectors—the vector running from the origin to the start-point of the segment, and the vector running from the 
+origin to the end-point of the segment. Use your vector representation from Exercise 2.46 to define a representation for segments with a constructor $make-segment$ and selectors 
+$start-segment$ and $end-segment$.
+---
+> 这道题太简单了，没啥说的。
+```
+(define (make-segment v1 v2)
+  (cons v1 v2))
+
+(define (start-segment segment)
+  (car segment))
+
+(define (end-segment segment)
+  (cdr segment))
+
+
+(define v1 (make-vect 3 4))
+(define v2 (make-vect -4 3))
+  
+(define a-segment (make-segment v1 v2))
+a-segment
+(start-segment a-segment)
+(end-segment a-segment)
+
+; 执行结果
+(mcons (mcons 3 4) (mcons -4 3))
+(mcons 3 4)
+(mcons -4 3)
+```
+
+### Exercise 2.49
+> Use $segments->painter$ to define the following primitive painters:
+  >> a. The painter that draws the outline of the designated frame.
+  >> b. The painter that draws an “X” by connecting opposite corners of the frame.
+  >> c. The painter that draws a diamond shape by connecting the midpoints of the sides of the frame.
+  >> d. The $wave$ painter.
+---
+> 

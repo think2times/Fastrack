@@ -77,6 +77,43 @@
 
 
 ; Frames
+(define (make-vect x y)
+  (cons x y))
+
+(define (xcor-vect vector)
+  (car vector))
+
+(define (ycor-vect vector)
+  (cdr vector))
+
+(define (add-vect v1 v2)
+  (make-vect (+ (xcor-vect v1)
+                (xcor-vect v2))
+             (+ (ycor-vect v1)
+                (ycor-vect v2))))
+
+(define (sub-vect v1 v2)
+  (make-vect (- (xcor-vect v1)
+                (xcor-vect v2))
+             (- (ycor-vect v1)
+                (ycor-vect v2))))
+
+(define (scale-vect s v)
+  (make-vect (* s (xcor-vect v))
+             (* s (ycor-vect v))))
+
+(define (make-frame origin edge1 edge2)
+  (cons origin (cons edge1 edge2)))
+
+(define (origin-frame frame)
+  (car frame))
+
+(define (edge1-frame frame)
+  (cadr frame))
+
+(define (edge2-frame frame)
+  (cddr frame))
+
 (define (frame-coord-map frame)
   (lambda (v)
     (add-vect
@@ -85,4 +122,24 @@
                (scale-vect (ycor-vect v) (edge2-frame frame))))))
 
 
+(define origin (make-vect 1 1))
+(define v1 (make-vect 3 4))
+(define v2 (make-vect -4 3))
+
+(define a-frame (make-frame origin v1 v2))
+
 ((frame-coord-map a-frame) (make-vect 0 0))
+(origin-frame a-frame)
+
+
+; Painters
+(define (segments->painter segment-list)
+  (lambda (frame)
+    (for-each
+     (lambda (segment)
+       (draw-line
+        ((frame-coord-map frame)
+         (start-segment segment))
+        ((frame-coord-map frame)
+         (end-segment segment))))
+     segment-list)))
