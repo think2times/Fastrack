@@ -1735,7 +1735,7 @@ $(transpose\ m)\ returns\ the\ matrix\ \boldsymbol n, where\ n_{ij} = m_{ji}.$
 
 ![Alt text](<images/exer 2.44-below.png>)
 
-### Exercise2.45
+### Exercise 2.45
 > $right-split$ and $up-split$ can be expressed as instances of a general splitting operation. Define a procedure $split$ with the property that evaluating
 ```
 (define right-split-2 (split beside below))
@@ -1788,3 +1788,120 @@ $(transpose\ m)\ returns\ the\ matrix\ \boldsymbol n, where\ n_{ij} = m_{ji}.$
 ![Alt text](<images/exer 2.45-up-split-1.png>)
 
 ![Alt text](<images/exer 2.45-up-split-2.png>)
+
+### Exercise 2.46
+> A two-dimensional vector $\boldsymbol v$ running from the origin to a point can be represented as a pair consisting of an x-coordinate and a y-coordinate. Implement a data abstraction for vectors 
+by giving a constructor $make-vect$ and corresponding selectors $xcor-vect$ and $ycor-vect$. In terms of your selectors and constructor, implement procedures $add-vect$, $sub-vect$, and 
+$scale-vect$ that perform the operations vector addition, vector subtraction, and multiplying a vector by a scalar:
+
+$(x_1, y_1) + (x_2, y_2) = (x_1+x_2, y_1+y_2),$
+$(x_1, y_1) - (x_2, y_2) = (x_1-x_2, y_1-y_2),$
+$s \cdot (x, y) = (sx, sy).$
+---
+> 这道题没啥说的，差不多是最简单的题目了
+```
+(define (make-vect x y)
+  (cons x y))
+
+(define (xcor-vect vector)
+  (car vector))
+
+(define (ycor-vect vector)
+  (cdr vector))
+
+(define (add-vect v1 v2)
+  (make-vect (+ (xcor-vect v1)
+                (xcor-vect v2))
+             (+ (ycor-vect v1)
+                (ycor-vect v2))))
+
+(define (sub-vect v1 v2)
+  (make-vect (- (xcor-vect v1)
+                (xcor-vect v2))
+             (- (ycor-vect v1)
+                (ycor-vect v2))))
+
+(define (scale-vect s v)
+  (make-vect (* s (xcor-vect v))
+             (* s (ycor-vect v))))
+
+
+(define v1 (make-vect 3 4))
+(define v2 (make-vect -4 3))
+
+(xcor-vect v1)
+(ycor-vect v1)
+
+(add-vect v1 v2)
+(sub-vect v1 v2)
+
+(scale-vect 0.2 (add-vect v1 v2))
+
+; 执行结果
+3
+4
+(mcons -1 7)
+(mcons 7 1)
+(mcons -0.2 1.4000000000000001)
+```
+
+### Exercise 2.47
+> Here are two possible constructors for frames:
+```
+(define (make-frame origin edge1 edge2)
+  (list origin edge1 edge2))
+
+(define (make-frame origin edge1 edge2)
+  (cons origin (cons edge1 edge2)))
+```
+> For each constructor supply the appropriate selectors to produce an implementation for frames.
+---
+> 这道题也不难，感觉是为了让我们熟悉 $car$ 和 $cdr$ 这两个函数。
+```
+(define (make-frame-by-list origin edge1 edge2)
+  (list origin edge1 edge2))
+
+(define (origin-frame-by-list frame)
+  (car frame))
+
+(define (edge1-frame-by-list frame)
+  (cadr frame))
+
+(define (edge2-frame-by-list frame)
+  (caddr frame))
+
+(define (make-frame-by-cons origin edge1 edge2)
+  (cons origin (cons edge1 edge2)))
+
+(define (origin-frame-by-cons frame)
+  (car frame))
+
+(define (edge1-frame-by-cons frame)
+  (cadr frame))
+
+(define (edge2-frame-by-cons frame)
+  (cddr frame))
+
+
+(define origin (make-vect 1 1))
+(define v1 (make-vect 3 4))
+(define v2 (make-vect -4 3))
+
+(define frame1 (make-frame-by-list origin v1 v2))
+(origin-frame-by-list frame1)
+(edge1-frame-by-list frame1)
+(edge2-frame-by-list frame1)
+
+(define frame2 (make-frame-by-cons origin v1 v2))
+(origin-frame-by-cons frame2)
+(edge1-frame-by-cons frame2)
+(edge2-frame-by-cons frame2)
+
+; 执行结果
+(mcons 1 1)
+(mcons 3 4)
+(mcons -4 3)
+(mcons 1 1)
+(mcons 3 4)
+(mcons -4 3)
+```
