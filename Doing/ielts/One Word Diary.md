@@ -31,3 +31,7 @@ or left-to-right. I'm eager to explore more about this topic and deenpen my unde
 ### 14th
 > My little brother didn't work well at recent exam, he only got 40th in his class. I should help him, but we had argued fiercely 4 monthes ago, we nearly haven't spoken a word since then. I don't know how to do.
 > AI revised edition: My little brother didn't do well on his recent exam, he ranked 40th in his class. I want to help him, but we had a fierce argument four monthes ago and have barely spoken since. I'm not sure what to do.
+
+### 15th
+> I have got over 2500 points in Duolinguo, but I even didn't in first five rank, they studied too hard.
+> AI revised edition: I have earned over 2500 points in Duolinguo, but I'm still not even in top five. They've been studying really hard.
