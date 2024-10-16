@@ -75,10 +75,13 @@
         (left (draw-line (bt frame) (bl frame))))         ; 左面那条边
     (segments->painter (list below right top left))))
 
-       
+    
 (define origin (make-vect 0 0))
 (define v1 (make-vect 3 4))
 (define v2 (make-vect -4 3))
 
+
 (define a-frame (make-frame origin v1 v2))
+(define below (draw-line (bl a-frame) (rl a-frame)))
+;below
 (paint (outline-of-frame a-frame))
