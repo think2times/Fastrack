@@ -1,87 +1,60 @@
-(define (make-vect x y)
-  (cons x y))
-
-(define (xcor-vect vector)
-  (car vector))
-
-(define (ycor-vect vector)
-  (cdr vector))
-
-(define (add-vect v1 v2)
-  (make-vect (+ (xcor-vect v1)
-                (xcor-vect v2))
-             (+ (ycor-vect v1)
-                (ycor-vect v2))))
-
-(define (sub-vect v1 v2)
-  (make-vect (- (xcor-vect v1)
-                (xcor-vect v2))
-             (- (ycor-vect v1)
-                (ycor-vect v2))))
-
-(define (scale-vect s v)
-  (make-vect (* s (xcor-vect v))
-             (* s (ycor-vect v))))
-
-(define (make-frame origin edge1 edge2)
-  (list origin edge1 edge2))
-
-(define (origin-frame frame)
-  (car frame))
-
-(define (edge1-frame frame)
-  (cadr frame))
-
-(define (edge2-frame frame)
-  (caddr frame))
-
-(define (frame-coord-map frame)
-  (lambda (v)
-    (add-vect
-     (origin-frame frame)
-     (add-vect (scale-vect (xcor-vect v) (edge1-frame frame))
-               (scale-vect (ycor-vect v) (edge2-frame frame))))))
-
-(define (draw-line v1 v2)
-  (cons v1 v2))
-
-(define (start-segment segment)
-  (car segment))
-
-(define (end-segment segment)
-  (cdr segment))
-
-(define (segments->painter segment-list)
-  (lambda (frame)
-    (for-each
-     (lambda (segment)
-       (draw-line
-        ((frame-coord-map frame)
-         (start-segment segment))
-        ((frame-coord-map frame)
-         (end-segment segment))))
-     segment-list)))
-
-; 获取 frame 的四个顶点的坐标
-(define (bl frame) (origin-frame frame))    ; 左下
-(define (bt frame) (add-vect (bl frame) (edge1-frame frame)))   ; 左上
-(define (rt frame) (add-vect (bt frame) (edge2-frame frame)))   ; 右上
-(define (rl frame) (add-vect (bl frame) (edge2-frame frame)))   ; 右下
-
-(define (outline-of-frame frame)
-  (let ((below (draw-line (bl frame) (rl frame)))         ; 下面那条边
-        (right (draw-line (rl frame) (rt frame)))         ; 右面那条边
-        (top (draw-line (rt frame) (bt frame)))           ; 上面那条边
-        (left (draw-line (bt frame) (bl frame))))         ; 左面那条边
-    (segments->painter (list below right top left))))
-
-    
-(define origin (make-vect 0 0))
-(define v1 (make-vect 3 4))
-(define v2 (make-vect -4 3))
+(#%require sicp-pict)
 
 
-(define a-frame (make-frame origin v1 v2))
-(define below (draw-line (bl a-frame) (rl a-frame)))
-;below
-(paint (outline-of-frame a-frame))
+; a 
+(define outline 
+  (segments->painter 
+   (list 
+    (segment (vect 0.0 0.0) (vect 0.0 1.0)) 
+    (segment (vect 0.0 0.0) (vect 1.0 0.0)) 
+    (segment (vect 0.0 1.0) (vect 1.0 1.0)) 
+    (segment (vect 1.0 0.0) (vect 1.0 1.0)))))
+
+; b 
+(define x-painter 
+  (segments->painter 
+   (list 
+    (segment (vect 0.0 0.0) (vect 1.0 1.0)) 
+    (segment (vect 0.0 1.0) (vect 1.0 0.0))))) 
+
+; c
+(define diamond 
+  (segments->painter 
+   (list 
+    (segment (vect 0.0 0.5) (vect 0.5 1.0)) 
+    (segment (vect 0.5 1.0) (vect 1.0 0.5)) 
+    (segment (vect 1.0 0.5) (vect 0.5 0.0)) 
+    (segment (vect 0.5 0.0) (vect 0.0 0.5))))) 
+
+; d
+(define wave 
+  (segments->painter (list 
+                      (segment (vect .25 0) (vect .35 .5)) 
+                      (segment (vect .35 .5) (vect .3 .6)) 
+                      (segment (vect .3 .6) (vect .15 .4)) 
+                      (segment (vect .15 .4) (vect 0 .65)) 
+                      (segment (vect 0 .65) (vect 0 .85)) 
+                      (segment (vect 0 .85) (vect .15 .6)) 
+                      (segment (vect .15 .6) (vect .3 .65)) 
+                      (segment (vect .3 .65) (vect .4 .65)) 
+                      (segment (vect .4 .65) (vect .35 .85)) 
+                      (segment (vect .35 .85) (vect .4 1)) 
+                      (segment (vect .4 1) (vect .6 1)) 
+                      (segment (vect .6 1) (vect .65 .85)) 
+                      (segment (vect .65 .85) (vect .6 .65)) 
+                      (segment (vect .6 .65) (vect .75 .65)) 
+                      (segment (vect .75 .65) (vect 1 .35)) 
+                      (segment (vect 1 .35) (vect 1 .15)) 
+                      (segment (vect 1 .15) (vect .6 .45)) 
+                      (segment (vect .6 .45) (vect .75 0)) 
+                      (segment (vect .75 0) (vect .6 0)) 
+                      (segment (vect .6 0) (vect .5 .3)) 
+                      (segment (vect .5 .3) (vect .4 0)) 
+                      (segment (vect .4 0) (vect .25 0)) 
+                      )))
+
+
+(paint outline)
+(paint x-painter)
+(paint diamond)
+(paint wave)
