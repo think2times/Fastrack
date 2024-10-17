@@ -2009,10 +2009,71 @@ a-segment
 (paint wave)
 ```
 > 效果如下：
-![Alt text](<Images/exer 2.49-outline.png>)
 
-![Alt text](<Images/exer 2.49-X.png>)
+![Alt text](<Images/exer 2.49.png>)
 
-![Alt text](<Images/exer 2.49-diamond.png>)
+### Exercise 2.50
+> Define the transformation flip-horiz, which flips painters horizontally, and transformations that rotate painters counterclockwise by 180 degrees and 270 degrees.
+---
+![Alt text](<Images/exer 2.50-illustration.png>)
 
-![Alt text](<Images/exer 2.49-wave.png>)
+> 这道题挺有意思的，搞明白这道题就明白了 frame 的3个点的位置。如上图所示，为了更好区分，特意用了长方形而不是正方形，第一幅图是原图，O 表示 origin, A 表示 edge1，B 表示 edge2。无论进行何种变换，左下坐标都是 (0, 0)，左上都是(0, 1)， 右下都是(1, 0)， 右上都是(1, 1)，我们只要把变换后的图形中 O, A, B 的新位置作为参数传进去就行。
+```
+#lang racket
+
+(require (planet "sicp.ss" ("soegaard" "sicp.plt" 2 1)))
+
+
+(define sub-vect vector-sub)
+
+; Transforming and combining painters
+(define (transform-painter painter origin corner1 corner2)
+  (lambda (frame)
+    (let ((m (frame-coord-map frame)))
+      (let ((new-origin (m origin)))
+        (painter (make-frame
+                  new-origin
+                  (sub-vect (m corner1) new-origin)
+                  (sub-vect (m corner2) new-origin)))))))
+
+(define (flip-horiz painter)
+  (transform-painter painter
+                     (make-vect 1.0 0.0) ; new origin
+                     (make-vect 0.0 0.0) ; new end of edge1
+                     (make-vect 1.0 1.0))) ; new end of edge2
+
+(define (rotate90 painter)
+  (transform-painter painter
+                     (make-vect 1.0 0.0) ; new origin
+                     (make-vect 1.0 1.0) ; new end of edge1
+                     (make-vect 0.0 0.0))) ; new end of edge2
+
+(define (rotate180 painter)
+  (transform-painter painter
+                     (make-vect 0.0 1.0) ; new origin
+                     (make-vect 1.0 1.0) ; new end of edge1
+                     (make-vect 0.0 0.0))) ; new end of edge2
+
+(define (rotate270 painter)
+  (transform-painter painter
+                     (make-vect 0.0 1.0) ; new origin
+                     (make-vect 0.0 0.0) ; new end of edge1
+                     (make-vect 1.0 1.0))) ; new end of edge2
+
+(paint einstein)
+(paint (flip-horiz einstein))
+(paint (rotate90 einstein))
+(paint (rotate180 einstein))
+(paint (rotate270 einstein))
+```
+> 效果如下图所示，为了跟水平翻转对比，特意把原图加上了：
+
+![Alt text](<Images/exer 2.50-origin.png>)
+
+![Alt text](<Images/exer 2.50-flip-horiz.png>)
+
+![Alt text](<Images/exer 2.50-rotate90.png>)
+
+![Alt text](<Images/exer 2.50-rotate180.png>)
+
+![Alt text](<Images/exer 2.50-rotate270.png>)
