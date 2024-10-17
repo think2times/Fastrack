@@ -39,3 +39,8 @@ or left-to-right. I'm eager to explore more about this topic and deenpen my unde
 ### 16th
 > Today I watched tv series known as <Yi Tian Tu Long Ji> on Bilibili live, but the up stopped the live after 30 past 21 o'clock. I wanted to watch the tv, so I started to live, and he report me with the reason 'Right Invasion'. That is rediculous because he doesn't have the right too!
 > AI revised edition: Today, I was watching the TV series Yi Tian Tu Long Ji on Bilibili Live, but the uploader stopped the stream after 9:30 PM. I still wanted to keep watching, so I started my own live stream of the show. However, the original uploader reported me for "copyright infringement." This is ridiculous because he doesn’t have the rights to the content either!
+
+### 17th
+> I have reported to Bilibili about a uploader's "copyright infringement" problem, but they said he had got the Bilibili's authoration to live the TV series Yi Tian Tu Long Ji, so they wouldn't 
+ban his live room. I'm very angry about this, and I will report this problem to Tencent Video who has the copyright of Yi Tian Tu Long Ji.
+> AI revised edition: I reported an uploader on Bilibili for copyright infringement regarding the TV series Yi Tian Tu Long Ji, but they responded that the uploader has authorization from Bilibili to stream it, so they will not ban his live room. I’m very frustrated by this and plan to report the issue to Tencent Video, which holds the copyright for Yi Tian Tu Long Ji.
