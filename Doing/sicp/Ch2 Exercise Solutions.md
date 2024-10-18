@@ -1724,7 +1724,7 @@ $(transpose\ m)\ returns\ the\ matrix\ \boldsymbol n, where\ n_{ij} = m_{ji}.$
 
 ![Alt text](<images/exer 2.44-corner-split-2.png>)
 
-> 不过这是全新的内容，我觉得最好先理解 $below$ 和 $beside$ 的作用，其实就是字面意思，$beside$ 是把2个图形左右排列，第一个图形在左边；$below$ 是把2个图形上下排列，但是要注意它是把第二个图形放在上面，如下图所示：
+> 不过这是全新的内容，我觉得最好先理解 $below$ 和 $beside$ 的作用，其实就是字面意思，$beside$ 是把2个图形左右排列，第一个图形在左边; $below$ 是把2个图形上下排列，但是要注意它是把第二个图形放在上面，如下图所示：
 ```
 (define wave einstein)
 
@@ -2077,3 +2077,98 @@ a-segment
 ![Alt text](<Images/exer 2.50-rotate180.png>)
 
 ![Alt text](<Images/exer 2.50-rotate270.png>)
+
+###  Exercise2.51
+> Define the below operation for painters. below takes two painters as arguments. The resulting painter, given a frame, draws with the first painter in the bottom of the frame
+ and with the second painter in the top. Define below in two different ways—first by writing a procedure that is analogous to the beside procedure given above, and again
+ in terms of beside and suitable rotation operations (from Exercise 2.50).
+---
+> 这道题目难度不大，理解了 2.50 那张图后，再仿照 beside 的代码，只要把3个坐标的位置调整一下就可以了; 至于利用 beside 和旋转来实现 below，就更简单了，先把2幅图向右旋转90°，然后 beside 排到一起，
+最后再把排到一起的图形向左旋转90°即可。
+```
+#lang racket
+
+
+(require (planet "sicp.ss" ("soegaard" "sicp.plt" 2 1)))
+
+
+(define sub-vect vector-sub)
+
+; Transforming and combining painters
+(define (transform-painter painter origin corner1 corner2)
+  (lambda (frame)
+    (let ((m (frame-coord-map frame)))
+      (let ((new-origin (m origin)))
+        (painter (make-frame
+                  new-origin
+                  (sub-vect (m corner1) new-origin)
+                  (sub-vect (m corner2) new-origin)))))))
+
+(define (beside painter1 painter2)
+  (let ((split-point (make-vect 0.5 0.0)))
+    (let ((paint-left
+           (transform-painter
+            painter1
+            (make-vect 0.0 0.0)
+            split-point
+            (make-vect 0.0 1.0)))
+          (paint-right
+           (transform-painter
+            painter2
+            split-point
+            (make-vect 1.0 0.0)
+            (make-vect 0.5 1.0))))
+      (lambda (frame)
+        (paint-left frame)
+        (paint-right frame)))))
+
+; analogous to beside
+(define (below painter1 painter2)
+  (let ((split-point (make-vect 0.0 0.5)))
+    (let ((paint-up
+           (transform-painter
+            painter2
+            split-point
+            (make-vect 1.0 0.5)
+            (make-vect 0.0 1.0)))
+          (paint-low
+           (transform-painter
+            painter1
+            (make-vect 0.0 0.0)
+            (make-vect 1.0 0.0)
+            split-point)))
+      (lambda (frame)
+        (paint-up frame)
+        (paint-low frame)))))
+
+(paint (below einstein (beside einstein einstein)))
+
+(define (rotate90 painter)
+  (transform-painter painter
+                     (make-vect 1.0 0.0) ; new origin
+                     (make-vect 1.0 1.0) ; new end of edge1
+                     (make-vect 0.0 0.0))) ; new end of edge2
+
+(define (rotate180 painter)
+  (transform-painter painter
+                     (make-vect 0.0 1.0) ; new origin
+                     (make-vect 1.0 1.0) ; new end of edge1
+                     (make-vect 0.0 0.0))) ; new end of edge2
+
+(define (rotate270 painter)
+  (transform-painter painter
+                     (make-vect 0.0 1.0) ; new origin
+                     (make-vect 0.0 0.0) ; new end of edge1
+                     (make-vect 1.0 1.0))) ; new end of edge2
+
+; in terms of beside and suittable rotation
+(define (below- painter1 painter2)
+  (rotate90 (beside (rotate270 painter1) (rotate270 painter2))))
+
+(paint (below- einstein (beside einstein einstein)))
+```
+> 结果如下所示：
+
+![Alt text](<Images/exer 2.51-beside.png>)
+
+![Alt text](<Images/exer 2.51-beside.png>)
