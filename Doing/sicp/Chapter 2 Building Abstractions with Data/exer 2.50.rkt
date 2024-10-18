@@ -39,6 +39,7 @@
                      (make-vect 0.0 0.0) ; new end of edge1
                      (make-vect 1.0 1.0))) ; new end of edge2
 
+
 (paint einstein)
 (paint (flip-horiz einstein))
 (paint (rotate90 einstein))
