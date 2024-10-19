@@ -44,3 +44,7 @@ or left-to-right. I'm eager to explore more about this topic and deenpen my unde
 > I have reported to Bilibili about a uploader's "copyright infringement" problem, but they said he had got the Bilibili's authoration to live the TV series Yi Tian Tu Long Ji, so they wouldn't 
 ban his live room. I'm very angry about this, and I will report this problem to Tencent Video who has the copyright of Yi Tian Tu Long Ji.
 > AI revised edition: I reported an uploader on Bilibili for copyright infringement regarding the TV series Yi Tian Tu Long Ji, but they responded that the uploader has authorization from Bilibili to stream it, so they will not ban his live room. I’m very frustrated by this and plan to report the issue to Tencent Video, which holds the copyright for Yi Tian Tu Long Ji.
+
+### 18th
+> I watched many interesting videos today. I'm very happy now!
+> AI revised edition: I watched many interesting videos today, and I'm feeling very happy now!
