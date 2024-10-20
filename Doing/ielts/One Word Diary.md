@@ -48,3 +48,12 @@ ban his live room. I'm very angry about this, and I will report this problem to 
 ### 18th
 > I watched many interesting videos today. I'm very happy now!
 > AI revised edition: I watched many interesting videos today, and I'm feeling very happy now!
+
+### 19th
+> There is nothing special today. The only one may be that I tutored two students.
+> AI revised edition: There's nothing particularly special today, except perphaps that I tutored two students.
+
+
+### 20th
+> My parents prepared many delicious food for my 33th years' birthday, I'm feeling particularly happy!
+> AI revised edition: My parents prepared many delicious dishes for my 33rd birthday, and I'm feeling particularly happy!

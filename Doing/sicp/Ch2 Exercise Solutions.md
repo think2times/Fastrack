@@ -2283,3 +2283,8 @@ a-segment
 > 执行结果如下图所示：
 
 ![alt text](<Images/exer 2.52.png>)
+
+
+# 2.3 Symbolic Data
+
+## 2.3.1 Quotation
