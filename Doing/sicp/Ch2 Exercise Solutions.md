@@ -2288,3 +2288,62 @@ a-segment
 # 2.3 Symbolic Data
 
 ## 2.3.1 Quotation
+
+###  Exercise2.53
+> What would the interpreter print in response to evaluating each of the following expressions?
+```
+(list 'a 'b 'c)
+(list (list 'george))
+(cdr '((x1 x2) (y1 y2)))
+(cadr '((x1 x2) (y1 y2)))
+(pair? (car '(a short list)))
+(memq 'red '((red shoes) (blue socks)))
+(memq 'red '(red shoes blue socks))
+```
+---
+> 结果如下：
+```
+'(a b c)
+'((george))
+'((y1 y2))
+'(y1 y2)
+#f
+#f
+'(red shoes blue socks)
+```
+
+### Exercise 2.54
+> Two lists are said to be equal? if they contain equal elements arranged in the same order. For example,
+
+`(equal? '(this is a list) '(this is a list))`
+> is true, but
+
+`(equal? '(this is a list) '(this (is a) list))`
+>  is false. To be more precise, we can define equal? recursively in terms of the basic eq? equality of symbols by saying that a and b are equal? if they are both symbols and 
+the symbols are eq?, or if they are both lists such that `(car a)` is equal? to `(car b)` and `(cdr a)` is equal? to `(cdr b)`. Using this idea, implement equal? as a procedure.
+---
+> 这道题挺简单的，依次比较就行了。
+```
+(define (equal? a b)
+  (cond ((and (null? a) (null? b)) true)
+        ((or (null? a) (null? b)) false)
+        ((eq? (car a) (car b)) (equal? (cdr a) (cdr b)))
+        (else false)))
+
+
+(equal? '(this is a list) '(this is a list))
+(equal? '(this is a list) '(this (is a) list))
+
+; 执行结果
+#t
+#f
+```
+
+### Exercise 2.55
+> Eva Lu Ator types to the interpreter the expression
+
+`(car ''abracadabra)`
+> To her surprise, the interpreter prints back quote. Explain.
+---
+> 因为 `(car ''abracadabra)` 被解释器理解为 `(car (quote (quote abracadabra)))`，第一个 quote 引用了后面的内容 `(quote abracadabra)`，
+这实际上是一个有2个元素的 list，对这个list 调用 car 就取出了第一个元素 quote。也就是第二个 quote 没有被当作函数使用，而是被当作字符串了。
