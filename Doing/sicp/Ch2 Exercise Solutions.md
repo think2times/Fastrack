@@ -2347,3 +2347,56 @@ the symbols are eq?, or if they are both lists such that `(car a)` is equal? to 
 ---
 > 因为 `(car ''abracadabra)` 被解释器理解为 `(car (quote (quote abracadabra)))`，第一个 quote 引用了后面的内容 `(quote abracadabra)`，
 这实际上是一个有2个元素的 list，对这个list 调用 car 就取出了第一个元素 quote。也就是第二个 quote 没有被当作函数使用，而是被当作字符串了。
+
+### Exercise 2.56
+> Show how to extend the basic differentiator to handle more kinds of expressions. For instance, implement the differentiation rule
+
+$\frac{d(u^n)}{dx}=n u^{n-1} \frac{du}{dx}$
+> by adding a new clause to the deriv program and defining appropriate procedures exponentiation?, base, exponent, and make-exponentiation.
+(You may use the symbol ** to denote exponentiation.) Build in the rules that anything raised to the power 0 is 1 and anything raised to the power 1 is the thing itself.
+---
+> 这道题难度不大，先仿照 make-sum, make-product 写出 make-exponentiation 函数，剩下的部分就很简单了。
+```
+(define (make-exponentiation base exponent)
+  (cond ((=number? base 0) 0)
+        ((=number? base 1) 1)
+        ((and (number? base) (=number? exponent 0)) 1)
+        ((and (number? base) (=number? exponent 1)) base)
+        ((and (number? base) (number? exponent)) (* base (make-exponentiation base (- exponent 1))))
+        (else (list '** base exponent))))
+
+(define (exponentiation? x) (and (pair? x) (eq? (car x) '**)))
+
+(define (base e) (cadr e))
+
+(define (exponent e) (caddr e))
+
+(define (deriv exp var)
+  (cond ((number? exp) 0)
+        ((variable? exp) (if (same-variable? exp var) 1 0))
+        ((exponentiation? exp)
+         (let ((base (base exp))
+               (n (exponent exp)))
+           (if (same-variable? base var)
+               (make-product n
+                             (make-exponentiation base (- n 1)))
+               0)))
+        ((sum? exp) (make-sum (deriv (addend exp) var)
+                              (deriv (augend exp) var)))
+        ((product? exp)
+         (make-sum
+          (make-product (multiplier exp)
+                        (deriv (multiplicand exp) var))
+          (make-product (deriv (multiplier exp) var)
+                        (multiplicand exp))))
+        (else
+         (error "unknown expression type: DERIV" exp))))
+
+
+(deriv '(** x 3) 'x)
+(deriv '(** x 3) 'y)
+
+; 执行结果
+'(* 3 (** x 2))
+0
+```
