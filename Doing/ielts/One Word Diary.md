@@ -53,7 +53,14 @@ ban his live room. I'm very angry about this, and I will report this problem to 
 > There is nothing special today. The only one may be that I tutored two students.
 > AI revised edition: There's nothing particularly special today, except perphaps that I tutored two students.
 
-
 ### 20th
 > My parents prepared many delicious food for my 33th years' birthday, I'm feeling particularly happy!
 > AI revised edition: My parents prepared many delicious dishes for my 33rd birthday, and I'm feeling particularly happy!
+
+### 21th
+> Today I didn't do many work, and I felt relaxed.
+> AI revised edition: Today, I didn't have much work to do, and I felt quite relaxed.
+
+### 22th
+> Today is my true birthday. I'm 33 years old now, I hope I can find a girlfriend this year.
+> AI revised edition: Today is my actual birthday. I am now 33 years old now, and I hope to find a girlfriend this year.
