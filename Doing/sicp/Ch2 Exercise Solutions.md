@@ -2400,3 +2400,34 @@ $\frac{d(u^n)}{dx}=n u^{n-1} \frac{du}{dx}$
 '(* 3 (** x 2))
 0
 ```
+
+### Exercise 2.57
+> Extend the differentiation program to handle sums and products of arbitrary numbers of (two or more) terms. Then the last example above could be expressed as
+
+`(deriv '(* x y (+ x 3)) 'x)`
+> Try to do this by changing only the representation for sums and products, without changing the deriv procedure at all. For example, the addend of a sum would be the first term,
+ and the augend would be the sum of the rest of the terms.
+---
+> 这道题挺难的，我理解了题目提示的方法，就是把剩下的项也表示为和或者乘的形式，但是我不明白该怎么实现，递归调用并不能达到要求，最后上网搜了一下才知道怎么做。
+```
+(define (augend s)
+  (let ((last (cddr s)))
+    (if (null? (cdr last))
+        (car last)
+        (cons '+ last))))
+
+(define (multiplicand p)
+    (let ((last (cddr p)))
+    (if (null? (cdr last))
+        (car last)
+        (cons '* last))))
+
+(deriv '(* x y (+ x 3)) 'x)
+(deriv '(+ x (* 3 (+ x (+ y 2)))) 'x)
+(deriv '(+ x (* 3 (+ x y 2))) 'x)
+
+; 执行结果
+'(+ (* x y) (* y (+ x 3)))
+4
+4
+```
