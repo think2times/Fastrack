@@ -2431,3 +2431,56 @@ $\frac{d(u^n)}{dx}=n u^{n-1} \frac{du}{dx}$
 4
 4
 ```
+
+###  Exercise 2.58
+> Suppose we want to modify the differentiation program so that it works with ordinary mathematical notation, in which + and * are infix rather than prefix operators. Since the differentiation program is defined 
+in terms of abstract data, we ca modify it to work with different representations of expressions solely by changing the predicates, selectors, and constructors that define the representation of the algebraic 
+expressions on which the differentiator is to operate.
+>> a. Show how to do this in order to differentiate algebraic expressions presented in infix form, such as (x + (3 * (x + (y + 2)))). To simplify the task, assume that + and * always take two arguments and that 
+expressions are fully parenthesized.
+>> b. The problem becomes substantially harder if we allow standard algebraic notation, such as (x + 3 * (x + y + 2)), which drops unnecessary parentheses and assumes that multiplication is done before addition.
+ Can you design appropriate predicates, selectors, and constructors for this notation such that our derivative program still works?
+---
+> 这道题乍一看很棘手，但是仔细一想其实挺简单的，只要把构造函数和选择器里 + 和 * 的位置改一下就行了，还有原来的前缀表示法要多加一个 + 或 *，现在也可以直接省略掉了。
+```
+(define (make-sum a1 a2)
+  (cond ((=number? a1 0) a2)
+        ((=number? a2 0) a1)
+        ((and (number? a1) (number? a2)) (+ a1 a2))
+        (else (list a1 '+ a2))))
+
+(define (sum? x) (and (pair? x) (eq? (cadr x) '+)))
+
+(define (addend s) (car s))
+
+(define (augend s)
+  (let ((last (cddr s)))
+    (if (null? (cdr last))
+        (car last)
+        last)))
+
+(define (make-product m1 m2)
+  (cond ((or (=number? m1 0) (=number? m2 0)) 0)
+        ((=number? m1 1) m2)
+        ((=number? m2 1) m1)
+        ((and (number? m1) (number? m2)) (* m1 m2))
+        (else (list m1 '* m2))))
+
+(define (product? x) (and (pair? x) (eq? (cadr x) '*)))
+
+(define (multiplier p) (car p))
+
+(define (multiplicand p)
+    (let ((last (cddr p)))
+    (if (null? (cdr last))
+        (car last)
+        last)))
+
+
+(deriv '(x + (3 * (x + (y + 2)))) 'x)
+(deriv '(x + 3 * (x + y + 2)) 'x)
+
+; 执行结果
+4
+4
+```
