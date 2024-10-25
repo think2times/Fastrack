@@ -2484,3 +2484,24 @@ expressions are fully parenthesized.
 4
 4
 ```
+
+### Exercise 2.59
+> Implement the union-set operation for the unordered-list representation of sets.
+---
+> 这道题很简单，仿照 intersection-set 稍作修改就可以实现了
+```
+(define (union-set set1 set2)
+  (cond ((null? set1) set2)
+        ((element-of-set? (car set1) set2)
+         (union-set (cdr set1) set2))
+        (else (cons (car set1) (union-set (cdr set1) set2)))))
+
+
+(define set1 (list 1 3 5 'a 'b 'c))
+(define set2 (list 2 4 6 'a 'd 'c))
+
+(union-set set1 set2)
+
+; 执行结果 
+'(1 3 5 b 2 4 6 a d c)
+```
