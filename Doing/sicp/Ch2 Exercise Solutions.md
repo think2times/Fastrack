@@ -2505,3 +2505,39 @@ expressions are fully parenthesized.
 ; 执行结果 
 '(1 3 5 b 2 4 6 a d c)
 ```
+
+### Exercise2.60
+> We specified that a set would be represented as a list with no duplicates. Now suppose we allow duplicates. For instance, the set {1, 2, 3} could be represented as the list (2 3 2 1 3 2 2). Design procedures element of-set?, adjoin-set, union-set, and intersection-set that operate on this representation. How does the efficiency of each compare with the corresponding procedure for the non-duplicate representation? Are there applications for which you would use this representation in preference to the nonduplicate one?
+---
+> 这道题目我有点没理解，如果允许重复的话，交集该怎么处理？所以最后交集我没有改变，element-of-set? 也没有修改。
+```
+(define (element-of-set? x set)
+  (cond ((null? set) false)
+        ((equal? x (car set)) true)
+        (else (element-of-set? x (cdr set)))))
+
+(define (adjoin-set x set)
+  (cons x set))
+
+(define (union-set set1 set2)
+  (append set1 set2))
+
+(define (intersection-set set1 set2)
+  (cond ((or (null? set1) (null? set2)) '())
+        ((element-of-set? (car set1) set2)
+         (cons (car set1) (intersection-set (cdr set1) set2)))
+        (else (intersection-set (cdr set1) set2))))
+
+
+(define set1 (list 1 3 5 'a 'b 'c))
+(define set2 (list 2 4 6 'a 'd 'c))
+
+(adjoin-set 'a set1)
+(union-set set1 set2)
+(intersection-set set1 set2)
+
+; 执行结果
+'{a 1 3 5 a b c}
+'{1 3 5 a b c 2 4 6 a d c}
+'{a c}
+```
