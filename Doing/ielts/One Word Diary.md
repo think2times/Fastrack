@@ -70,3 +70,9 @@ ban his live room. I'm very angry about this, and I will report this problem to 
 
 ### 24th
 > It's hard to do one thing everyday, even it's easy!
+
+### 25th
+> I got 735 RMB for food subsidy. I'm feeling particularly good because they give me cash not transferring.
+
+### 27th
+> Today I scolded my student when she couldn't remember some theory, that we have learned many times. But I regret now, I should tell her in a better way.
