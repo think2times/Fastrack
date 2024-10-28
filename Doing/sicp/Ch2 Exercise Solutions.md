@@ -2541,3 +2541,47 @@ expressions are fully parenthesized.
 '{1 3 5 a b c 2 4 6 a d c}
 '{a c}
 ```
+
+###  Exercise 2.61
+> Give an implementation of adjoin-set using the ordered representation. By analogy with element-of-set? show how to take advantage of the ordering to produce a procedure that requires
+ on the average about half as many steps as with the unordered representation.
+---
+> 这道题实现起来倒是不难，每次比较一下集合第一个元素和要插入的元素的大小，如果要插入的数小于等于集合第一个元素，就直接用 cons 把这个新元素和集合连接起来; 如果要插入的元素大于集合第一个元素，
+就把集合第一个元素和要插入元素和集合其他项连接的结果连接起来就行了。最差的情况就是，要插入的元素比集合最大的元素还要大，这样要遍历整个集合，此时和原来的实现没有区别; 在其他情况，平均应该可以节省一半的步骤。
+```
+(define (adjoin-set x set)
+  (let ((first (car set)))
+    (cond ((null? set) (list x))
+          ((<= x first) (cons x set))
+          (else (cons first (adjoin-set x (cdr set)))))))
+      
+
+(define set1 (list 1 3 5 7 9))
+(adjoin-set 6 set1)
+
+; 执行结果 
+'(1 3 5 6 7 9)
+```
+
+### Exercise 2.62
+> Give a (n) implementation of union-set for sets represented as ordered lists.
+---
+> 这道题难度也不大，思路是依次从两个集合中取第一个元素，比较他们的大小，把小的那个和剩下所有元素连接的结果连接起来。由于两个集合中每个元素都只需要取出一次，所以时间复杂度应该是 O(n)。
+```
+(define (union-set set1 set2)
+  (cond ((null? set1) set2)
+        ((null? set2) set1)
+        ((let ((s1 (car set1))
+               (s2 (car set2)))
+           (if (<= s1 s2)
+               (cons s1 (union-set (cdr set1) set2))
+               (cons s2 (union-set set1 (cdr set2))))))))
+
+(define set1 (list 1 3 5 7 9))
+(define set2 (list 2 4 6 8 10))
+
+(union-set set1 set2)
+
+; 结果如下所示
+'(1 2 3 4 5 6 7 8 9 10)
+```
