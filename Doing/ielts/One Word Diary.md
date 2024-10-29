@@ -76,3 +76,6 @@ ban his live room. I'm very angry about this, and I will report this problem to 
 
 ### 27th
 > Today I scolded my student when she couldn't remember some theory, that we have learned many times. But I regret now, I should tell her in a better way.
+
+### 28th
+> I bought four steamed buns and a bag of hot of mustard tuber after work, but I don't eat that for dinner.
