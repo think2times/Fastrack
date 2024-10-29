@@ -2585,3 +2585,64 @@ expressions are fully parenthesized.
 ; 结果如下所示
 '(1 2 3 4 5 6 7 8 9 10)
 ```
+
+###  Exercise 2.63
+> Each of the following two procedures converts a binary tree to a list.
+```
+(define (tree->list-1 tree)
+  (if (null? tree)
+      '()
+      (append (tree->list-1 (left-branch tree))
+              (cons (entry tree)
+                    (tree->list-1
+                     (right-branch tree))))))
+
+
+(define (tree->list-2 tree)
+  (define (copy-to-list tree result-list)
+    (if (null? tree)
+        result-list
+        (copy-to-list (left-branch tree)
+                      (cons (entry tree)
+                            (copy-to-list
+                             (right-branch tree)
+                             result-list)))))
+  (copy-to-list tree '()))
+```
+>> a. Do the two procedures produce the same result for every tree? If not, how do the results differ? What lists do the two procedures produce for the trees in Figure 2.16?
+>> b. Do the two procedures have the same order of growth in the number of steps required to convert a balanced tree withn elements to a list? If not, which one grows more slowly?
+---
+> a. 对于 图2.16 的三种形式，这两个函数执行的结果是相同的，如下所示：
+```
+(define t1 (make-tree 3 (make-tree 1 '() '()) (make-tree 5 '() '())))
+(define t2 (make-tree 9 '() (make-tree 11 '() '())))
+(define test1 (make-tree 7 t1 t2))
+
+(tree->list-1 test1)
+(tree->list-2 test1)
+
+
+(define t3 (make-tree 3 (make-tree 1 '() '()) '()))
+(define t4 (make-tree 9 (make-tree 7 '() '()) (make-tree 11 '() '())))
+(define test2 (make-tree 5 t3 t4))
+
+(tree->list-1 test2)
+(tree->list-2 test2)
+
+
+(define t5 (make-tree 1 '() '()))
+(define t6 (make-tree 7 (make-tree 5 '() '()) (make-tree 9 '() (make-tree 11 '() '()))))
+(define test3 (make-tree 3 t5 t6))
+
+(tree->list-1 test3)
+(tree->list-2 test3)
+
+; 结果如下
+'(1 3 5 7 9 11)
+'(1 3 5 7 9 11)
+'(1 3 5 7 9 11)
+'(1 3 5 7 9 11)
+'(1 3 5 7 9 11)
+'(1 3 5 7 9 11)
+```
+> b. 对于 tree->list-1，因为 append 需要花费线性时间，所以T(n) = 2 * T(n/2) + O(n/2)，时间复杂度为 O(n * log n); 对于 tree->list-2，T(n) = 2*T(n/2) + O(1)，时间复杂度为 O(n)，第二个增长的慢一些。
