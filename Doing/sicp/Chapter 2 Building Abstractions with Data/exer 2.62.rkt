@@ -6,7 +6,7 @@
         ((null? set2) set1)
         ((let ((s1 (car set1))
                (s2 (car set2)))
-           (if (<= s1 s2)
+           (if (< s1 s2)
                (cons s1 (union-set (cdr set1) set2))
                (cons s2 (union-set set1 (cdr set2))))))))
 

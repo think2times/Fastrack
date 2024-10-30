@@ -2646,3 +2646,83 @@ expressions are fully parenthesized.
 '(1 3 5 7 9 11)
 ```
 > b. 对于 tree->list-1，因为 append 需要花费线性时间，所以T(n) = 2 * T(n/2) + O(n/2)，时间复杂度为 O(n * log n); 对于 tree->list-2，T(n) = 2*T(n/2) + O(1)，时间复杂度为 O(n)，第二个增长的慢一些。
+
+### Exercise 2.64
+> The following procedure list->tree converts an ordered list to a balanced binary tree. The helper procedure partial-tree takes as arguments an integer n and list of at least n elements 
+and constructs a balanced tree containing the firstn elements of the list. The result returned by partial-tree is a pair (formed with cons) whose car is the constructed tree and 
+whose cdr is the list of elements not included in the tree.
+```
+(define (list->tree elements)
+  (car (partial-tree elements (length elements))))
+(define (partial-tree elts n)
+  (if (= n 0)
+      (cons '() elts)
+      (let ((left-size (quotient (- n 1) 2)))
+        (let ((left-result
+               (partial-tree elts left-size)))
+          (let ((left-tree (car left-result))
+                (non-left-elts (cdr left-result))
+                (right-size (- n (+ left-size 1))))
+            (let ((this-entry (car non-left-elts))
+                  (right-result
+                   (partial-tree
+                    (cdr non-left-elts)
+                    right-size)))
+              (let ((right-tree (car right-result))
+                    (remaining-elts
+                     (cdr right-result)))
+                (cons (make-tree this-entry
+                                 left-tree
+                                 right-tree)
+                      remaining-elts))))))))
+```
+>> a. Write a short paragraph explaining as clearly as you can how partial-tree works. Draw the tree produced by list->tree for the list (1 3 5 7 9 11).
+>> b. What is the order of growth in the number of steps required by list->tree to convert a list ofn elements?
+---
+> a. 这个函数首先取前 (n-1)/2 个元素作为树的左子树，取剩下的元素中第一个作为树的根，然后把剩下的元素作为右子树，对于每一个子树也采用同样的方法，最后把左子树、根和右子树拼起来作为返回结果的第一个元素。
+结果如下所示：
+
+![alt text](<Images/exer 2.64-a.png>)
+
+> b. partial-tree 每一次都把列表分成2个大概是 n/2 的新列表和中间的一个元素，然后再把他们拼成一颗树。所以 T(n) = 2T(n/2) + O(1)，根据 Master theorem，a=2, b=2, f(n) = O(1) = O(n^0), 即 c=0.
+则 T(n) = O(n)，具体计算方法参考这篇[维基百科](https://en.wikipedia.org/wiki/Master_theorem_(analysis_of_algorithms)#Generic_form)。
+
+### Exercise 2.65
+> Use the results of Exercise 2.63 and Exercise 2.64 to give (n) implementations of union-set and intersection-set for sets implemented as (balanced) binary trees.
+---
+> 这道题难度还是挺大的，一开始我不知道怎么直接对2颗树求交集和并集，而且要在 O(n) 的时间复杂度内。上网看了一下别人的答案，发现他们都是先用 2.63 的 tree->list-2 把树转为列表，然后再求交集并集，最后再用 2.64 的 list->tree 把结果转成树结构。
+这样我就明白怎么做了，尤其是求并集可以直接参考 2.62 的答案，但是稍作修改，让它能去除重复元素，求交集虽然没有现成的，但是参考并集的方法也不难。
+```
+(define (union-tree tree1 tree2) 
+  (define (union-set set1 set2) 
+    (cond ((null? set2) set1) 
+          ((null? set1) set2)
+          (else (let ((s1 (car set1))
+                      (s2 (car set2)))
+                  (cond ((= s1 s2) (cons s1 (union-set (cdr set1) (cdr set2))))
+                        ((< s1 s2) (cons s1 (union-set (cdr set1) set2)))
+                        (else (cons s2 (union-set set1 (cdr set2)))))))))
+  (list->tree (union-set (tree->list-2 tree1) (tree->list-2 tree2))))
+  
+(define (intersection-tree tree1 tree2) 
+  (define (intersection-set set1 set2) 
+    (if (or (null? set1) (null? set2))
+        '()
+        (let ((s1 (car set1))
+              (s2 (car set2)))
+          (cond ((= s1 s2) (cons s1 (intersection-set (cdr set1) (cdr set2))))
+                ((< s1 s2) (intersection-set (cdr set1) set2))
+                (else (intersection-set set1 (cdr set2)))))))
+  (list->tree (intersection-set (tree->list-2 tree1) (tree->list-2 tree2)))) 
+
+
+(define tree1 (list->tree (list 1 3 5 7 9 11)))
+(define tree2 (list->tree (list 2 4 6 7 8 9 10)))
+
+(intersection-tree tree1 tree2)
+(union-tree tree1 tree2)
+
+; 结果如下
+'(7 () (9 () ()))
+'(6 (3 (1 () (2 () ())) (4 () (5 () ()))) (9 (7 () (8 () ())) (10 () (11 () ()))))
+```
