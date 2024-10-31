@@ -2726,3 +2726,28 @@ whose cdr is the list of elements not included in the tree.
 '(7 () (9 () ()))
 '(6 (3 (1 () (2 () ())) (4 () (5 () ()))) (9 (7 () (8 () ())) (10 () (11 () ()))))
 ```
+
+### Exercise 2.66
+> Implement the lookup procedure for the case where the set of records is structured as a binary tree, ordered by the numerical values of the keys.
+---
+> 这道题还是挺简单的，由于是有序的二叉树，所以可以先比较根与要查找的数字的大小，如果相等就查到了；如果根小于要查找的数，则递归调用判断右子树中是否包含这个数; 如果根大于要查找的数，则去左子树去查即可。
+```
+(define (lookup given-key set-of-records)
+  (if (null? set-of-records)
+      false
+      (let ((root (entry set-of-records)))
+        (cond ((= given-key root) true)
+              ((< given-key root) (lookup given-key (left-branch set-of-records)))
+              (else (lookup given-key (right-branch set-of-records)))))))
+
+
+(define test (list->tree (list 1 2 3 4 5 6 7 8 9)))
+(lookup 7 test)
+(lookup 10 test)
+
+; 结果如下
+#t
+#f
+```
+
+## 2.3.4 Example: Huffman Encoding Trees
