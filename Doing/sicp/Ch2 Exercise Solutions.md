@@ -2751,3 +2751,33 @@ whose cdr is the list of elements not included in the tree.
 ```
 
 ## 2.3.4 Example: Huffman Encoding Trees
+
+### Exercise 2.67
+> Define an encoding tree and a sample message:
+```
+(define (make-leaf-set pairs)
+  (if (null? pairs)
+      '()
+      (let ((pair (car pairs)))
+        (adjoin-set (make-leaf (car pair)      ; symbol
+                               (cadr pair))    ; frequency
+                    (make-leaf-set (cdr pairs))))))
+
+(define sample-tree
+  (make-code-tree (make-leaf 'A 4)
+                  (make-code-tree
+                   (make-leaf 'B 2)
+                   (make-code-tree
+                    (make-leaf 'D 1)
+                    (make-leaf 'C 1)))))
+
+(define sample-message '(0 1 1 0 0 1 0 1 0 1 1 1 0))
+```
+> Use the decode procedure to decode the message, and give the result.
+---
+> 这道题纯粹是为了展示前面定义的 Huffman 算法的作用，结果如下：
+```
+> (decode sample-message sample-tree)
+'(A D A B B C A)(decode sample-message sample-tree)
+```
+
