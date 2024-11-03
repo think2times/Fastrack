@@ -2781,3 +2781,56 @@ whose cdr is the list of elements not included in the tree.
 '(A D A B B C A)(decode sample-message sample-tree)
 ```
 
+### Exercise 2.68
+> The encode procedure takes as arguments a message and a tree and produces the list of bits that gives the encoded message.
+```
+(define (encode message tree)
+  (if (null? message)
+      '()
+      (append (encode-symbol (car message) tree)
+              (encode (cdr message) tree))))
+```
+> encode-symbol is a procedure, which you must write, that returns the list of bits that encodes a given symbol according to a given tree. You should design encode-symbol 
+so that it signals an error if the symbol is not in the tree at all. Test your procedure by encoding the result you obtained in Exercise 2.67 with the sample tree and seeing 
+whether it is the same as the original sample message.
+---
+> 这道题对我来说难度挺大的，我一开始就被如果符号就是树的根怎么表示难住了，因为书上讲的好像都是左边是0，右边是1，却没有关于根上字符的表示，我也没有想到可以直接用“空”表示。。最后看了别人的答案才终于明白了。
+```
+(define (encode message tree)
+  (if (null? message)
+      '()
+      (append (encode-symbol (car message) tree)
+              (encode (cdr message) tree))))
+
+(define (element-of-set? x set)
+  (cond ((null? set) false)
+        ((equal? x (car set)) true)
+        (else (element-of-set? x (cdr set)))))
+
+(define (encode-symbol symbol tree)
+  (if (leaf? tree)
+      (if (eq? symbol (symbol-leaf tree))
+          '()
+          (error "bad symbol: The symbol is not in the tree at all!" symbol))
+      (let ((left (left-branch tree)))
+        (if (element-of-set? symbol left)
+            (cons 0 (encode-symbol symbol left))
+            (cons 1 (encode-symbol symbol (right-branch tree)))))))
+
+
+(define sample-tree
+  (make-code-tree (make-leaf 'A 4)
+                  (make-code-tree
+                   (make-leaf 'B 2)
+                   (make-code-tree
+                    (make-leaf 'D 1)
+                    (make-leaf 'C 1)))))
+
+(define sample-message '(A D A B B C A))
+
+; 期望答案是 '(0 1 1 0 0 1 0 1 0 1 1 1 0)
+(encode sample-message sample-tree)
+
+; 结果如下
+'(0 1 1 0 0 1 0 1 0 1 1 1 0)
+```
