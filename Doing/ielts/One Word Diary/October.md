@@ -1,7 +1,3 @@
-# 2024
-
-## October
-
 ### 8th
 > Today, I eat hot pot in ZhuGuangYu which is very delicious with two friends whose name are Yuefeng Tian and Shuxin Qiu.
 > AI revised edition: Today, my two friends, Yuefeng Tian and Shuxin Qiu, and I had a delicious hot pot meal in ZhuGuangYu.
@@ -79,3 +75,10 @@ ban his live room. I'm very angry about this, and I will report this problem to 
 
 ### 28th
 > I bought four steamed buns and a bag of hot of mustard tuber after work, but I don't eat that for dinner.
+
+
+### 29th
+> My mom made some dumplings, and it tasted good!
+
+### 30th
+> I helped two little girls open the door and set the elavator for them, that felt particularly good.
