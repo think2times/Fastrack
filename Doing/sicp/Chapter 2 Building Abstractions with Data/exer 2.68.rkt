@@ -48,7 +48,7 @@
           (error "bad symbol: The symbol is not in the tree at all!" symbol))
       (let ((left (left-branch tree)))
         (if (element-of-set? symbol left)
-            (cons 0 (encode-symbol symbol left))
+            (cons 0 (encode-symbol symbol (symbols left)))
             (cons 1 (encode-symbol symbol (right-branch tree)))))))
 
 
@@ -61,6 +61,7 @@
                     (make-leaf 'C 1)))))
 
 (define sample-message '(A D A B B C A))
+
 
 ; 期望答案是 '(0 1 1 0 0 1 0 1 0 1 1 1 0)
 (encode sample-message sample-tree)
