@@ -2834,3 +2834,82 @@ whether it is the same as the original sample message.
 ; 结果如下
 '(0 1 1 0 0 1 0 1 0 1 1 1 0)
 ```
+
+### Exercise 2.69
+> The following procedure takes as its argument a list of symbol-frequency pairs (where no symbol appears in more than one pair) and generates a Huffman encoding tree according to the Huffman algorithm.
+```
+(define (generate-huffman-tree pairs)
+  (successive-merge (make-leaf-set pairs)))
+```
+> make-leaf-set is the procedure given above that transforms the list of pairs into an ordered set of leaves. successive merge is the procedure you must write, using make-code-tree to successively merge the smallest-weight elements of the set until there is only one element left, which is the desired Huffman tree. (This procedure is slightly tricky, but not really complicated. If you find yourself designing a complex procedure, then you are almost certainly doing something wrong. You can take significant advantage of the fact that we are using an ordered set representation.)
+---
+> 这道题虽然题目说不会很复杂，但是我觉得还是挺难的。首先是要理解 successive-merge 的作用，它是要把一个个叶子按照权重由小到大依次合并成一个树，由于参数已经用 make-leaf-set 进行了排序，所以我们只要从前往后依次把这些“叶子”合并起来就行，每次合并好的树作为一个新的“叶子”与其他叶子一起进行新的合并；这里要注意合并后的树的权重可能会超过排在它之后的叶子，所以要重新对这些“叶子”按权重排序，这里我们可以直接用前面的 adjoin-set 来实现，完整代码如下：
+```
+(define (successive-merge leaf-set)
+  (if (null? leaf-set)
+      '()
+      (let ((first (car leaf-set))
+            (last (cdr leaf-set)))
+        (if (null? last)
+            first
+            (successive-merge (adjoin-set (make-code-tree first (car last))
+                                          (cdr last)))))))
+
+(define pairs1 '((A 4) (B 2) (C 1) (D 1)))
+(define pairs2 '((A 8) (B 3) (C 1) (D 1) (E 1) (F 1) (G 1) (H 1)))
+
+(generate-huffman-tree pairs1)
+(generate-huffman-tree pairs2)
+
+; 结果如下
+'((leaf A 4) ((leaf B 2) ((leaf D 1) (leaf C 1) (D C) 2) (B D C) 4) (A B D C) 8)
+'((leaf A 8)
+  ((((leaf H 1) (leaf G 1) (H G) 2) ((leaf F 1) (leaf E 1) (F E) 2) (H G F E) 4)
+   (((leaf D 1) (leaf C 1) (D C) 2) (leaf B 3) (D C B) 5)
+   (H G F E D C B)
+   9)
+  (A H G F E D C B)
+  17)
+```
+
+### Exercise 2.70
+> The following eight-symbol alphabet with associated relative frequencies was designed to efficiently encode the lyrics of 1950s rock songs. (Note that the “symbols” of an “alphabet” need not be individual letters.) 
+```
+A    2   GET 2   SHA 3   WAH 1
+BOOM 1   JOB 2   NA  16  YIP 9
+```
+> Use generate-huffman-tree (Exercise 2.69) to generate a corresponding Huffmantree and use encode (Exercise 2.68) to encode the following message:
+```
+ Get a job
+ Sha na na na na na na na na
+ Get a job
+ Sha na na na na na na na na
+ Wah yip yip yip yip yip yip yip yip yip
+ Sha boom
+```
+> How many bits are required for the encoding? What is the smallest number of bits that would be needed to encode this song if we used a fixed-length code for the eight-symbol alphabet?
+---
+> 这道题本来应该是非常简单的，只需要调用 2.68 和 2.69 的函数就行，但是我却遇到了好几个麻烦，第一个是大小写问题，我在生成霍夫曼树的时候，用的都是题目中默认的大写字母，但是要翻译的歌词却是既有大写又有小写，所以在 encode-symbol 函数的 `(eq? symbol (symbol-leaf tree))` 这一步就会跳出，我尝试了好几个方法也没找到怎么解决，最后直接把歌词改成全大写了。解决了大小写问题，我又遇到了相同的提示，一步步调试之后终于发现了问题，我练习 2.68 的 encode-symbol 本身就有问题，改完之后终于成功了。最后就是统计了一下长度，如果使用固定长度的编码，那么每个“符号”至少需要3个字符，程序如下所示：
+```
+(define (encode-symbol symbol tree)
+  (if (leaf? tree)
+      (if (eq? symbol (symbol-leaf tree))
+          '()
+          (error "bad symbol: The symbol is not in the tree at all!" symbol))
+      (let ((left (left-branch tree)))
+        (if (element-of-set? symbol (symbols left))
+            (cons 0 (encode-symbol symbol left))
+            (cons 1 (encode-symbol symbol (right-branch tree)))))))
+
+
+(define pairs '((A 2) (GET 2) (SHA 3) (WAH 1) (BOOM 1) (JOB 2) (NA 16) (YIP 9)))
+(define rock-tree (generate-huffman-tree pairs))
+(define rock-song '(GET A JOB SHA NA NA NA NA NA NA NA NA GET A JOB SHA NA NA NA NA NA NA NA NA WAH YIP YIP YIP YIP YIP YIP YIP YIP YIP SHA BOOM))
+(define encoded-rock-song (encode rock-song rock-tree))
+(length encoded-rock-song)
+(* 3 (length rock-song))
+
+; 结果如下，由于编码后的内容是竖着的，太占地方了，就不贴了
+84
+108
+```
