@@ -9,3 +9,9 @@
 
 ### 5th
 > I even forgot I don't write the diary yesterday. I don't feel good now.
+
+### 6th
+> Today, I didn't bring food, so I bought take-away instead.
+
+### 7th
+> My leader took me home just now, I am feeling particularly good.
