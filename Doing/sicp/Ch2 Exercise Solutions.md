@@ -2913,3 +2913,19 @@ BOOM 1   JOB 2   NA  16  YIP 9
 84
 108
 ```
+
+### Exercise 2.71
+> Suppose we have a Huffman tree for an alphabet of n symbols, and that the relative frequencies of the symbols are 1,2,4, . . . ,2n 1. Sketch the tree for n = 5; for n = 10. In such a tree (for general n) how many bits are required to encode the most frequent symbol? The least frequent symbol?
+---
+> 这道题挺简单的，只要明白了霍夫曼编码的逻辑，自己画一下就可以了，这会是一种非常不平衡的树，除了权重最低的两个符号构成了一个完整的子树，其他的子树都只有一个叶子，n=5 时如下图所示，n=10太多了就不画了，跟这个类似。
+
+![alt text](<Images/exer 2.71.png>)
+
+> 可以看出，当有 n 个符号时，使用频率最高的符号只需要1位就可以表示，频率最低的则需要 n-1 位。
+
+### Exercise 2.72
+> Consider the encoding procedure that you designed in Exercise 2.68. What is the order of growth in the number of steps needed to encode a symbol? Be sure to include the number of steps needed to search the symbol list at each node encountered. To answer this question in general is difficult. Consider the special case where the relative frequencies of then symbols are as described in Exercise 2.71, and give the order of growth (as a function of n) of the number of steps needed to encode the most frequent and least frequent symbols in the alphabet.
+---
+> 这道题如果只考虑 2.71 的那种情况，最常用的符号永远只需要1位，时间复杂度是 O(1), 最不常用的符号根据 2.71 的图可以看出来，每增加一个符号，所增加的步骤只是常数个，所以时间复杂度应该是 O(n)。
+
+## 2.4 Multiple Representations for Abstract Data
