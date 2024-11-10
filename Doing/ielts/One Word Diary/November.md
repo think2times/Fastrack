@@ -15,3 +15,9 @@
 
 ### 7th
 > My leader took me home just now, I am feeling particularly good.
+
+### 9th
+> Today, I made an apologize to my little brother and bought dumplings for him. Now I feel very good.
+
+### 10th
+> I have been watching a TV shows named <Bye Bye my lover> all day, it's too interesting.

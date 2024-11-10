@@ -2928,4 +2928,146 @@ BOOM 1   JOB 2   NA  16  YIP 9
 ---
 > 这道题如果只考虑 2.71 的那种情况，最常用的符号永远只需要1位，时间复杂度是 O(1), 最不常用的符号根据 2.71 的图可以看出来，每增加一个符号，所增加的步骤只是常数个，所以时间复杂度应该是 O(n)。
 
-## 2.4 Multiple Representations for Abstract Data
+# 2.4 Multiple Representations for Abstract Data
+
+## 2.4.1 Representations for Complex Numbers
+
+### Exercise 2.73
+> Section 2.3.2 described a program that performs symbolic differentiation:
+```
+(define (deriv exp var)
+  (cond ((number? exp) 0)
+        ((variable? exp)
+         (if (same-variable? exp var) 1 0))
+        ((sum? exp)
+         (make-sum (deriv (addend exp) var)
+                   (deriv (augend exp) var)))
+        ((product? exp)
+         (make-sum (make-product
+                    (multiplier exp)
+                    (deriv (multiplicand exp) var))
+                   (make-product
+                    (deriv (multiplier exp) var)
+                    (multiplicand exp))))
+        ⟨more rules can be added here⟩
+        (else (error "unknown expression type: DERIV" exp))))
+```
+>  We can regard this program as performing a dispatch on the type of the expression to be differentiated. In this situation the “type tag” of the datum is the algebraic operator symbol (such as +) and the operation being performed is deriv. We can transform this program into data-directed style by rewriting the basic derivative procedure as
+```
+(define (deriv exp var)
+  (cond ((number? exp) 0)
+        ((variable? exp) (if (same-variable? exp var) 1 0))
+        (else ((get 'deriv (operator exp))
+               (operands exp) var))))
+
+(define (operator exp) (car exp))
+(define (operands exp) (cdr exp))
+```
+>> a. Explain what was done above. Why can’t we assimilate the predicates number? and variable? into the data-directed dispatch?
+>> b. Write the procedures for derivatives of sums and products, and the auxiliary code required to install them in the table used by the program above.
+>> c. Choose any additional differentiation rule that you like, such as the one for exponents (Exercise 2.56), and install it in this data-directed system.
+>> d. In this simple algebraic manipulator the type of an expression is the algebraic operator that binds it together. Suppose, however, we indexed the procedures in the opposite way, so that the dispatch line in deriv looked like
+```
+((get (operator exp) 'deriv) (operands exp) var)
+```
+>> What corresponding changes to the derivative system are required?
+---
+> 首先做这道题之前要先把 put 和 get 函数给加进来
+```
+(define *operation-table* (make-hash))
+
+(define (put op-type op-name procedure)
+  (hash-set! *operation-table* (list op-type op-name) procedure))
+
+(define (get op-type op-name)
+  (hash-ref *operation-table* (list op-type op-name) #f))
+```
+> a. 上面的程序就是从 data-directed dispatch 表里取出一个操作为 deriv，类型为 (operator exp) 的过程，并把表达式和变量传给这个提取出的过程。不把 number? 和 variable? 放到 data-directed dispatch 表的原因是因为它们两个只需要一个参数，而这个程序会给取出的过程2个参数。我看到别人的答案基本都是说这两个过程没有标签，而且不需要加标签，所以不能放入 data-directed dispatch 表，但是题目问的是 why can't，它们的解释不是 can't 而是 needn't，不知道我的理解对不对。
+> b&c. 这两问情况一样，难度也不大，参考 2.56 的练习，只需要修改一下取操作数的逻辑就可以了，因为 “+, *, **” 本身已经作为区分采用哪个过程的符号，所以取操作数不是从第二个取，而是第一个，其他地方就照搬过来就可以了。
+```
+(define (install-deriv-package)
+  ;; internal procedures
+  ;; sum
+  (define (make-sum a1 a2)
+    (cond ((=number? a1 0) a2)
+          ((=number? a2 0) a1)
+          ((and (number? a1) (number? a2)) (+ a1 a2))
+          (else (list '+ a1 a2))))
+
+  (define (sum? x) (and (pair? x) (eq? (car x) '+)))
+
+  (define (addend s) (car s))
+
+  (define (augend s) (cadr s))
+
+  (define (sum-deriv expr var) 
+    (make-sum (deriv (addend expr) var) 
+              (deriv (augend expr) var))) 
+
+  ;; product
+  (define (make-product m1 m2)
+    (cond ((or (=number? m1 0) (=number? m2 0)) 0)
+          ((=number? m1 1) m2)
+          ((=number? m2 1) m1)
+          ((and (number? m1) (number? m2)) (* m1 m2))
+          (else (list '* m1 m2))))
+
+  (define (product? x) (and (pair? x) (eq? (car x) '*)))
+
+  (define (multiplier p) (car p))
+
+  (define (multiplicand p) (cadr p))
+
+  (define (product-deriv expr var) 
+    (make-sum (make-product (deriv (multiplier expr) var) 
+                            (multiplicand expr))
+              (make-product (multiplier expr)
+                            (deriv (multiplicand expr) var))))
+
+  ;; exponentiate
+  (define (make-exponentiation base exponent)
+    (cond ((=number? base 0) 0)
+          ((=number? base 1) 1)
+          ((and (number? base) (=number? exponent 0)) 1)
+          ((and (number? base) (=number? exponent 1)) base)
+          ((and (number? base) (number? exponent)) (* base (make-exponentiation base (- exponent 1))))
+          (else (list '** base exponent))))
+
+  (define (base e) (car e))
+
+  (define (exponent e) (cadr e))
+
+  (define (exponentation-deriv expr var) 
+    (make-product (exponent expr) 
+                  (make-product  
+                   (make-exponentiation (base expr) 
+                                        (make-sum (exponent expr) -1)) 
+                   (deriv (base expr) var))))
+               
+  ;; interface to the rest of the system
+  (put 'deriv '+ sum-deriv)
+  (put 'deriv '* product-deriv)
+  (put 'deriv '** exponentation-deriv)
+  'done)
+
+
+(install-deriv-package)
+
+
+(deriv '(+ x x x) 'x) 
+(deriv '(* x x x) 'x) 
+(deriv '(+ x (* x  (+ x (+ y 2)))) 'x) 
+(deriv '(+ x (* 3 (+ x (+ y 2)))) 'x)
+(deriv '(** x 3) 'x) 
+
+; 结果如下
+'done
+2
+'(+ x x)
+'(+ 1 (+ (+ x (+ y 2)) x))
+4
+'(* 3 (** x 2))
+```
+> d. 这样的话，只要在使用 put 函数的时候也先传类型，再传操作就可以了。
+
+### 
