@@ -21,3 +21,9 @@
 
 ### 10th
 > I have been watching a TV shows named <Bye Bye my lover> all day, it's too interesting.
+
+### 11th
+> I didn't do something important today, that's not good.
+
+### 12th
+> I changed a new phone today because the older have been used for 4 years.
