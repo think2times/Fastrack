@@ -3268,4 +3268,185 @@ this procedure takes as arguments an employee’s name and a list of all the div
 (magnitude-rectangular '(3 . 4))
 5
 ```
-> 为了看得更清楚，使用 magnitude-rectangular 表示 install-rectangular-package 包中的 magnitude 过程。可以看出，在上面的过程中，一共调用了2次 apply-generic，第一次它根据 complex 和 magnitude 去寻找 install-complex-package 包中对应的过程；第二次它根据 rectangular 和 magnitude 找到了 install-rectangular-package 包中的 magnitude 过程。
+> 为了看得更清楚，这里用 magnitude-rectangular 表示 install-rectangular-package 包中的 magnitude 过程。可以看出，在上面的过程中，一共调用了2次 apply-generic，第一次它根据 complex 和 magnitude 去寻找 install-complex-package 包中对应的过程；第二次它根据 rectangular 和 magnitude 找到了 install-rectangular-package 包中的 magnitude 过程。
+
+### Exercise2.78
+> The internal procedures in the scheme-number package are essentially nothing more than calls to the primitive procedures +, -, etc. It was not possible to use the primitives of the language directly because our type-tag system requires that each data object have a type attached to it. In fact, however, all Lisp implementations do have a type system, which they use internally. Primitive predicates such as symbol? and number? determine whether data objects have particular types. Modify the definitions of type-tag, contents, and attach-tag from Section 2.4.2 so that our generic system takes advantage of Scheme’s internal type system. That is to say, the system should work as before except that ordinary numbers should be represented simply as Scheme numbers rather than as pairs whose car is the symbol scheme-number.
+---
+> 这道题难度不大，就是说我们在设计程序的时候，先用内置的 number? 函数来判断，如果确实是数字，那就不用添加 scheme-number 标签，否则还跟之前一样。
+```
+(define (attach-tag type-tag contents)
+  (if (number? contents)
+      contents
+      (cons type-tag contents)))
+
+(define (type-tag datum)
+  (cond ((number? datum) 'scheme-number)
+        ((pair? datum) (car datum))
+        (else (error "Bad tagged datum: TYPE-TAG" datum))))
+
+(define (contents datum)
+  (cond ((number? datum) datum)
+        ((pair? datum) (cdr datum))
+        (else (error "Bad tagged datum: CONTENTS" datum))))
+```
+> 上网看了别人的答案后，我发现 install-scheme-number-package 也能做一定简化，如下所示：
+```
+(define (install-scheme-number-package)
+  (put 'add '(scheme-number scheme-number) +)
+  (put 'sub '(scheme-number scheme-number) -)
+  (put 'mul '(scheme-number scheme-number) *)
+  (put 'div '(scheme-number scheme-number) /)
+  (put 'make 'scheme-number (lambda (x) (attach-tag 'scheme-number x)))
+  'done)
+
+(define (make-scheme-number n)
+  ((get 'make 'scheme-number) n))
+
+(install-scheme-number-package)
+
+(define m (make-scheme-number 5))
+(define n (make-scheme-number 10))
+(add m n)
+(sub m n)
+(mul m n)
+(div m n)
+
+; 执行结果
+'done
+15
+-5
+50
+1/2
+```
+
+### Exercise2.79
+> Define a generic equality predicate equ? that tests the equality of two numbers, and install it in the generic arithmetic package. This operation should work for ordinary numbers, rational numbers, and complex numbers.
+---
+> 这道题也挺简单的，分别在一般数字、有理数和复数包里实现这个函数就行了，以下代码复数部分在 2.77 的基础上添加，一般数字和有理数在书上 2.5.1 的基础上添加
+```
+(define (equ? x y) (apply-generic 'equ? x y))
+
+; 一般数字
+(put 'equ? '(scheme-number scheme-number) =)
+
+; 有理数
+(define (equ? x y)
+  ;; 先化简为最简有理数
+  (let ((simple-x (make-rat (numer x) (denom x)))
+        (simple-y (make-rat (numer y) (denom y))))
+    (and (= (numer simple-x) (numer simple-y))
+         (= (denom simple-x) (denom simple-y)))))
+
+(put 'equ? '(rational rational)
+     (lambda (x y) (equ? x y)))
+
+; 复数，只用在 install-complex-package 里添加就行
+(define (equ? z1 z2)
+  (and (= (real-part z1) (real-part z2))
+       (= (imag-part z1) (imag-part z2))))
+
+(put 'equ? '(complex complex)
+     (lambda (z1 z2) (equ? z1 z2)))
+
+
+; 测试
+(install-scheme-number-package)
+(define n1 (make-scheme-number 5))
+(define n2 (make-scheme-number 10))
+(define n3 (make-scheme-number 10))
+(equ? n1 n2)
+(equ? n2 n3)
+
+(newline)
+(install-rational-package)
+(define r1 (make-rational 5 5))
+(define r2 (make-rational 10 10))
+(define r3 (make-rational 10 20))
+(equ? r1 r2)
+(equ? r2 r3)
+
+(newline)
+(install-rectangular-package)
+(install-polar-package)
+(install-complex-package)
+(define z1 (make-complex-from-real-imag 3 4))
+(define z2 (make-complex-from-real-imag 3 4))
+(define z3 (make-complex-from-real-imag 3 5))
+(equ? z1 z2)
+(equ? z2 z3)
+
+; 结果如下
+'done
+#f
+#t
+
+'done
+#t
+#f
+
+'done
+'done
+'done
+#t
+#f
+```
+> 看了一下别人的答案，有理数部分可以通过十字相乘来使得答案更简单。
+```
+(define (equ? x y) 
+   (= (* (numer x) (denom y)) (* (numer y) (denom x)))) 
+```
+
+### Exercise 2.80
+> Define a generic predicate =zero? that tests if its argument is zero, and install it in the generic arithmetic package. This operation should work for ordinary numbers, rational numbers, and complex numbers.
+---
+> 这道题更简单，直接与0相比较就行，以下代码在 2.79 的基础上修改
+```
+(define (=zero? x) (apply-generic '=zero? x))
+
+; 一般数字
+(put '=zero? '(scheme-number) (lambda (x) (= x 0)))
+
+; 有理数
+(put '=zero? '(rational) (lambda (x) (= (numer x) 0)))
+
+; 复数，这里我有点奇怪，用 (= (magnitude z) 0) 实现居然检查不出来，我也没找到原因是啥
+(put '=zero? '(complex) (lambda (z) (= (real-part z) (imag-part z) 0)))
+
+(install-scheme-number-package)
+(define n1 (make-scheme-number 0))
+(define n2 (make-scheme-number 10))
+(=zero? n1)
+(=zero? n2)
+
+(newline)
+(install-rational-package)
+(define r1 (make-rational 5 10))
+(define r2 (make-rational 0 20))
+(=zero? r1)
+(=zero? r2)
+
+(newline)
+(install-rectangular-package)
+(install-polar-package)
+(install-complex-package)
+(define z1 (make-complex-from-real-imag 3 4))
+(define z2 (make-complex-from-real-imag 0 0))
+(=zero? z1)
+(=zero? z2)
+
+; 执行结果
+'done
+#t
+#f
+
+'done
+#f
+#t
+
+'done
+'done
+'done
+#f
+#t
+```

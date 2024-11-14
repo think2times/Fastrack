@@ -27,3 +27,9 @@
 
 ### 12th
 > I changed a new phone today because the older have been used for 4 years.
+
+### 13th
+> I played jigsaw with my friend Qiu Shuxin, that's interesting and I wanted to buy one too.
+
+### 14th
+> Today is wonderful. There was first snow in this winter and I watched the lastest update of the legendary TV show <Bye Bye my lover>.
