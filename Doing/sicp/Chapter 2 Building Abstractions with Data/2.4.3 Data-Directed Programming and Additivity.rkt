@@ -76,6 +76,7 @@
 (define (imag-part z) (apply-generic 'imag-part z))
 (define (magnitude z) (apply-generic 'magnitude z))
 (define (angle z) (apply-generic 'angle z))
+<<<<<<< HEAD
 
 
 ;; Message passing
@@ -89,3 +90,5 @@
   dispatch)
 
 (define (apply-generic- op arg) (arg op))
+=======
+>>>>>>> b44974c026b167484c540725f26ef6d61807ee5e
