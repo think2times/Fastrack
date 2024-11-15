@@ -2781,3 +2781,672 @@ whose cdr is the list of elements not included in the tree.
 '(A D A B B C A)(decode sample-message sample-tree)
 ```
 
+### Exercise 2.68
+> The encode procedure takes as arguments a message and a tree and produces the list of bits that gives the encoded message.
+```
+(define (encode message tree)
+  (if (null? message)
+      '()
+      (append (encode-symbol (car message) tree)
+              (encode (cdr message) tree))))
+```
+> encode-symbol is a procedure, which you must write, that returns the list of bits that encodes a given symbol according to a given tree. You should design encode-symbol 
+so that it signals an error if the symbol is not in the tree at all. Test your procedure by encoding the result you obtained in Exercise 2.67 with the sample tree and seeing 
+whether it is the same as the original sample message.
+---
+> 这道题对我来说难度挺大的，我一开始就被如果符号就是树的根怎么表示难住了，因为书上讲的好像都是左边是0，右边是1，却没有关于根上字符的表示，我也没有想到可以直接用“空”表示。。最后看了别人的答案才终于明白了。
+```
+(define (encode message tree)
+  (if (null? message)
+      '()
+      (append (encode-symbol (car message) tree)
+              (encode (cdr message) tree))))
+
+(define (element-of-set? x set)
+  (cond ((null? set) false)
+        ((equal? x (car set)) true)
+        (else (element-of-set? x (cdr set)))))
+
+(define (encode-symbol symbol tree)
+  (if (leaf? tree)
+      (if (eq? symbol (symbol-leaf tree))
+          '()
+          (error "bad symbol: The symbol is not in the tree at all!" symbol))
+      (let ((left (left-branch tree)))
+        (if (element-of-set? symbol left)
+            (cons 0 (encode-symbol symbol left))
+            (cons 1 (encode-symbol symbol (right-branch tree)))))))
+
+
+(define sample-tree
+  (make-code-tree (make-leaf 'A 4)
+                  (make-code-tree
+                   (make-leaf 'B 2)
+                   (make-code-tree
+                    (make-leaf 'D 1)
+                    (make-leaf 'C 1)))))
+
+(define sample-message '(A D A B B C A))
+
+; 期望答案是 '(0 1 1 0 0 1 0 1 0 1 1 1 0)
+(encode sample-message sample-tree)
+
+; 结果如下
+'(0 1 1 0 0 1 0 1 0 1 1 1 0)
+```
+
+### Exercise 2.69
+> The following procedure takes as its argument a list of symbol-frequency pairs (where no symbol appears in more than one pair) and generates a Huffman encoding tree according to the Huffman algorithm.
+```
+(define (generate-huffman-tree pairs)
+  (successive-merge (make-leaf-set pairs)))
+```
+> make-leaf-set is the procedure given above that transforms the list of pairs into an ordered set of leaves. successive merge is the procedure you must write, using make-code-tree to successively merge the smallest-weight elements of the set until there is only one element left, which is the desired Huffman tree. (This procedure is slightly tricky, but not really complicated. If you find yourself designing a complex procedure, then you are almost certainly doing something wrong. You can take significant advantage of the fact that we are using an ordered set representation.)
+---
+> 这道题虽然题目说不会很复杂，但是我觉得还是挺难的。首先是要理解 successive-merge 的作用，它是要把一个个叶子按照权重由小到大依次合并成一个树，由于参数已经用 make-leaf-set 进行了排序，所以我们只要从前往后依次把这些“叶子”合并起来就行，每次合并好的树作为一个新的“叶子”与其他叶子一起进行新的合并；这里要注意合并后的树的权重可能会超过排在它之后的叶子，所以要重新对这些“叶子”按权重排序，这里我们可以直接用前面的 adjoin-set 来实现，完整代码如下：
+```
+(define (successive-merge leaf-set)
+  (if (null? leaf-set)
+      '()
+      (let ((first (car leaf-set))
+            (last (cdr leaf-set)))
+        (if (null? last)
+            first
+            (successive-merge (adjoin-set (make-code-tree first (car last))
+                                          (cdr last)))))))
+
+(define pairs1 '((A 4) (B 2) (C 1) (D 1)))
+(define pairs2 '((A 8) (B 3) (C 1) (D 1) (E 1) (F 1) (G 1) (H 1)))
+
+(generate-huffman-tree pairs1)
+(generate-huffman-tree pairs2)
+
+; 结果如下
+'((leaf A 4) ((leaf B 2) ((leaf D 1) (leaf C 1) (D C) 2) (B D C) 4) (A B D C) 8)
+'((leaf A 8)
+  ((((leaf H 1) (leaf G 1) (H G) 2) ((leaf F 1) (leaf E 1) (F E) 2) (H G F E) 4)
+   (((leaf D 1) (leaf C 1) (D C) 2) (leaf B 3) (D C B) 5)
+   (H G F E D C B)
+   9)
+  (A H G F E D C B)
+  17)
+```
+
+### Exercise 2.70
+> The following eight-symbol alphabet with associated relative frequencies was designed to efficiently encode the lyrics of 1950s rock songs. (Note that the “symbols” of an “alphabet” need not be individual letters.) 
+```
+A    2   GET 2   SHA 3   WAH 1
+BOOM 1   JOB 2   NA  16  YIP 9
+```
+> Use generate-huffman-tree (Exercise 2.69) to generate a corresponding Huffmantree and use encode (Exercise 2.68) to encode the following message:
+```
+ Get a job
+ Sha na na na na na na na na
+ Get a job
+ Sha na na na na na na na na
+ Wah yip yip yip yip yip yip yip yip yip
+ Sha boom
+```
+> How many bits are required for the encoding? What is the smallest number of bits that would be needed to encode this song if we used a fixed-length code for the eight-symbol alphabet?
+---
+> 这道题本来应该是非常简单的，只需要调用 2.68 和 2.69 的函数就行，但是我却遇到了好几个麻烦，第一个是大小写问题，我在生成霍夫曼树的时候，用的都是题目中默认的大写字母，但是要翻译的歌词却是既有大写又有小写，所以在 encode-symbol 函数的 `(eq? symbol (symbol-leaf tree))` 这一步就会跳出，我尝试了好几个方法也没找到怎么解决，最后直接把歌词改成全大写了。解决了大小写问题，我又遇到了相同的提示，一步步调试之后终于发现了问题，我练习 2.68 的 encode-symbol 本身就有问题，改完之后终于成功了。最后就是统计了一下长度，如果使用固定长度的编码，那么每个“符号”至少需要3个字符，程序如下所示：
+```
+(define (encode-symbol symbol tree)
+  (if (leaf? tree)
+      (if (eq? symbol (symbol-leaf tree))
+          '()
+          (error "bad symbol: The symbol is not in the tree at all!" symbol))
+      (let ((left (left-branch tree)))
+        (if (element-of-set? symbol (symbols left))
+            (cons 0 (encode-symbol symbol left))
+            (cons 1 (encode-symbol symbol (right-branch tree)))))))
+
+
+(define pairs '((A 2) (GET 2) (SHA 3) (WAH 1) (BOOM 1) (JOB 2) (NA 16) (YIP 9)))
+(define rock-tree (generate-huffman-tree pairs))
+(define rock-song '(GET A JOB SHA NA NA NA NA NA NA NA NA GET A JOB SHA NA NA NA NA NA NA NA NA WAH YIP YIP YIP YIP YIP YIP YIP YIP YIP SHA BOOM))
+(define encoded-rock-song (encode rock-song rock-tree))
+(length encoded-rock-song)
+(* 3 (length rock-song))
+
+; 结果如下，由于编码后的内容是竖着的，太占地方了，就不贴了
+84
+108
+```
+
+### Exercise 2.71
+> Suppose we have a Huffman tree for an alphabet of n symbols, and that the relative frequencies of the symbols are 1,2,4, . . . ,2n 1. Sketch the tree for n = 5; for n = 10. In such a tree (for general n) how many bits are required to encode the most frequent symbol? The least frequent symbol?
+---
+> 这道题挺简单的，只要明白了霍夫曼编码的逻辑，自己画一下就可以了，这会是一种非常不平衡的树，除了权重最低的两个符号构成了一个完整的子树，其他的子树都只有一个叶子，n=5 时如下图所示，n=10太多了就不画了，跟这个类似。
+
+![alt text](<Images/exer 2.71.png>)
+
+> 可以看出，当有 n 个符号时，使用频率最高的符号只需要1位就可以表示，频率最低的则需要 n-1 位。
+
+### Exercise 2.72
+> Consider the encoding procedure that you designed in Exercise 2.68. What is the order of growth in the number of steps needed to encode a symbol? Be sure to include the number of steps needed to search the symbol list at each node encountered. To answer this question in general is difficult. Consider the special case where the relative frequencies of then symbols are as described in Exercise 2.71, and give the order of growth (as a function of n) of the number of steps needed to encode the most frequent and least frequent symbols in the alphabet.
+---
+> 这道题如果只考虑 2.71 的那种情况，最常用的符号永远只需要1位，时间复杂度是 O(1), 最不常用的符号根据 2.71 的图可以看出来，每增加一个符号，所增加的步骤只是常数个，所以时间复杂度应该是 O(n)。
+
+# 2.4 Multiple Representations for Abstract Data
+
+## 2.4.1 Representations for Complex Numbers
+
+### Exercise 2.73
+> Section 2.3.2 described a program that performs symbolic differentiation:
+```
+(define (deriv exp var)
+  (cond ((number? exp) 0)
+        ((variable? exp)
+         (if (same-variable? exp var) 1 0))
+        ((sum? exp)
+         (make-sum (deriv (addend exp) var)
+                   (deriv (augend exp) var)))
+        ((product? exp)
+         (make-sum (make-product
+                    (multiplier exp)
+                    (deriv (multiplicand exp) var))
+                   (make-product
+                    (deriv (multiplier exp) var)
+                    (multiplicand exp))))
+        ⟨more rules can be added here⟩
+        (else (error "unknown expression type: DERIV" exp))))
+```
+>  We can regard this program as performing a dispatch on the type of the expression to be differentiated. In this situation the “type tag” of the datum is the algebraic operator symbol (such as +) and the operation being performed is deriv. We can transform this program into data-directed style by rewriting the basic derivative procedure as
+```
+(define (deriv exp var)
+  (cond ((number? exp) 0)
+        ((variable? exp) (if (same-variable? exp var) 1 0))
+        (else ((get 'deriv (operator exp))
+               (operands exp) var))))
+
+(define (operator exp) (car exp))
+(define (operands exp) (cdr exp))
+```
+>> a. Explain what was done above. Why can’t we assimilate the predicates number? and variable? into the data-directed dispatch?
+>> b. Write the procedures for derivatives of sums and products, and the auxiliary code required to install them in the table used by the program above.
+>> c. Choose any additional differentiation rule that you like, such as the one for exponents (Exercise 2.56), and install it in this data-directed system.
+>> d. In this simple algebraic manipulator the type of an expression is the algebraic operator that binds it together. Suppose, however, we indexed the procedures in the opposite way, so that the dispatch line in deriv looked like
+```
+((get (operator exp) 'deriv) (operands exp) var)
+```
+>> What corresponding changes to the derivative system are required?
+---
+> 首先做这道题之前要先把 put 和 get 函数给加进来
+```
+(define *operation-table* (make-hash))
+
+(define (put op-type op-name procedure)
+  (hash-set! *operation-table* (list op-type op-name) procedure))
+
+(define (get op-type op-name)
+  (hash-ref *operation-table* (list op-type op-name) #f))
+```
+> a. 上面的程序就是从 data-directed dispatch 表里取出一个操作为 deriv，类型为 (operator exp) 的过程，并把表达式和变量传给这个提取出的过程。不把 number? 和 variable? 放到 data-directed dispatch 表的原因是因为它们两个只需要一个参数，而这个程序会给取出的过程2个参数。我看到别人的答案基本都是说这两个过程没有标签，而且不需要加标签，所以不能放入 data-directed dispatch 表，但是题目问的是 why can't，它们的解释不是 can't 而是 needn't，不知道我的理解对不对。
+> b&c. 这两问情况一样，难度也不大，参考 2.56 的练习，只需要修改一下取操作数的逻辑就可以了，因为 “+, *, **” 本身已经作为区分采用哪个过程的符号，所以取操作数不是从第二个取，而是第一个，其他地方就照搬过来就可以了。
+```
+(define (install-deriv-package)
+  ;; internal procedures
+  ;; sum
+  (define (make-sum a1 a2)
+    (cond ((=number? a1 0) a2)
+          ((=number? a2 0) a1)
+          ((and (number? a1) (number? a2)) (+ a1 a2))
+          (else (list '+ a1 a2))))
+
+  (define (sum? x) (and (pair? x) (eq? (car x) '+)))
+
+  (define (addend s) (car s))
+
+  (define (augend s) (cadr s))
+
+  (define (sum-deriv expr var) 
+    (make-sum (deriv (addend expr) var) 
+              (deriv (augend expr) var))) 
+
+  ;; product
+  (define (make-product m1 m2)
+    (cond ((or (=number? m1 0) (=number? m2 0)) 0)
+          ((=number? m1 1) m2)
+          ((=number? m2 1) m1)
+          ((and (number? m1) (number? m2)) (* m1 m2))
+          (else (list '* m1 m2))))
+
+  (define (product? x) (and (pair? x) (eq? (car x) '*)))
+
+  (define (multiplier p) (car p))
+
+  (define (multiplicand p) (cadr p))
+
+  (define (product-deriv expr var) 
+    (make-sum (make-product (deriv (multiplier expr) var) 
+                            (multiplicand expr))
+              (make-product (multiplier expr)
+                            (deriv (multiplicand expr) var))))
+
+  ;; exponentiate
+  (define (make-exponentiation base exponent)
+    (cond ((=number? base 0) 0)
+          ((=number? base 1) 1)
+          ((and (number? base) (=number? exponent 0)) 1)
+          ((and (number? base) (=number? exponent 1)) base)
+          ((and (number? base) (number? exponent)) (* base (make-exponentiation base (- exponent 1))))
+          (else (list '** base exponent))))
+
+  (define (base e) (car e))
+
+  (define (exponent e) (cadr e))
+
+  (define (exponentation-deriv expr var) 
+    (make-product (exponent expr) 
+                  (make-product  
+                   (make-exponentiation (base expr) 
+                                        (make-sum (exponent expr) -1)) 
+                   (deriv (base expr) var))))
+               
+  ;; interface to the rest of the system
+  (put 'deriv '+ sum-deriv)
+  (put 'deriv '* product-deriv)
+  (put 'deriv '** exponentation-deriv)
+  'done)
+
+
+(install-deriv-package)
+
+
+(deriv '(+ x x x) 'x) 
+(deriv '(* x x x) 'x) 
+(deriv '(+ x (* x  (+ x (+ y 2)))) 'x) 
+(deriv '(+ x (* 3 (+ x (+ y 2)))) 'x)
+(deriv '(** x 3) 'x) 
+
+; 结果如下
+'done
+2
+'(+ x x)
+'(+ 1 (+ (+ x (+ y 2)) x))
+4
+'(* 3 (** x 2))
+```
+> d. 这样的话，只要在使用 put 函数的时候也先传类型，再传操作就可以了。
+
+### Exercise 2.74
+> Insatiable Enterprises, Inc., is a highly decentralized conglomerate company consisting of a large number of independent divisions located all over the world. The company’s computer 
+facilities have just been interconnected by means of a clever network-interfacing scheme that makes the entire network appear to any user to be a single computer. Insatiable’s president, 
+in her first attempt to exploit the ability of the network to extract administrative information from division files, is dismayed to discover that, although all the division files have been 
+implemented as data structures in Scheme, the particular data structure used varies from division to division. A meeting of division managers is hastily called to search for a strategy 
+to integrate the files that will satisfy headquarters’ needs while preserving the existing autonomy of the divisions.
+> Show how such a strategy can be implemented with data-directed programming. As an example, suppose that each division’s personnel records consist of a single file, which contains 
+a set of records keyed on employees’ names. The structure of the set varies from division to division. Furthermore, each employee’s record is itself a set (structured differently 
+from division to division) that contains information keyed under identifiers such as address and salary.
+> In particular:
+>> a. Implement for headquarters a get-record procedure that retrieves a specified employee’s record from a specified personnel file. The procedure should be applicable to any division’s file. 
+Explain how the individual divisions’ files should be structured. In particular, what type information must be supplied?
+>> b. Implement for headquarters a get-salary procedure that returns the salary information from a given employee’s record from any division’s personnel file. How should the record be structured 
+in order to make this operation work?
+>> c. Implement for headquarters a find-employee-record procedure. This should search all the divisions’ files for the record of a given employee and return the record. Assume that 
+this procedure takes as arguments an employee’s name and a list of all the divisions’ files.
+>> d. When Insatiable takes over a new company, what changes must be made in order to incorporate the new personnel information into the central system?
+---
+> a. 这道题里，部门名称就相当于前面所说的类型，获取部门信息就是操作，我们根据这两个信息从提前建好的二维表里提取雇员所属部门的文件。每个部门文件都应该有一个 get-division 的过程，它根据雇员姓名获取对应的部门文件。
+```
+(define (get-record get-division employee-name) 
+   ((get 'division get-division) employee-name)) 
+```
+> b. 这道题跟上一题很像，只是这次是从某个雇员的记录中获取工资信息。
+```
+(define (get-salary get-division record) 
+  ((get 'salary get-division) record)) 
+```
+> c. 这道题就是依次检查所有部门，根据雇员名称获取记录。
+```
+(define (find-employee-record employee-name division-list) 
+  (if (null? division-list) 
+      #f 
+      (or (get-record (car division-list) employee-name) 
+          (find-employee-record employee-name (cdr division-list))))) 
+```
+> d. 每次接管一个新公司，都要把上述提到的过程添加到二维表里，使用的时候根据部门类型和操作来获取对应公司的过程。
+
+### Exercise2.75
+> Implement the constructor make-from-mag-ang in message-passing style. This procedure should be an alogous to the make-from-real-imag procedure given above.
+---
+> 这道题非常简单，只要稍微修改一下 make-from-real-imag 就行了
+```
+(define (make-from-mag-ang r a)
+  (define (dispatch op)
+    (cond ((eq? op 'magnitude) r)
+          ((eq? op 'angle) a)
+          ((eq? op 'real-part) (* (r (cos a))))
+          ((eq? op 'imag-part) (* (r (sin a))))
+          (else (error "Unknown op: MAKE-FROM-MAG-ANG" op))))
+  dispatch)
+```
+
+### Exercise 2.76
+> As a large system with generic operations evolves, new types of data objects or new operations may be needed. For each of the three strategies—generic operations with explicit dispatch data-directed style, and message-passing-style -- describe the changes that must be made to a system in order to add new types or new operations. Which organization would be most appropriate for a system in which new types must often be added? Which would be most appropriate for a system in which new operations must often be added?
+---
+> 对于 explicit dispatch 风格，每添加一种新类型，都需要编写新类型自身的操作函数，并在每个通用操作函数的 cond 中，添加一个新的分支；而添加新的操作，除了编写新的通用操作函数，还需要为每个类型添加类型相关的操作函数。
+> 对于 data-directed 风格，添加一种新类型时，只需要添加相应的 install-new-package 函数，在一个地方编写好新类型自身的操作函数。通过二维表进行分发管理，通用函数本身不用做任何修改；而添加新操作，需要在每个包中添加相应的类型操作函数，并注册到二维表中；无论是添加操作还是类型，都比较简单。
+> 对于 message-passing 风格，它使用一个动态的函数作为分发的依据，要添加新的类型，只需要为新类型添加一个分发函数；但是要添加新的操作，就需要在每个类型的分发函数中，添加一个新的分支，原有类型越多，添加新操作修改的地方就越多。
+> 对于需要频繁新增类型的系统，应该选择 message-passing 风格，因为它新增类型非常简单，不需要修改旧的代码；对于需要频繁新增操作的系统，应该选择 data-directed 风格，添加操作只需要在实现了新的函数后，添加到二维表中即可。
+
+## 2.5.1 Generic Arithmetic Operations
+
+### Exercise 2.77
+> Louis Reasoner tries to evaluate the expression (magnitude z) where z is the object shown in Figure 2.24. To his surprise, instead of the answer she gets an error message from apply-generic, saying there is no method for the operation magnitude on the types (complex). He shows this interaction to Alyssa P. Hacker, who says “The problem is that the complex-number selectors were never defined for complex numbers, just for polar and rectangular numbers. All you have to do to make this work is add the following to the complex package:”
+```
+  (put 'real-part '(complex) real-part)
+  (put 'imag-part '(complex) imag-part)
+  (put 'magnitude '(complex) magnitude)
+  (put 'angle '(complex) angle)
+```
+> Describe in detail why this works. As an example, trace through all the procedures called in evaluating the expression (magnitude z) where z is the object shown in Figure 2.24. In particular, how many times is apply-generic invoked? What procedure is dispatched to in each case?
+---
+> 这道题我想的是先把代码跑起来，因为直接按题目提示添加了那4行代码还是会报错，最终能运行的代码如下：
+```
+(define (install-rectangular-package)
+  ;; internal procedures
+  (define (real-part z) (car z))
+  (define (imag-part z) (cdr z))
+  (define (make-from-real-imag x y) (cons x y))
+  (define (magnitude z)
+    (sqrt (+ (square (real-part z))
+             (square (imag-part z)))))
+  (define (angle z)
+    (atan (imag-part z) (real-part z)))
+  (define (make-from-mag-ang r a)
+    (cons (* r (cos a)) (* r (sin a))))
+  ;; interface to the rest of the system
+  (define (tag x) (attach-tag 'rectangular x))
+  (put 'real-part '(rectangular) real-part)
+  (put 'imag-part '(rectangular) imag-part)
+  (put 'magnitude '(rectangular) magnitude)
+  (put 'angle '(rectangular) angle)
+  (put 'make-from-real-imag 'rectangular
+       (lambda (x y) (tag (make-from-real-imag x y))))
+  (put 'make-from-mag-ang 'rectangular
+       (lambda (r a) (tag (make-from-mag-ang r a))))
+  'done)
+
+(define (install-polar-package)
+  ;; internal procedures
+  (define (magnitude z) (car z))
+  (define (angle z) (cdr z))
+  (define (make-from-mag-ang r a) (cons r a))
+  (define (real-part z) (* (magnitude z) (cos (angle z))))
+  (define (imag-part z) (* (magnitude z) (sin (angle z))))
+  (define (make-from-real-imag x y)
+    (cons (sqrt (+ (square x) (square y)))
+          (atan y x)))
+  ;; interface to the rest of the system
+  (define (tag x) (attach-tag 'polar x))
+  (put 'real-part '(polar) real-part)
+  (put 'imag-part '(polar) imag-part)
+  (put 'magnitude '(polar) magnitude)
+  (put 'angle '(polar) angle)
+  (put 'make-from-real-imag 'polar
+       (lambda (x y) (tag (make-from-real-imag x y))))
+  (put 'make-from-mag-ang 'polar
+       (lambda (r a) (tag (make-from-mag-ang r a))))
+  'done)
+
+;; 复数
+(define (install-complex-package)
+  ;; imported procedures from rectangular and polar packages
+  (define (make-from-real-imag x y)
+    ((get 'make-from-real-imag 'rectangular) x y))
+  (define (make-from-mag-ang r a)
+    ((get 'make-from-mag-ang 'polar) r a))
+  ;; internal procedures
+  (define (add-complex z1 z2)
+    (make-from-real-imag (+ (real-part z1) (real-part z2))
+                         (+ (imag-part z1) (imag-part z2))))
+  (define (sub-complex z1 z2)
+    (make-from-real-imag (- (real-part z1) (real-part z2))
+                         (- (imag-part z1) (imag-part z2))))
+  (define (mul-complex z1 z2)
+    (make-from-mag-ang (* (magnitude z1) (magnitude z2))
+                       (+ (angle z1) (angle z2))))
+  (define (div-complex z1 z2)
+    (make-from-mag-ang (/ (magnitude z1) (magnitude z2))
+                       (- (angle z1) (angle z2))))
+  ;; interface to rest of the system
+  (define (tag z) (attach-tag 'complex z))
+  (put 'add '(complex complex)
+       (lambda (z1 z2) (tag (add-complex z1 z2))))
+  (put 'sub '(complex complex)
+       (lambda (z1 z2) (tag (sub-complex z1 z2))))
+  (put 'mul '(complex complex)
+       (lambda (z1 z2) (tag (mul-complex z1 z2))))
+  (put 'div '(complex complex)
+       (lambda (z1 z2) (tag (div-complex z1 z2))))
+  (put 'make-from-real-imag 'complex
+       (lambda (x y) (tag (make-from-real-imag x y))))
+  (put 'make-from-mag-ang 'complex
+       (lambda (r a) (tag (make-from-mag-ang r a))))
+  (put 'real-part '(complex) real-part)
+  (put 'imag-part '(complex) imag-part)
+  (put 'magnitude '(complex) magnitude)
+  (put 'angle '(complex) angle)
+  'done)
+
+(define (make-complex-from-real-imag x y)
+  ((get 'make-from-real-imag 'complex) x y))
+(define (make-complex-from-mag-ang r a)
+  ((get 'make-from-mag-ang 'complex) r a))
+
+(define (real-part z) (apply-generic 'real-part z)) 
+(define (imag-part z) (apply-generic 'imag-part z)) 
+(define (magnitude z) (apply-generic 'magnitude z)) 
+(define (angle z) (apply-generic 'angle z))
+
+(install-rectangular-package)
+(install-polar-package)
+(install-complex-package)
+
+
+(define z (make-complex-from-real-imag 3 4))
+(magnitude z)
+
+; 结果如下
+5.000000000053722
+```
+> 这里要注意2点，一个是要安装这几个包，另一个是在安装这些包之前需要加上 `(define (magnitude z) (apply-generic 'magnitude z))`，不然会报错。
+> 执行 `(magnitude z)` 的函数调用依次是：
+```
+(magnitude z)
+(magnitude '(complex rectangular 3 . 4))
+(apply-generic 'magnitude '(complex rectangular 3 . 4))
+(get 'magnitude '(complex))
+(apply magnitude (map contents '((complex rectangular 3 . 4))))
+
+(magnitude '(rectangular 3 . 4))
+(apply-generic 'magnitude '(rectangular 3 . 4))
+(get 'magnitude '(rectangular))
+(apply magnitude-rectangular (map contents '((rectangular 3 . 4))))
+(magnitude-rectangular '(3 . 4))
+5
+```
+> 为了看得更清楚，这里用 magnitude-rectangular 表示 install-rectangular-package 包中的 magnitude 过程。可以看出，在上面的过程中，一共调用了2次 apply-generic，第一次它根据 complex 和 magnitude 去寻找 install-complex-package 包中对应的过程；第二次它根据 rectangular 和 magnitude 找到了 install-rectangular-package 包中的 magnitude 过程。
+
+### Exercise2.78
+> The internal procedures in the scheme-number package are essentially nothing more than calls to the primitive procedures +, -, etc. It was not possible to use the primitives of the language directly because our type-tag system requires that each data object have a type attached to it. In fact, however, all Lisp implementations do have a type system, which they use internally. Primitive predicates such as symbol? and number? determine whether data objects have particular types. Modify the definitions of type-tag, contents, and attach-tag from Section 2.4.2 so that our generic system takes advantage of Scheme’s internal type system. That is to say, the system should work as before except that ordinary numbers should be represented simply as Scheme numbers rather than as pairs whose car is the symbol scheme-number.
+---
+> 这道题难度不大，就是说我们在设计程序的时候，先用内置的 number? 函数来判断，如果确实是数字，那就不用添加 scheme-number 标签，否则还跟之前一样。
+```
+(define (attach-tag type-tag contents)
+  (if (number? contents)
+      contents
+      (cons type-tag contents)))
+
+(define (type-tag datum)
+  (cond ((number? datum) 'scheme-number)
+        ((pair? datum) (car datum))
+        (else (error "Bad tagged datum: TYPE-TAG" datum))))
+
+(define (contents datum)
+  (cond ((number? datum) datum)
+        ((pair? datum) (cdr datum))
+        (else (error "Bad tagged datum: CONTENTS" datum))))
+```
+> 上网看了别人的答案后，我发现 install-scheme-number-package 也能做一定简化，如下所示：
+```
+(define (install-scheme-number-package)
+  (put 'add '(scheme-number scheme-number) +)
+  (put 'sub '(scheme-number scheme-number) -)
+  (put 'mul '(scheme-number scheme-number) *)
+  (put 'div '(scheme-number scheme-number) /)
+  (put 'make 'scheme-number (lambda (x) (attach-tag 'scheme-number x)))
+  'done)
+
+(define (make-scheme-number n)
+  ((get 'make 'scheme-number) n))
+
+(install-scheme-number-package)
+
+(define m (make-scheme-number 5))
+(define n (make-scheme-number 10))
+(add m n)
+(sub m n)
+(mul m n)
+(div m n)
+
+; 执行结果
+'done
+15
+-5
+50
+1/2
+```
+
+### Exercise2.79
+> Define a generic equality predicate equ? that tests the equality of two numbers, and install it in the generic arithmetic package. This operation should work for ordinary numbers, rational numbers, and complex numbers.
+---
+> 这道题也挺简单的，分别在一般数字、有理数和复数包里实现这个函数就行了，以下代码复数部分在 2.77 的基础上添加，一般数字和有理数在书上 2.5.1 的基础上添加
+```
+(define (equ? x y) (apply-generic 'equ? x y))
+
+; 一般数字
+(put 'equ? '(scheme-number scheme-number) =)
+
+; 有理数
+(define (equ? x y)
+  ;; 先化简为最简有理数
+  (let ((simple-x (make-rat (numer x) (denom x)))
+        (simple-y (make-rat (numer y) (denom y))))
+    (and (= (numer simple-x) (numer simple-y))
+         (= (denom simple-x) (denom simple-y)))))
+
+(put 'equ? '(rational rational)
+     (lambda (x y) (equ? x y)))
+
+; 复数，只用在 install-complex-package 里添加就行
+(define (equ? z1 z2)
+  (and (= (real-part z1) (real-part z2))
+       (= (imag-part z1) (imag-part z2))))
+
+(put 'equ? '(complex complex)
+     (lambda (z1 z2) (equ? z1 z2)))
+
+
+; 测试
+(install-scheme-number-package)
+(define n1 (make-scheme-number 5))
+(define n2 (make-scheme-number 10))
+(define n3 (make-scheme-number 10))
+(equ? n1 n2)
+(equ? n2 n3)
+
+(newline)
+(install-rational-package)
+(define r1 (make-rational 5 5))
+(define r2 (make-rational 10 10))
+(define r3 (make-rational 10 20))
+(equ? r1 r2)
+(equ? r2 r3)
+
+(newline)
+(install-rectangular-package)
+(install-polar-package)
+(install-complex-package)
+(define z1 (make-complex-from-real-imag 3 4))
+(define z2 (make-complex-from-real-imag 3 4))
+(define z3 (make-complex-from-real-imag 3 5))
+(equ? z1 z2)
+(equ? z2 z3)
+
+; 结果如下
+'done
+#f
+#t
+
+'done
+#t
+#f
+
+'done
+'done
+'done
+#t
+#f
+```
+> 看了一下别人的答案，有理数部分可以通过十字相乘来使得答案更简单。
+```
+(define (equ? x y) 
+   (= (* (numer x) (denom y)) (* (numer y) (denom x)))) 
+```
+
+### Exercise 2.80
+> Define a generic predicate =zero? that tests if its argument is zero, and install it in the generic arithmetic package. This operation should work for ordinary numbers, rational numbers, and complex numbers.
+---
+> 这道题更简单，直接与0相比较就行，以下代码在 2.79 的基础上修改
+```
+(define (=zero? x) (apply-generic '=zero? x))
+
+; 一般数字
+(put '=zero? '(scheme-number) (lambda (x) (= x 0)))
+
+; 有理数
+(put '=zero? '(rational) (lambda (x) (= (numer x) 0)))
+
+; 复数，这里我有点奇怪，用 (= (magnitude z) 0) 实现居然检查不出来，我也没找到原因是啥
+(put '=zero? '(complex) (lambda (z) (= (real-part z) (imag-part z) 0)))
+
+(install-scheme-number-package)
+(define n1 (make-scheme-number 0))
+(define n2 (make-scheme-number 10))
+(=zero? n1)
+(=zero? n2)
+
+(newline)
+(install-rational-package)
+(define r1 (make-rational 5 10))
+(define r2 (make-rational 0 20))
+(=zero? r1)
+(=zero? r2)
+
+(newline)
+(install-rectangular-package)
+(install-polar-package)
+(install-complex-package)
+(define z1 (make-complex-from-real-imag 3 4))
+(define z2 (make-complex-from-real-imag 0 0))
+(=zero? z1)
+(=zero? z2)
+
+; 执行结果
+'done
+#t
+#f
+
+'done
+#f
+#t
+
+'done
+'done
+'done
+#f
+#t
+```

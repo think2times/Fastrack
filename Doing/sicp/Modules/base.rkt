@@ -14,7 +14,17 @@
 (provide positive?)
 (provide negative?)
 (provide sqrt)
+(provide put)
+(provide get)
 
+
+(define *operation-table* (make-hash))
+
+(define (put op-type op-name procedure)
+  (hash-set! *operation-table* (list op-type op-name) procedure))
+
+(define (get op-type op-name)
+  (hash-ref *operation-table* (list op-type op-name) #f))
 
 (define nil '())
 

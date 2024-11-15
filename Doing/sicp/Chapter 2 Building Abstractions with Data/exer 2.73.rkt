@@ -90,7 +90,11 @@
                    (make-exponentiation (base expr) 
                                         (make-sum (exponent expr) -1)) 
                    (deriv (base expr) var))))
+<<<<<<< HEAD
 
+=======
+               
+>>>>>>> b44974c026b167484c540725f26ef6d61807ee5e
   ;; interface to the rest of the system
   (put 'deriv '+ sum-deriv)
   (put 'deriv '* product-deriv)
