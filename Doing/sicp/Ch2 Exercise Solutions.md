@@ -3131,6 +3131,8 @@ this procedure takes as arguments an employee’s name and a list of all the div
 > 对于 message-passing 风格，它使用一个动态的函数作为分发的依据，要添加新的类型，只需要为新类型添加一个分发函数；但是要添加新的操作，就需要在每个类型的分发函数中，添加一个新的分支，原有类型越多，添加新操作修改的地方就越多。
 > 对于需要频繁新增类型的系统，应该选择 message-passing 风格，因为它新增类型非常简单，不需要修改旧的代码；对于需要频繁新增操作的系统，应该选择 data-directed 风格，添加操作只需要在实现了新的函数后，添加到二维表中即可。
 
+# 2.5 Systems with Generic Operations
+
 ## 2.5.1 Generic Arithmetic Operations
 
 ### Exercise 2.77
@@ -3450,3 +3452,150 @@ this procedure takes as arguments an employee’s name and a list of all the div
 #f
 #t
 ```
+
+## 2.5.2 Combining Data of Different Types
+
+### Exercise2.81
+> Louis Reasoner has noticed that apply-generic may try to coerce the arguments to each other’s type even if they already have the same type. Therefore, he reasons, we need to put procedures in the coercion table to coerce arguments of each type to their own type. For example, in addition to the scheme-number->complex coercion shown above, he would do:
+```
+(define (scheme-number->scheme-number n) n)
+(define (complex->complex z) z)
+(put-coercion 'scheme-number
+              'scheme-number
+              scheme-number->scheme-number)
+(put-coercion 'complex 'complex complex->complex)
+```
+>> a. With Louis’s coercion procedures installed, what happens if apply-generic is called with two arguments of type scheme-number or two arguments of type complex for an operation that is not found in the table for those types? For example, assume that we’ve defined a generic exponentiation operation:
+```
+(define (exp x y) (apply-generic 'exp x y))
+```
+>> and have put a procedure for exponentiation in the Scheme-number package but not in any other package:
+```
+;; following added to Scheme-number package
+(put 'exp '(scheme-number scheme-number)
+     (lambda (x y) (tag (expt x y))))
+     ; using primitive expt
+```
+>> What happens if we call exp with two complex numbers as arguments?
+
+>> b. Is Louis correct that something had to be done about coercion with arguments of the same type, or does apply-generic work correctly as is?
+
+>> c. c. Modify apply-generic so that it doesn’t try coercion if the two arguments have the same type.
+---
+> 这道题要想看到实际执行结果，首先要实现 put-coercion 和 get-coercion 过程，我从网上找到的代码如下：
+```
+(define *operation-table* (make-hash))
+
+; A function to add a coercion entry to the table
+(define (put-coercion type1 type2 fn)
+  (hash-set! *operation-table* (list type1 type2) fn))
+
+; A function to get a coercion function from type1 to type2
+(define (get-coercion type1 type2)
+  (hash-ref *operation-table* (list type1 type2) #f))
+```
+> a. 我在 2.80 和本节的新 apply-generic 的基础上添加了本题所需的代码，然后生成了2个复数 3+4i 和 5+12i，第一次直接运行程序陷入了无穷递归调用，所以我添加了 trace 函数追踪 apply-generic 的调用情况。
+```
+(require racket/trace)
+
+(define (scheme-number->scheme-number n) n)
+(define (complex->complex z) z)
+(put-coercion 'scheme-number
+              'scheme-number
+              scheme-number->scheme-number)
+(put-coercion 'complex 'complex complex->complex)
+
+
+(install-rectangular-package)
+(install-polar-package)
+(install-complex-package)
+(define c1 (make-complex-from-real-imag 3 4))
+(define c2 (make-complex-from-real-imag 5 12))
+
+(trace apply-generic)
+(exp c1 c2)
+
+; 结果如下
+>(apply-generic
+  'exp
+  '(complex rectangular 3 . 4)
+  '(complex rectangular 5 . 12))
+>(apply-generic
+  'exp
+  '(complex rectangular 3 . 4)
+  '(complex rectangular 5 . 12))
+...
+```
+> 可以看出现在的程序在找不到对应的过程时，不停使用相同的参数调用 apply-generic 过程。
+
+> b. 很显然 Louis 的代码对于2个参数是相同类型时的情况是不正确的，不仅没有解决相同类型参数的问题，反而使得问题更严重了。因为没有添加强制类型转换过程时，对复数求 exp 时，程序会报错：`No method for these types '(exp (complex complex))`，修改之后反而会死循环。
+
+> 因为修改后，`(get-coercion 'complex 'complex)` 可以找到从 coercion 表中找到对应的过程，所以 apply-generic 过程里的 t1->t2 条件就成立了，开始执行 `(apply-generic op (t1->t2 a1) a2)`。但是 t1->t2 会返回自身， `(t1->t2 a1)` 结果为 a1，因此程序就会不断循环执行，如下所示：
+```
+(get-coercion 'complex 'complex)
+(apply-generic op (t1->t2 a1) a2)
+(apply-generic op a1 a2)
+
+(get-coercion 'complex 'complex)
+(apply-generic op (t1->t2 a1) a2)
+(apply-generic op a1 a2)
+
+(get-coercion 'complex 'complex)
+(apply-generic op (t1->t2 a1) a2)
+(apply-generic op a1 a2)
+
+...
+```
+> c. 要解决死循环的问题，只要在判断 t1->t2 之前先判断 t1 和 t2 是否是相同类型，如果类型相同就不进行强制类型转换。
+```
+(define (apply-generic op . args) 
+  (define (no-method type-tags) 
+    (error "No method for these types" 
+           (list op type-tags))) 
+  
+  (let ((type-tags (map type-tag args))) 
+    (let ((proc (get op type-tags))) 
+      (if proc 
+          (apply proc (map contents args)) 
+          (if (= (length args) 2) 
+              (let ((type1 (car type-tags)) 
+                    (type2 (cadr type-tags)) 
+                    (a1 (car args)) 
+                    (a2 (cadr args)))
+                ; 判断两个参数的类型是否相同
+                (if (equal? type1 type2) 
+                    (no-method type-tags) 
+                    (let ((t1->t2 (get-coercion type1 type2)) 
+                          (t2->t1 (get-coercion type2 type1)) 
+                          (a1 (car args)) 
+                          (a2 (cadr args))) 
+                      (cond (t1->t2 
+                             (apply-generic op (t1->t2 a1) a2)) 
+                            (t2->t1 
+                             (apply-generic op a1 (t2->t1 a2))) 
+                            (else (no-method type-tags)))))) 
+              (no-method type-tags))))))(define (apply-generic op . args)
+  (let ((type-tags (map type-tag args))) 
+    (let ((proc (get op type-tags))) 
+      (if proc 
+          (apply proc (map contents args)) 
+          (if (= (length args) 2) 
+              (let ((type1 (car type-tags)) 
+                    (type2 (cadr type-tags)) 
+                    (a1 (car args)) 
+                    (a2 (cadr args)))
+                ; 判断两个参数的类型是否相同
+                (if (equal? type1 type2) 
+                    (error "No method for these types" (list op type-tags)) 
+                    (let ((t1->t2 (get-coercion type1 type2)) 
+                          (t2->t1 (get-coercion type2 type1)) 
+                          (a1 (car args)) 
+                          (a2 (cadr args))) 
+                      (cond (t1->t2 
+                             (apply-generic op (t1->t2 a1) a2)) 
+                            (t2->t1 
+                             (apply-generic op a1 (t2->t1 a2))) 
+                            (else (no-method type-tags)))))) 
+              (no-method type-tags))))))
+```
+> 再次执行，得到如下反馈信息：`No method for these types '(exp (complex complex))`

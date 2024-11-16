@@ -16,6 +16,8 @@
 (provide sqrt)
 (provide put)
 (provide get)
+(provide put-coercion)
+(provide get-coercion)
 
 
 (define *operation-table* (make-hash))
@@ -25,6 +27,14 @@
 
 (define (get op-type op-name)
   (hash-ref *operation-table* (list op-type op-name) #f))
+
+; A function to add a coercion entry to the table
+(define (put-coercion type1 type2 fn)
+  (hash-set! *operation-table* (list type1 type2) fn))
+
+; A function to get a coercion function from type1 to type2
+(define (get-coercion type1 type2)
+  (hash-ref *operation-table* (list type1 type2) #f))
 
 (define nil '())
 
