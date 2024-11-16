@@ -33,3 +33,9 @@
 
 ### 14th
 > Today is wonderful. There was first snow in this winter and I watched the lastest update of the legendary TV show <Bye Bye my lover>.
+
+### 15th
+> I got my salary today, that's good!
+
+### 16th
+> I forgot bring materials for my tutor class, however, my student didn't find that. I was lucky today, but I will remember this the next time.
