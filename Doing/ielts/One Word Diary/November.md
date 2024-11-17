@@ -39,3 +39,6 @@
 
 ### 16th
 > I forgot bring materials for my tutor class, however, my student didn't find that. I was lucky today, but I will remember this the next time.
+
+### 17th
+> My throat is hurt now because I tutored 4 students, that's really tired.
