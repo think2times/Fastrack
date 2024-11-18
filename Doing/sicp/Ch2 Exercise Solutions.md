@@ -3574,28 +3574,47 @@ this procedure takes as arguments an employee’s name and a list of all the div
                             (t2->t1 
                              (apply-generic op a1 (t2->t1 a2))) 
                             (else (no-method type-tags)))))) 
-              (no-method type-tags))))))(define (apply-generic op . args)
-  (let ((type-tags (map type-tag args))) 
-    (let ((proc (get op type-tags))) 
-      (if proc 
-          (apply proc (map contents args)) 
-          (if (= (length args) 2) 
-              (let ((type1 (car type-tags)) 
-                    (type2 (cadr type-tags)) 
-                    (a1 (car args)) 
-                    (a2 (cadr args)))
-                ; 判断两个参数的类型是否相同
-                (if (equal? type1 type2) 
-                    (error "No method for these types" (list op type-tags)) 
-                    (let ((t1->t2 (get-coercion type1 type2)) 
-                          (t2->t1 (get-coercion type2 type1)) 
-                          (a1 (car args)) 
-                          (a2 (cadr args))) 
-                      (cond (t1->t2 
-                             (apply-generic op (t1->t2 a1) a2)) 
-                            (t2->t1 
-                             (apply-generic op a1 (t2->t1 a2))) 
-                            (else (no-method type-tags)))))) 
               (no-method type-tags))))))
 ```
 > 再次执行，得到如下反馈信息：`No method for these types '(exp (complex complex))`
+
+### Exercise 2.82
+> Show how to generalize apply-generic to handle coercion in the general case of multiple arguments. One strategy is to attempt to coerce all the arguments to the type of the first argument, 
+then to the type of the second argument, and so on. Give an example of a situation where this strategy (and likewise the two-argument version given above) is not sufficiently general.
+(Hint: Consider the case where there are some suitable mixed-type operations present in the table that will not be tried.)
+---
+> 这道题太难了，我上网看了别人的答案还是写不出来，最后挑了一个能看懂的。。
+```
+(define (apply-generic op . args) 
+  (define (no-method type-tags) 
+    (error "No method for these types" 
+           (list op type-tags)))
+  
+  (define (type-tags args) 
+         (map type-tag args))
+
+  ; 对每一个参数尝试进行强制类型转换
+  (define (try-coerce-to target)
+    (map (lambda (origin)
+           (if (eq? (type-tag origin) (type-tag target))
+               (lambda (x) x)   ; 如果类型一致，不进行转换
+               (let ((coercor (get-coercion (type-tag origin) (type-tag target)))) 
+                 (if coercor 
+                     (coercor origin) 
+                     origin)))) 
+           args))
+  
+  (define (iterate next) 
+    (if (null? next)
+        (no-method (type-tags args)) 
+        (let ((coerced (try-coerce-to (car next)))) 
+          (let ((proc (get op (type-tags coerced)))) 
+            (if proc 
+                (apply proc (map contents coerced)) 
+                (iterate (cdr next))))))) 
+  
+  (let ((proc (get op (type-tags args)))) 
+    (if proc 
+        (apply proc (map contents args)) 
+        (iterate args))))
+```
