@@ -1,5 +1,6 @@
 #lang racket
 
+(require racket/trace)
 (require "../Modules/base.rkt")
 
 
@@ -16,26 +17,33 @@
       (cdr datum)
       (error "Bad tagged datum: CONTENTS" datum)))
 
-(define (apply-generic op . args)
-  (let ((type-tags (map type-tag args)))
-    (let ((proc (get op type-tags)))
-      (if proc
-          (apply proc (map contents args))
-          (if (= (length args) 2)
-              (let ((type1 (car type-tags))
-                    (type2 (cadr type-tags))
-                    (a1 (car args))
+(define (apply-generic op . args) 
+  (define (no-method type-tags) 
+    (error "No method for these types" 
+           (list op type-tags))) 
+  
+  (let ((type-tags (map type-tag args))) 
+    (let ((proc (get op type-tags))) 
+      (if proc 
+          (apply proc (map contents args)) 
+          (if (= (length args) 2) 
+              (let ((type1 (car type-tags)) 
+                    (type2 (cadr type-tags)) 
+                    (a1 (car args)) 
                     (a2 (cadr args)))
-                (let ((t1->t2 (get-coercion type1 type2))
-                      (t2->t1 (get-coercion type2 type1)))
-                  (cond (t1->t2
-                         (apply-generic op (t1->t2 a1) a2))
-                        (t2->t1
-                         (apply-generic op a1 (t2->t1 a2)))
-                        (else (error "No method for these types"
-                                     (list op type-tags))))))
-              (error "No method for these types"
-                     (list op type-tags)))))))
+                ; 判断两个参数的类型是否相同
+                (if (equal? type1 type2) 
+                    (no-method type-tags) 
+                    (let ((t1->t2 (get-coercion type1 type2)) 
+                          (t2->t1 (get-coercion type2 type1)) 
+                          (a1 (car args)) 
+                          (a2 (cadr args))) 
+                      (cond (t1->t2 
+                             (apply-generic op (t1->t2 a1) a2)) 
+                            (t2->t1 
+                             (apply-generic op a1 (t2->t1 a2))) 
+                            (else (no-method type-tags)))))) 
+              (no-method type-tags))))))
 
 (define (add x y) (apply-generic 'add x y))
 (define (sub x y) (apply-generic 'sub x y))
@@ -234,5 +242,6 @@
 (install-complex-package)
 (define c1 (make-complex-from-real-imag 3 4))
 (define c2 (make-complex-from-real-imag 5 12))
-(exp c1 c2)
+
 (trace apply-generic)
+(exp c1 c2)
