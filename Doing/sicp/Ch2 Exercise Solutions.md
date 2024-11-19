@@ -3583,7 +3583,7 @@ this procedure takes as arguments an employee’s name and a list of all the div
 then to the type of the second argument, and so on. Give an example of a situation where this strategy (and likewise the two-argument version given above) is not sufficiently general.
 (Hint: Consider the case where there are some suitable mixed-type operations present in the table that will not be tried.)
 ---
-> 这道题太难了，我上网看了别人的答案还是写不出来，最后挑了一个能看懂的。。
+> 这道题还是挺难的，题目的提示是通过一个双循环来依次进行类型转换，我参考别人的代码修改了很久最后才能跑通，用下面的代码替换上一题的 apply-generic 过程，可以验证是否能用。
 ```
 (define (apply-generic op . args) 
   (define (no-method type-tags) 
