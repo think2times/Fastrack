@@ -3618,3 +3618,26 @@ then to the type of the second argument, and so on. Give an example of a situati
         (apply proc (map contents args)) 
         (iterate args))))
 ```
+
+### Exercise 2.83
+> Suppose you are designing a generic arithmetic system for dealing with the tower of types shown in Figure 2.25: integer, rational, real, complex. For each type (except complex), 
+design a procedure that raises objects of that type one level in the tower. Show how to install a generic raise operation that will work for each type (except complex).
+---
+> 这道题挺简单的，只要在每个包里用下一级的构造方法生成符合下一级规则的数就行。因为有理数本身就可以直接看成实数，所以我没有写有理数到实数和实数到复数的转换过程，这样直接在 2.81 的基础上修改就行了。
+```
+(define (raise x) (apply-generic 'raise x))
+
+; interger to rational，在 scheme-number 包添加如下代码
+(put 'raise '(scheme-number) (lambda (x) make-rational x 1))
+
+; rational to complex，在 rational 包添加如下代码
+(put 'raise '(rational) (lambda (x) (make-complex-from-real-imag x 0)))
+
+; 如果要实现有理数到实数的转换，只要将有理数乘以 1.0 即可
+```
+
+### Exercise 2.84
+> Using the raise operation of Exercise 2.83, modify the apply-generic procedure so that it coerces its arguments to have the same type by the method of successive raising, as discussed in this section. 
+You will need to devise a way to test which of two types is higher in the tower. Do this in a manner that is “compatible” with the rest of the system and will not lead to problems in adding new levels to the tower.
+---
+> 
