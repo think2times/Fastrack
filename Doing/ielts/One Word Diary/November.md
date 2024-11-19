@@ -42,3 +42,6 @@
 
 ### 17th
 > My throat is hurt now because I tutored 4 students, that's really tired.
+
+### 18th
+> Today I ate dinner with my friends and we talked many interesting things. I'm very happy.
