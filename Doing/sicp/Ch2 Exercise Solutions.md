@@ -3633,11 +3633,46 @@ design a procedure that raises objects of that type one level in the tower. Show
 ; rational to complex，在 rational 包添加如下代码
 (put 'raise '(rational) (lambda (x) (make-complex-from-real-imag x 0)))
 
-; 如果要实现有理数到实数的转换，只要将有理数乘以 1.0 即可
+; 如果要实现有理数到实数的转换，只要将有理数分子分母相除再乘以 1.0 即可
 ```
 
 ### Exercise 2.84
 > Using the raise operation of Exercise 2.83, modify the apply-generic procedure so that it coerces its arguments to have the same type by the method of successive raising, as discussed in this section. 
 You will need to devise a way to test which of two types is higher in the tower. Do this in a manner that is “compatible” with the rest of the system and will not lead to problems in adding new levels to the tower.
 ---
-> 
+> 这道题难度也不大，而且 tower 结构更简单，参考 2.81 和 2.83 再针对参数类型分别进行处理就行了
+```
+(define (apply-generic op . args) 
+  (define (no-method type-tags) 
+    (error "No method for these types" 
+           (list op type-tags)))
+  
+  (define (type-tags args) 
+    (map type-tag args))
+
+  ; 将当前的类型升级为上一级，如果不存在对应的转换函数，返回 false
+  (define (tower-raise origin target)
+    (let ((o-type (type-tag origin))
+          (t-type (type-tag target)))
+      (cond ((eq? o-type t-type)
+             origin)
+            ((get 'raise (list o-type))
+             (tower-raise ((get 'raise (list o-type)) (contents origin) target)))
+            (else false))))
+
+  (let ((proc (get op (type-tags args)))) 
+    (if proc 
+        (apply proc (map contents args))
+        (if (= (length args) 2)
+            ;; 假设类型以简单的 tower 形式排序，从低到高
+            (let ((curr (car args))
+                  (next (cadr args)))
+              (cond ((eq? (type-tag curr) (type-tag next))
+                     (no-method (type-tags args)))
+                    ((tower-raise curr next)
+                     (apply-generic op (tower-raise curr next) next))
+                    ((tower-raise curr next)
+                     (apply-generic op (tower-raise next curr) curr))
+                    (else (no-method (type-tags args)))))
+            (no-method (type-tags args))))))
+```
