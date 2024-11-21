@@ -51,3 +51,6 @@
 
 ### 20th
 > Today, Tian yuefeng proposed to do something to make our life better and I agreed. She will read 10 minutes and recite 5 English words everyday. And I will watch 10 minutes English videos of AI and write a diary in English. I also want to learn piano, but I don't tell her. I'll tell her when I can play a song completely.
+
+### 21th
+> I wathed the latest update of popular TV show Bye Bye Lover, Mai lin is much more disgusting than ever. She is very very very selfish. She only think herself whatever she does. And she has two standards for herself and others. I love the show, but I hate her!
