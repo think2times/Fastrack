@@ -3633,7 +3633,7 @@ design a procedure that raises objects of that type one level in the tower. Show
 ; rational to complex，在 rational 包添加如下代码
 (put 'raise '(rational) (lambda (x) (make-complex-from-real-imag x 0)))
 
-; 如果要实现有理数到实数的转换，只要将有理数分子分母相除再乘以 1.0 即可
+; 如果要实现有理数到实数的转换，只要将有理数转换为分子分母相除再乘以 1.0 即可
 ```
 
 ### Exercise 2.84
