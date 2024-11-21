@@ -3676,3 +3676,16 @@ You will need to devise a way to test which of two types is higher in the tower.
                     (else (no-method (type-tags args)))))
             (no-method (type-tags args))))))
 ```
+
+### Exercise 2.85
+> This section mentioned a method for “simplifying” a data object by lowering it in the tower of types as far as possible. Design a procedure drop that accomplishes this for the tower described in Exercise 2.83. 
+The key is to decide, in some general way, whether an object can be lowered. For example, the complex number 1.5 + 0i can be lowered as far as real, the complex number 1 + 0i can be lowered as far as integer, 
+and the complex number 2 +3i cannot be lowered at all. Here is a plan for determining whether an object can be lowered: Begin by defining a generic operation project that “pushes” an object down in the tower. 
+For example, projecting a complex number would involve throwing away the imaginary part. Then a number can be dropped if, when we project it and raise the result back to the type we started with, we end up with 
+something equal to what we started with. Show how to implementthis idea indetail, by writing a drop procedure that drops an object as far as possible. You will need to design the various projection operations53 
+and install project as a generic operation in the system. You will also need to make use of a generic equality predicate, such as described in Exercise 2.79. Finally, use drop to rewrite apply-generic 
+from Exercise 2.84 so that it “simplifies” its answers.
+---
+> 这道题本身难度不大，project 函数就是对一些特殊情况的处理，drop 就是要重复这一过程直到不能降级为止。但是从 2.83 开始我感觉做的有点怪怪的，我似乎没有很好地理解这些题目的目的，也没有在写完之后用测试样例监测，只是单独完成了那个功能。
+> 所以我决定重新写一遍，每一个过程都要有对应的测试样例。
+
