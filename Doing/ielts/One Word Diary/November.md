@@ -54,3 +54,6 @@
 
 ### 21th
 > I wathed the latest update of popular TV show Bye Bye Lover, Mai lin is much more disgusting than ever. She is very very very selfish. She only think herself whatever she does. And she has two standards for herself and others. I love the show, but I hate her!
+
+### 22th
+> Today I met a considerably triky question when I was learning sicp. I hope I can solve it after work.
