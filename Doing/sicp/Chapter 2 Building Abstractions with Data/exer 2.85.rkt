@@ -17,6 +17,15 @@
       (cdr datum)
       (error "Bad tagged datum: CONTENTS" datum)))
 
+(define (drop x)
+  (let ((project-proc (get 'project (type-tag x))))
+    (if project-proc
+        (let ((project-number (project-proc (contents x))))
+          (if (equ? project-number (raise project-number))
+              (drop project-number)
+              x))
+        x)))
+
 (define (apply-generic op . args) 
   (define (no-method type-tags) 
     (error "No method for these types" 
@@ -29,8 +38,7 @@
   (define (tower-raise origin target)
     (let ((o-type (type-tag origin))
           (t-type (type-tag target)))
-      (cond ((eq? o-type t-type)
-             origin)
+      (cond ((equal? o-type t-type) origin)
             ((get 'raise (list o-type))
              (tower-raise ((get 'raise (list o-type)) (contents origin) target)))
             (else false))))
@@ -61,23 +69,25 @@
 (define (raise x) (apply-generic 'raise x))
 (define (project x) (apply-generic 'project x))
 
-;; 数字运算包
-(define (install-scheme-number-package)
-  (put 'add '(scheme-number scheme-number) +)
-  (put 'sub '(scheme-number scheme-number) -)
-  (put 'mul '(scheme-number scheme-number) *)
-  (put 'div '(scheme-number scheme-number) /)
-  (put 'equ? '(scheme-number scheme-number) =)
-  (put '=zero? '(scheme-number) (lambda (x) (= x 0)))
-  (put 'exp '(scheme-number scheme-number)
+;; 整数运算包
+(define (install-integer-package)
+  (put 'add '(integer integer) +)
+  (put 'sub '(integer integer) -)
+  (put 'mul '(integer integer) *)
+  (put 'div '(integer integer) /)
+  (put 'equ? '(integer integer) =)
+  (put '=zero? '(integer) (lambda (x) (= x 0)))
+  (put 'exp '(integer integer)
        ; using primitive expt
-       (lambda (x y) (attach-tag 'scheme-number (expt x y))))
-  (put 'raise '(scheme-number) (lambda (x) make-rational x 1))
-  (put 'make 'scheme-number (lambda (x) (attach-tag 'scheme-number x)))
+       (lambda (x y) (attach-tag 'integer (expt x y))))
+  (put 'raise '(integer)
+       (lambda (x) make-rational x 1))
+  (put 'make 'integer
+       (lambda (x) (attach-tag 'integer x)))
   'done)
 
-(define (make-scheme-number n)
-  ((get 'make 'scheme-number) n))
+(define (make-integer n)
+  ((get 'make 'integer) n))
 
 ;; 有理数
 (define (install-rational-package)
@@ -123,19 +133,45 @@
        (lambda (x y) (tag (div-rat x y))))
   (put 'equ? '(rational rational)
        (lambda (x y) (equ? x y)))
-  (put '=zero? '(rational) (lambda (x) (= (numer x) 0)))
-  (put 'raise '(rational) (lambda (x) (make-complex-from-real-imag x 0)))
+  (put '=zero? '(rational)
+       (lambda (x) (= (numer x) 0)))
+  (put 'raise '(rational)
+       (lambda (x) (make-real (* 1.0 (/ (numer x) (denom x))))))
   (put 'project '(rational)
-       (lambda (x) (cond ((= (numer x) 0) (make-scheme-number 0))
-                         ((= (denom x) 1) (make-scheme-number (numer x)))
-                         (else false))))
-                         
+       (lambda (x) (make-integer (round (/ (numer x) (denom x))))))
   (put 'make 'rational
        (lambda (n d) (tag (make-rat n d))))
   'done)
 
 (define (make-rational n d)
   ((get 'make 'rational) n d))
+
+(define (install-real-package)
+  (define (tag x) (attach-tag 'real x))
+  (put 'add '(real real)
+       (lambda (x y) (tag (+ x y))))
+  (put 'sub '(real real)
+       (lambda (x y) (tag (- x y))))
+  (put 'mul '(real real)
+       (lambda (x y) (tag (* x y))))
+  (put 'div '(real real)
+       (lambda (x y) (tag (/ x y))))
+  (put 'equ? '(real real)
+       (lambda (x y) (= x y)))
+  (put '=zero? '(real)
+       (lambda (x) (= x 0)))
+  (put 'raise '(real)
+       (lambda (x) (make-complex-from-real-imag x 0)))
+  (put 'project '(real)
+       ;; 实数转为有理数没啥简单的好办法
+       ;; 我就直接默认实数都转为分母为1的有理数
+       ;; 测试的时候实数全选整数
+       (lambda (x) (make-rational x 1)))
+  (put 'make 'real (lambda (x) (tag x)))
+  'done)
+
+(define (make-real r)
+  ((get 'make 'real) r))
 
 
 ;; 复数
@@ -219,9 +255,10 @@
        (lambda (z1 z2) (tag (div-complex z1 z2))))
   (put 'equ? '(complex complex)
        (lambda (z1 z2) (equ? z1 z2)))
-  (put '=zero? '(complex) (lambda (z) (= (real-part z) (imag-part z) 0)))
+  (put '=zero? '(complex)
+       (lambda (z) (= (real-part z) (imag-part z) 0)))
   (put 'project '(complex)
-       (lambda (z) (if (= (imag-part z) 0) (make-rational (real-part z) 1) false)))
+       (lambda (z) (make-real (real-part z))))
   (put 'make-from-real-imag 'complex
        (lambda (x y) (tag (make-from-real-imag x y))))
   (put 'make-from-mag-ang 'complex
@@ -242,18 +279,35 @@
 (define (magnitude z) (apply-generic 'magnitude z)) 
 (define (angle z) (apply-generic 'angle z))
 
-(define (scheme-number->rational n)
-  (make-rational (contents n) 1))
-
-(define (rational->complex r)
-  (make-complex-from-real-imag (contents r) 0))
-
 
 (install-rectangular-package)
-(install-polar-package)
+(install-integer-package)
+(install-rational-package)
+(install-real-package)
 (install-complex-package)
-(define c1 (make-complex-from-real-imag 3 4))
-(define c2 (make-complex-from-real-imag 5 12))
+  
+(define int-val (make-integer 10))
+(define rat-val (make-rational 1 2))
+(define real-val (make-real 2))
+(define complex-val (make-complex-from-real-imag 10 20))
+(define complex-val-2 (make-complex-from-real-imag 10 -20))
 
-(trace apply-generic)
-(exp c1 c2)
+int-val
+(raise int-val)
+(project (raise int-val))
+
+(equ? (project (raise int-val)) int-val)
+(equ? (project (raise rat-val)) rat-val)
+(equ? (project (raise real-val)) real-val)
+  
+(add int-val int-val)
+(add rat-val rat-val)
+(add real-val real-val)
+(add complex-val complex-val-2)
+  
+(add int-val complex-val)
+(add complex-val int-val)
+
+(add int-val real-val)
+(add real-val int-val)
+     
