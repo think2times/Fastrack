@@ -3687,5 +3687,5 @@ and install project as a generic operation in the system. You will also need to 
 from Exercise 2.84 so that it “simplifies” its answers.
 ---
 > 这道题本身难度不大，project 函数就是对一些特殊情况的处理，drop 就是要重复这一过程直到不能降级为止。但是从 2.83 开始我感觉做的有点怪怪的，我似乎没有很好地理解这些题目的目的，也没有在写完之后用测试样例监测，只是单独完成了那个功能。
-> 所以我决定重新写一遍，每一个过程都要有对应的测试样例。
+> 做到这道题我感觉我已经不知道在干什么了，所以我决定重新写一遍，把实数这一层也加上，同时每道题目新增的过程都要有对应的测试样例。
 
