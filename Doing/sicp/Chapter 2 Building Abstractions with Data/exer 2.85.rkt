@@ -1,6 +1,5 @@
 #lang racket
 
-(require racket/trace)
 (require "../Modules/base.rkt")
 
 
@@ -45,7 +44,7 @@
 
   (let ((proc (get op (type-tags args)))) 
     (if proc 
-        (apply proc (map contents args))
+        (drop (apply proc (map contents args)))
         (if (= (length args) 2)
             ;; 假设类型以简单的 tower 形式排序,从低到高
             (let ((curr (car args))
@@ -59,6 +58,7 @@
                     (else (no-method (type-tags args)))))
             (no-method (type-tags args))))))
 
+
 (define (add x y) (apply-generic 'add x y))
 (define (sub x y) (apply-generic 'sub x y))
 (define (mul x y) (apply-generic 'mul x y))
@@ -71,20 +71,24 @@
 
 ;; 整数运算包
 (define (install-integer-package)
-  (put 'add '(integer integer) +)
-  (put 'sub '(integer integer) -)
-  (put 'mul '(integer integer) *)
-  (put 'div '(integer integer) /)
+  (define (tag x) (attach-tag 'integer x))
+  (put 'add '(integer integer)
+       (lambda (x y) (tag (+ x y))))
+  (put 'sub '(integer integer)
+       (lambda (x y) (tag (- x y))))
+  (put 'mul '(integer integer)
+       (lambda (x y) (tag (* x y))))
+  (put 'div '(integer integer)
+       (lambda (x y) (tag (/ x y))))
   (put 'equ? '(integer integer) =)
   (put '=zero? '(integer) (lambda (x) (= x 0)))
   (put 'exp '(integer integer)
        ; using primitive expt
        (lambda (x y) (attach-tag 'integer (expt x y))))
   (put 'raise '(integer)
-       (lambda (x) make-rational x 1))
+       (lambda (x) (make-rational x 1)))
   (put 'make 'integer
-       (lambda (x) (attach-tag 'integer x)))
-  'done)
+       (lambda (x) (attach-tag 'integer x))))
 
 (define (make-integer n)
   ((get 'make 'integer) n))
@@ -140,8 +144,7 @@
   (put 'project '(rational)
        (lambda (x) (make-integer (round (/ (numer x) (denom x))))))
   (put 'make 'rational
-       (lambda (n d) (tag (make-rat n d))))
-  'done)
+       (lambda (n d) (tag (make-rat n d)))))
 
 (define (make-rational n d)
   ((get 'make 'rational) n d))
@@ -167,8 +170,7 @@
        ;; 我就直接默认实数都转为分母为1的有理数
        ;; 测试的时候实数全选整数
        (lambda (x) (make-rational x 1)))
-  (put 'make 'real (lambda (x) (tag x)))
-  'done)
+  (put 'make 'real (lambda (x) (tag x))))
 
 (define (make-real r)
   ((get 'make 'real) r))
@@ -196,8 +198,7 @@
   (put 'make-from-real-imag 'rectangular
        (lambda (x y) (tag (make-from-real-imag x y))))
   (put 'make-from-mag-ang 'rectangular
-       (lambda (r a) (tag (make-from-mag-ang r a))))
-  'done)
+       (lambda (r a) (tag (make-from-mag-ang r a)))))
 
 (define (install-polar-package)
   ;; internal procedures
@@ -218,8 +219,7 @@
   (put 'make-from-real-imag 'polar
        (lambda (x y) (tag (make-from-real-imag x y))))
   (put 'make-from-mag-ang 'polar
-       (lambda (r a) (tag (make-from-mag-ang r a))))
-  'done)
+       (lambda (r a) (tag (make-from-mag-ang r a)))))
 
 (define (install-complex-package)
   ;; imported procedures from rectangular and polar packages
@@ -266,8 +266,7 @@
   (put 'real-part '(complex) real-part)
   (put 'imag-part '(complex) imag-part)
   (put 'magnitude '(complex) magnitude)
-  (put 'angle '(complex) angle)
-  'done)
+  (put 'angle '(complex) angle))
 
 (define (make-complex-from-real-imag x y)
   ((get 'make-from-real-imag 'complex) x y))
@@ -289,25 +288,5 @@
 (define int-val (make-integer 10))
 (define rat-val (make-rational 1 2))
 (define real-val (make-real 2))
-(define complex-val (make-complex-from-real-imag 10 20))
+(define complex-val-1 (make-complex-from-real-imag 10 0))
 (define complex-val-2 (make-complex-from-real-imag 10 -20))
-
-int-val
-(raise int-val)
-(project (raise int-val))
-
-(equ? (project (raise int-val)) int-val)
-(equ? (project (raise rat-val)) rat-val)
-(equ? (project (raise real-val)) real-val)
-  
-(add int-val int-val)
-(add rat-val rat-val)
-(add real-val real-val)
-(add complex-val complex-val-2)
-  
-(add int-val complex-val)
-(add complex-val int-val)
-
-(add int-val real-val)
-(add real-val int-val)
-     
