@@ -3686,6 +3686,724 @@ something equal to what we started with. Show how to implementthis idea indetail
 and install project as a generic operation in the system. You will also need to make use of a generic equality predicate, such as described in Exercise 2.79. Finally, use drop to rewrite apply-generic 
 from Exercise 2.84 so that it “simplifies” its answers.
 ---
-> 这道题本身难度不大，project 函数就是对一些特殊情况的处理，drop 就是要重复这一过程直到不能降级为止。但是从 2.83 开始我感觉做的有点怪怪的，我似乎没有很好地理解这些题目的目的，也没有在写完之后用测试样例监测，只是单独完成了那个功能。
-> 做到这道题我感觉我已经不知道在干什么了，所以我决定重新写一遍，把实数这一层也加上，同时每道题目新增的过程都要有对应的测试样例。
+```
+#lang racket
 
+(provide get put gcd square fib =number?)
+(provide get-coercion put-coercion)
+(provide display-brackets)
+
+;;;from chapter 1
+(define (square x) (* x x))
+
+(define (=number? x num) (and (number? x) (= x num)))
+
+;;;from section 1.2.5, for Section 2.1.1
+(define (gcd a b)
+  (if (= b 0)
+      a
+      (gcd b (remainder a b))))
+
+;;;from section 1.2.2, for Section 2.2.3
+(define (fib n)
+  (cond ((= n 0) 0)
+        ((= n 1) 1)
+        (else (+ (fib (- n 1))
+                 (fib (- n 2))))))
+
+;;; ***not in book, but needed for code before quote is introduced*** 
+(define nil '())
+
+;;;-----------
+;; put get 简单实现
+(define *op-table* (make-hash))
+
+(define (put op type proc)
+  (hash-set! *op-table* (list op type) proc))
+
+(define (get op type)
+  (hash-ref *op-table* (list op type) #f))
+
+;;;-----------
+;; put-coercion get-coercion 简单实现
+(define *coercion-table* (make-hash))
+
+(define (put-coercion op type proc)
+  (hash-set! *coercion-table* (list op type) proc))
+
+(define (get-coercion op type)
+  (hash-ref *coercion-table* (list op type) #f))
+
+;;---------------
+(define (display-brackets val)
+  (display "(")
+  (display val)
+  (display ")"))
+
+(module* complex-op #f
+  (provide install-polar-package install-rectangular-package)
+  (provide real-part imag-part magnitude angle)
+  )
+
+(module* data-directed #f
+  (provide attach-tag type-tag contents apply-generic)
+  )
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(define (add-complex z1 z2)
+  (make-from-real-imag (+ (real-part z1) (real-part z2))
+                       (+ (imag-part z1) (imag-part z2))))
+
+(define (sub-complex z1 z2)
+  (make-from-real-imag (- (real-part z1) (real-part z2))
+                       (- (imag-part z1) (imag-part z2))))
+
+(define (mul-complex z1 z2)
+  (make-from-mag-ang (* (magnitude z1) (magnitude z2))
+                     (+ (angle z1) (angle z2))))
+
+(define (div-complex z1 z2)
+  (make-from-mag-ang (/ (magnitude z1) (magnitude z2))
+                     (- (angle z1) (angle z2))))
+
+(define (install-rectangular-package)
+  ;; internal procedures
+  (define (real-part z) (car z))
+  (define (imag-part z) (cdr z))
+  (define (magnitude z)
+    (sqrt (+ (square (real-part z)) (square (imag-part z)))))
+  (define (angle z)
+    (atan (imag-part z) (real-part z)))
+  (define (make-from-real-imag x y) (cons x y))
+  (define (make-from-mag-ang r a)
+    (cons (* r (cos a)) (* r (sin a))))
+  
+  ;; interface to the rest of the system
+  (define (tag x) (attach-tag 'rectangular x))
+  (put 'real-part '(rectangular) real-part)
+  (put 'imag-part '(rectangular) imag-part)
+  (put 'magnitude '(rectangular) magnitude)
+  (put 'angle     '(rectangular) angle)
+  (put 'make-from-real-imag '(rectangular)
+       (lambda (x y) (tag (make-from-real-imag x y))))
+  (put 'make-from-mag-ang '(rectangular)
+       (lambda (r a) (tag (make-from-mag-ang r a))))
+  'done)
+
+(define (install-polar-package)
+  ;; internal procedures
+  (define (real-part z)
+    (* (magnitude z) (cos (angle z))))
+  (define (imag-part z)
+    (* (magnitude z) (sin (angle z))))
+  (define (magnitude z) (car z))
+  (define (angle z) (cdr z))
+  (define (make-from-real-imag x y)
+    (cons (sqrt (+ (square x) (square y)))
+          (atan y x)))
+  (define (make-from-mag-ang r a) (cons r a))
+  
+  ;; interface to the rest of the system
+  (define (tag x) (attach-tag 'polar x))
+  (put 'real-part '(polar) real-part)
+  (put 'imag-part '(polar) imag-part)
+  (put 'magnitude '(polar) magnitude)
+  (put 'angle     '(polar) angle)
+  (put 'make-from-real-imag '(polar)
+       (lambda (x y) (tag (make-from-real-imag x y))))
+  (put 'make-from-mag-ang '(polar)
+       (lambda (r a) (tag (make-from-mag-ang r a))))
+  'done)
+
+(define (real-part z) (apply-generic 'real-part z))
+(define (imag-part z) (apply-generic 'imag-part z))
+(define (magnitude z) (apply-generic 'magnitude z))
+(define (angle z)     (apply-generic 'angle z))
+
+(define (make-from-real-imag x y)
+  ((get 'make-from-real-imag '(rectangular)) x y))
+
+(define (make-from-mag-ang r a)
+  ((get 'make-from-mag-ang '(polar)) r a))
+
+
+ 
+;;;;;;;;;;;;;;;;;;;;;;;;
+(define (attach-tag type-tag contents)
+  (cons type-tag contents))
+
+(define (type-tag datum)
+  (if (pair? datum)
+      (car datum)
+      (error "Bad tagged datum -- TYPE-TAG" datum)))
+
+(define (contents datum)
+  (if (pair? datum)
+      (cdr datum)
+      (error "Bad tagged datum -- CONTENTS" datum)))
+
+(define (raise-into x type)
+  (let ((x-type (type-tag x)))
+    (if (equal? x-type type)
+        x
+        (let ((x-raise (raise x)))
+          (if x-raise
+              (raise-into x-raise type)
+              #f)))))
+     
+(define (apply-generic op . args)
+  (let ((type-tags (map type-tag args)))
+    (let ((proc (get op type-tags)))
+      (if proc
+          (drop (apply proc (map contents args)))
+          (if (and (= (length args) 2)
+                   (not (equal? (car type-tags) (cadr type-tags)))) ; 防止 a1、a2 类型相同时死循环,见[练习 2.81]
+              (let ((a1 (car args))
+                    (a2 (cadr args)))
+                (let ((a1-raise (raise-into a1 (type-tag a2))))
+                  (if a1-raise
+                      (apply-generic op a1-raise a2)
+                      (let ((a2-raise (raise-into a2 (type-tag a1))))
+                        (if a2-raise
+                            (apply-generic op a1 a2-raise)
+                            (error "No method for these types -- APPLY-GENERIC"
+                                   (list op type-tags)))))))
+              (error "No method for these types -- APPLY-GENERIC"
+                     (list op type-tags)))))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;
+(define (raise x) 
+  (let ((raise-proc (get 'raise (list (type-tag x)))))
+    (if raise-proc
+        (raise-proc (contents x))
+        #f)))
+
+(define (project x)
+  (let ((proc (get 'project (list (type-tag x)))))
+    (if proc
+        (proc (contents x))
+        #f)))
+
+(define (drop x)
+  (if (pair? x) ; 过滤 #t、#f 等没有 type-tag 的参数
+      (let ((x-project (project x)))
+        (if (and x-project
+                 (equ? (raise x-project) x))
+            (drop x-project)
+            x))
+      x))
+
+(define (add x y) (apply-generic 'add x y))
+(define (equ? x y) (apply-generic 'equ? x y))
+
+(define (install-raise-package)
+  (put 'raise '(integer)
+       (lambda (x) (make-rational x 1)))
+  (put 'raise '(rational)
+       (lambda (x) (make-real (/ (number x) (denom x)))))
+  (put 'raise '(real)
+       (lambda (x) (make-complex-from-real-imag x 0)))
+  'done)
+
+(define (install-project-package)
+  (define (real->rational x)
+    (let ((rat (rationalize (inexact->exact x) 1/100)))
+      (make-rational (numerator rat) (denominator rat))))
+  (put 'project '(rational)
+       (lambda (x) (make-integer (number x))))
+  (put 'project '(real) real->rational)
+  (put 'project '(complex)
+       (lambda (x) (make-real (real-part x))))
+  'done)
+
+;;;;;;;;;;;;;;;;;;;;;;;;
+(define (install-integer-package)
+  (define (tag x) (attach-tag 'integer x))
+  (put 'add '(integer integer)
+       (lambda (x y) (tag (+ x y))))
+  (put 'equ? '(integer integer)
+       (lambda (x y) (= x y)))
+  (put 'make 'integer
+       (lambda (x) (tag x)))
+  'done)
+
+(define (make-integer n)
+  ((get 'make 'integer) n))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;
+(define (number x) (car x))
+(define (denom x) (cdr x))
+  
+(define (install-rational-package)
+  (define (make-rat n d) 
+    (let ((g (gcd n d)))
+      (cons (/ n g) (/ d g))))
+  (define (add-rat x y)
+    (make-rat (+ (* (number x) (denom y))
+                 (* (number y) (denom x)))
+              (* (denom x) (denom y))))
+  (define (equal-rat? x y)
+    (=  (* (number x) (denom y))
+        (* (number y) (denom x))))
+  (define (tag x) (attach-tag 'rational x))
+  (put 'add '(rational rational)
+       (lambda (x y) (tag (add-rat x y))))
+  (put 'equ? '(rational rational)
+       (lambda (x y) (equal-rat? x y)))
+  (put 'make 'rational
+       (lambda (n d) (tag (make-rat n d))))
+  'done)
+
+(define (make-rational n d)
+  ((get 'make 'rational) n d))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;
+(define (install-real-package)
+  (define (tag x) (attach-tag 'real x))
+  (put 'add '(real real)
+       (lambda (x y) (tag (+ x y))))
+  (put 'equ? '(real real)
+       (lambda (x y) (= x y)))
+  (put 'make 'real
+       (lambda (x) (tag x)))
+  'done)
+
+(define (make-real n)
+  ((get 'make 'real) n))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;
+(define (install-complex-package)
+  (define (make-from-real-imag x y)
+    ((get 'make-from-real-imag '(rectangular)) x y))
+  (define (add-complex z1 z2)
+    (make-from-real-imag (+ (real-part z1) (real-part z2))
+                         (+ (imag-part z1) (imag-part z2))))
+  (define (equ-complex? z1 z2)
+    (and (= (real-part z1) (real-part z2))
+         (= (imag-part z1) (imag-part z2))))
+  (define (tag z) (attach-tag 'complex z))
+  (put 'add '(complex complex)
+       (lambda (x y) (tag (add-complex x y))))
+  (put 'equ? '(complex complex)
+       (lambda (x y) (equ-complex? x y)))
+  (put 'make-from-real-imag 'complex
+       (lambda (x y) (tag (make-from-real-imag x y))))
+  'done)
+
+(define (make-complex-from-real-imag x y)
+  ((get 'make-from-real-imag 'complex) x y))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(install-rectangular-package)
+(install-integer-package)
+(install-rational-package)
+(install-real-package)
+(install-complex-package)
+(install-raise-package)
+(install-project-package)
+  
+(define int-val (make-integer 10))
+(define rat-val (make-rational 1 2))
+(define real-val (make-real 0.5))
+(define complex-val (make-complex-from-real-imag 10 20))
+(define complex-val-2 (make-complex-from-real-imag 10 -20))
+
+(equ? (project (raise int-val)) int-val)
+(equ? (project (raise rat-val)) rat-val)
+(equ? (project (raise real-val)) real-val)
+  
+(add int-val int-val)
+(add rat-val rat-val)
+(add real-val real-val)
+(add complex-val complex-val-2)
+  
+(add int-val complex-val)
+(add complex-val int-val)
+
+(add int-val real-val)
+(add real-val int-val)
+
+; 执行结果
+'(integer . 20)
+'(integer . 1)
+'(integer . 1)
+'(integer . 20)
+'(complex rectangular 20 . 20)
+'(complex rectangular 20 . 20)
+'(rational 21 . 2)
+'(rational 21 . 2)
+```
+
+### Exercise 2.86
+> Suppose we want to handle complex numbers whose real parts, imaginary parts, magnitudes, and angles can be either ordinary numbers, rational numbers, or other numbers we might wish to add to the system. Describe and implement the changes to the system needed to accommodate this. You will have to define operations such as sineandcosinethataregeneric over ordinary numbers and rational numbers.
+---
+```
+#lang racket 
+  
+;;; 
+;;; put-coersion & get-coersion 
+;;; from https://gist.github.com/kinoshita-lab/b76a55759a0d0968cd97 
+;;; 
+  
+(define coercion-list '()) 
+  
+(define (clear-coercion-list) 
+  (set! coercion-list '())) 
+  
+(define (put-coercion type1 type2 item) 
+  (if (get-coercion type1 type2) coercion-list 
+      (set! coercion-list 
+            (cons (list type1 type2 item) 
+                  coercion-list)))) 
+  
+(define (get-coercion type1 type2) 
+  (define (get-type1 listItem) 
+    (car listItem)) 
+  (define (get-type2 listItem) 
+    (cadr listItem)) 
+  (define (get-item listItem) 
+    (caddr listItem)) 
+  (define (get-coercion-iter list type1 type2) 
+    (if (null? list) #f 
+        (let ((top (car list))) 
+          (if (and (equal? type1 (get-type1 top)) 
+                   (equal? type2 (get-type2 top))) 
+              (get-item top) 
+              (get-coercion-iter (cdr list) type1 type2))))) 
+  (get-coercion-iter coercion-list type1 type2)) 
+  
+;;; 
+;;; Put & Get, from https://stackoverflow.com/a/19114031 
+;;; 
+  
+(define *op-table* (make-hash)) 
+(define (put op type proc) 
+  (hash-set! *op-table* (list op type) proc)) 
+(define (get op type) 
+  (hash-ref *op-table* (list op type) #f)) 
+  
+;;; 
+;;; Tags from 2.4.2 
+;;; 
+  
+(define (attach-tag type-tag z) 
+  (cons type-tag z)) 
+  
+(define (type-tag datum) 
+  (if (pair? datum) 
+      (car datum) 
+      (error "Not a pair: TYPE-TAG" datum))) 
+(define (contents datum) 
+  (if (pair? datum) 
+      (cdr datum) 
+      (error "Not a pair: CONTENT" datum))) 
+  
+;;; 
+;;; 2.4.3 Data-Directed Programming and Additivity 
+;;; 
+  
+(define (install-rectangular-package) 
+  ;; internal procedures 
+  (define (real-part z) (car z)) 
+  (define (imag-part z) (cdr z)) 
+  (define (make-from-real-imag x y) 
+    (cons x y)) 
+  
+  ;; change sqrt, +, square, atan, *, cos, sin to generic procedures 
+  (define (magnitude z) 
+    (sqrt-generic (add (square-generic (real-part z)) 
+                       (square-generic (imag-part z))))) 
+  (define (angle z) 
+    (atan-generic (imag-part z) (real-part z))) 
+  (define (make-from-mag-ang r a) 
+    (cons (mul r (cosine a)) (mul r (sine a)))) 
+  
+  ;; interface to the rest of the system 
+  (define (tag x) 
+    (attach-tag 'rectangular x)) 
+  (put 'real-part '(rectangular) real-part) 
+  (put 'imag-part '(rectangular) imag-part) 
+  (put 'magnitude '(rectangular) magnitude) 
+  (put 'angle '(rectangular) angle) 
+  (put 'make-from-real-imag 'rectangular 
+       (lambda (x y) 
+         (tag (make-from-real-imag x y)))) 
+  (put 'make-from-mag-ang 'rectangular 
+       (lambda (r a) 
+         (tag (make-from-mag-ang r a)))) 
+  'done) 
+  
+(define (install-polar-package) 
+  ;; internal procedures 
+  (define (magnitude z) (car z)) 
+  (define (angle z) (cdr z)) 
+  (define (make-from-mag-ang r a) (cons r a)) 
+  
+  ;; change *, cos, sin, sqrt, +, square, atan to generic procedures 
+  (define (real-part z) 
+    (mul (magnitude z) (cosine (angle z)))) 
+  (define (imag-part z) 
+    (mul (magnitude z) (sine (angle z)))) 
+  (define (make-from-real-imag x y) 
+    (cons (sqrt-generic (add (square-generic x) (square-generic y))) 
+          (atan-generic y x))) 
+  
+  ;; interface to the rest of the system 
+  (define (tag x) (attach-tag 'polar x)) 
+  (put 'real-part '(polar) real-part) 
+  (put 'imag-part '(polar) imag-part) 
+  (put 'magnitude '(polar) magnitude) 
+  (put 'angle '(polar) angle) 
+  (put 'make-from-real-imag 'polar 
+       (lambda (x y) 
+         (tag (make-from-real-imag x y)))) 
+  (put 'make-from-mag-ang 'polar 
+       (lambda (r a) 
+         (tag (make-from-mag-ang r a)))) 
+  'done) 
+  
+  
+(define (real-part z) 
+  (apply-generic 'real-part z)) 
+(define (imag-part z) 
+  (apply-generic 'imag-part z)) 
+(define (magnitude z) 
+  (apply-generic 'magnitude z)) 
+(define (angle z) 
+  (apply-generic 'angle z)) 
+  
+;;; 
+;;; APPLY-GENERIC 
+;;; From 2.5.2 Combining Data of Different Types -> Coercion 
+;;; 
+  
+(define (apply-generic op . args) 
+  (let ((type-tags (map type-tag args))) 
+    (let ((proc (get op type-tags))) 
+      (if proc 
+          (apply proc (map contents args)) 
+          (if (= (length args) 2) 
+              (let ((type1 (car type-tags)) 
+                    (type2 (cadr type-tags)) 
+                    (a1 (car args)) 
+                    (a2 (cadr args))) 
+                (let ((t1->t2 (get-coercion type1 type2)) 
+                      (t2->t1 (get-coercion type2 type1))) 
+                  (cond (t1->t2 
+                         (apply-generic op (t1->t2 a1) a2)) 
+                        (t2->t1 
+                         (apply-generic op a1 (t2->t1 a2))) 
+                        (else (error "No method for these types: 
+                                       APPLY-GENERIC" 
+                                     (list op type-tags)))))) 
+              (error "No method for these types: APPLY-GENERIC" 
+                     (list op type-tags))))))) 
+  
+;;; 
+;;; Added 
+;;; Coerce rational to scheme-number 
+;;; 
+  
+(define (rational->scheme-number x) 
+  (let ((numer (car (contents x))) 
+        (denom (cdr (contents x)))) 
+    (make-scheme-number (/ (* numer 1.0) denom)))) 
+  
+(put-coercion 'rational 'scheme-number rational->scheme-number) 
+  
+;;; 
+;;; 2.5.1 Generic Arithmetic Operations 
+;;; 
+  
+(define (add x y) (apply-generic 'add x y)) 
+(define (sub x y) (apply-generic 'sub x y)) 
+(define (mul x y) (apply-generic 'mul x y)) 
+(define (div x y) (apply-generic 'div x y)) 
+  
+;; Add definitons of generic procedures 
+(define (sine x) (apply-generic 'sine x)) 
+(define (cosine x) (apply-generic 'cosine x)) 
+(define (sqrt-generic x) (apply-generic 'sqrt-generic x)) 
+(define (atan-generic y x) (apply-generic 'atan-generic y x)) 
+(define (square-generic x) (mul x x)) 
+  
+(define (install-scheme-number-package) 
+  (define (tag x) 
+    (attach-tag 'scheme-number x)) 
+  (put 'add '(scheme-number scheme-number) 
+       (lambda (x y) (tag (+ x y)))) 
+  (put 'sub '(scheme-number scheme-number) 
+       (lambda (x y) (tag (- x y)))) 
+  (put 'mul '(scheme-number scheme-number) 
+       (lambda (x y) (tag (* x y)))) 
+  (put 'div '(scheme-number scheme-number) 
+       (lambda (x y) (tag (/ x y)))) 
+  (put 'make 'scheme-number 
+       (lambda (x) (tag x))) 
+  
+  ;; added 
+  (put 'sine '(scheme-number) (lambda (x) (tag (sin x)))) 
+  (put 'cosine '(scheme-number) (lambda (x) (tag (cos x)))) 
+  (put 'sqrt-generic '(scheme-number) (lambda (x) (tag (sqrt x)))) 
+  (put 'atan-generic '(scheme-number scheme-number) (lambda (y x) (tag (atan y x)))) 
+  
+  'done) 
+  
+(define (make-scheme-number n) 
+  ((get 'make 'scheme-number) n)) 
+  
+(define (install-rational-package) 
+  ;; internal procedures 
+  (define (numer x) (car x)) 
+  (define (denom x) (cdr x)) 
+  (define (make-rat n d) 
+    (let ((g (gcd n d))) 
+      (cons (/ n g) (/ d g)))) 
+  (define (add-rat x y) 
+    (make-rat (+ (* (numer x) (denom y)) 
+                 (* (numer y) (denom x))) 
+              (* (denom x) (denom y)))) 
+  (define (sub-rat x y) 
+    (make-rat (- (* (numer x) (denom y)) 
+                 (* (numer y) (denom x))) 
+              (* (denom x) (denom y)))) 
+  (define (mul-rat x y) 
+    (make-rat (* (numer x) (numer y)) 
+              (* (denom x) (denom y)))) 
+  (define (div-rat x y) 
+    (make-rat (* (numer x) (denom y)) 
+              (* (denom x) (numer y)))) 
+  ;; interface to rest of the system 
+  (define (tag x) (attach-tag 'rational x)) 
+  (put 'add '(rational rational) 
+       (lambda (x y) (tag (add-rat x y)))) 
+  (put 'sub '(rational rational) 
+       (lambda (x y) (tag (sub-rat x y)))) 
+  (put 'mul '(rational rational) 
+       (lambda (x y) (tag (mul-rat x y)))) 
+  (put 'div '(rational rational) 
+       (lambda (x y) (tag (div-rat x y)))) 
+  (put 'make 'rational 
+       (lambda (n d) (tag (make-rat n d)))) 
+  
+  ;; added 
+  (define (tag-schemenumber x) 
+    (attach-tag 'scheme-number x)) 
+  (put 'sine '(rational) 
+       (lambda (x) 
+         (tag-schemenumber (sin (/ (numer x) (denom x)))))) 
+  (put 'cosine '(rational) 
+       (lambda (x) 
+         (tag-schemenumber (cos (/ (numer x) (denom x)))))) 
+  (put 'sqrt-generic '(rational) 
+       (lambda (x) 
+         (tag-schemenumber (sqrt (/ (* 1.0 (numer x)) (denom x)))))) 
+  (put 'atan-generic '(rational rational) 
+       (lambda (y x) 
+         (tag-schemenumber (atan (/ (numer y) (denom y)) 
+                                 (/ (numer x) (denom x)))))) 
+  
+  'done) 
+  
+(define (make-rational n d) 
+  ((get 'make 'rational) n d)) 
+  
+(define (install-complex-package) 
+  ;; imported procedures from rectangular 
+  ;; and polar packages 
+  (define (make-from-real-imag x y) 
+    ((get 'make-from-real-imag 
+          'rectangular) 
+     x y)) 
+  (define (make-from-mag-ang r a) 
+    ((get 'make-from-mag-ang 'polar) 
+     r a)) 
+  ;; internal procedures 
+  
+  ;; change +, -, *, / to generic procedures 
+  (define (add-complex z1 z2) 
+    (make-from-real-imag 
+     (add (real-part z1) (real-part z2)) 
+     (add (imag-part z1) (imag-part z2)))) 
+  (define (sub-complex z1 z2) 
+    (make-from-real-imag 
+     (sub (real-part z1) (real-part z2)) 
+     (sub (imag-part z1) (imag-part z2)))) 
+  (define (mul-complex z1 z2) 
+    (make-from-mag-ang 
+     (mul (magnitude z1) (magnitude z2)) 
+     (add (angle z1) (angle z2)))) 
+  (define (div-complex z1 z2) 
+    (make-from-mag-ang 
+     (div (magnitude z1) (magnitude z2)) 
+     (sub (angle z1) (angle z2)))) 
+  
+  ;; interface to rest of the system 
+  (define (tag z) (attach-tag 'complex z)) 
+  (put 'add '(complex complex) 
+       (lambda (z1 z2) 
+         (tag (add-complex z1 z2)))) 
+  (put 'sub '(complex complex) 
+       (lambda (z1 z2) 
+         (tag (sub-complex z1 z2)))) 
+  (put 'mul '(complex complex) 
+       (lambda (z1 z2) 
+         (tag (mul-complex z1 z2)))) 
+  (put 'div '(complex complex) 
+       (lambda (z1 z2) 
+         (tag (div-complex z1 z2)))) 
+  (put 'make-from-real-imag 'complex 
+       (lambda (x y) 
+         (tag (make-from-real-imag x y)))) 
+  (put 'make-from-mag-ang 'complex 
+       (lambda (r a) 
+         (tag (make-from-mag-ang r a)))) 
+  'done) 
+  
+(define (make-complex-from-real-imag x y) 
+  ((get 'make-from-real-imag 'complex) x y)) 
+(define (make-complex-from-mag-ang r a) 
+  ((get 'make-from-mag-ang 'complex) r a)) 
+  
+  
+;;; 
+;;; Test 
+;;; 
+  
+(install-scheme-number-package) 
+(install-rational-package) 
+(install-rectangular-package) 
+(install-polar-package) 
+(install-complex-package) 
+  
+(define x1 (make-scheme-number 1)) 
+(define x2 (make-scheme-number 2)) 
+  
+(define y1 (make-rational 2 3)) 
+(define y2 (make-rational 2 5)) 
+  
+(define z1 (make-complex-from-mag-ang x1 x2)) 
+(define z2 (make-complex-from-mag-ang x1 y1)) 
+(define z3 (make-complex-from-real-imag y1 y2)) 
+  
+(add z1 z2) 
+(add z1 z3) 
+(sub z1 z2) 
+(sub z1 z3) 
+(mul z1 z2) 
+(mul z1 z3) 
+(div z1 z2) 
+(div z1 z3) 
+
+; 执行结果
+'(complex rectangular (scheme-number . 0.36974042422980563) scheme-number . 1.5276672298954188)
+'(complex rectangular (scheme-number . 0.2505198301195242) scheme-number . 1.3092974268256818)
+'(complex rectangular (scheme-number . -1.2020340973240904) scheme-number . 0.2909276237559447)
+'(complex rectangular (scheme-number . -1.082813503213809) scheme-number . 0.5092974268256817)
+'(complex polar (scheme-number . 1) scheme-number . 2.6666666666666665)
+'(complex polar (scheme-number . 0.77746025264604) scheme-number . 2.540419500270584)
+'(complex polar (scheme-number . 1) scheme-number . 1.3333333333333335)
+'(complex polar (scheme-number . 1.2862393885688164) scheme-number . 1.459580499729416)
+```
