@@ -1,6 +1,5 @@
 #lang racket
 
-(require racket/trace)
 (require "../Modules/base.rkt")
 
 
@@ -29,10 +28,10 @@
   (define (tower-raise origin target)
     (let ((o-type (type-tag origin))
           (t-type (type-tag target)))
-      (cond ((eq? o-type t-type)
+      (cond ((eq? o-type t-type)    ; 如果参数类型相同，不需要
              origin)
             ((get 'raise (list o-type))
-             (tower-raise ((get 'raise (list o-type)) (contents origin) target)))
+             (tower-raise ((get 'raise (list o-type)) (contents origin)) target))
             (else false))))
 
   (let ((proc (get op (type-tags args)))) 
@@ -40,14 +39,12 @@
         (apply proc (map contents args))
         (if (= (length args) 2)
             ;; 假设类型以简单的 tower 形式排序，从低到高
-            (let ((curr (car args))
-                  (next (cadr args)))
-              (cond ((eq? (type-tag curr) (type-tag next))
-                     (no-method (type-tags args)))
-                    ((tower-raise curr next)
-                     (apply-generic op (tower-raise curr next) next))
-                    ((tower-raise curr next)
-                     (apply-generic op (tower-raise next curr) curr))
+            (let ((a1 (car args))
+                  (a2 (cadr args)))
+              (cond ((tower-raise a1 a2)
+                     (apply-generic op (tower-raise a1 a2) a2))
+                    ((tower-raise a2 a1)
+                     (apply-generic op a1 (tower-raise a2 a1)))
                     (else (no-method (type-tags args)))))
             (no-method (type-tags args))))))
 
@@ -60,23 +57,29 @@
 (define (exp x y) (apply-generic 'exp x y))
 (define (raise x) (apply-generic 'raise x))
 
-;; 数字运算包
-(define (install-scheme-number-package)
-  (put 'add '(scheme-number scheme-number) +)
-  (put 'sub '(scheme-number scheme-number) -)
-  (put 'mul '(scheme-number scheme-number) *)
-  (put 'div '(scheme-number scheme-number) /)
-  (put 'equ? '(scheme-number scheme-number) =)
-  (put '=zero? '(scheme-number) (lambda (x) (= x 0)))
-  (put 'exp '(scheme-number scheme-number)
+;; 整数运算包
+(define (install-integer-package)
+  (define (tag x) (attach-tag 'integer x))
+  (put 'add '(integer integer)
+       (lambda (x y) (tag (+ x y))))
+  (put 'sub '(integer integer)
+       (lambda (x y) (tag (- x y))))
+  (put 'mul '(integer integer)
+       (lambda (x y) (tag (* x y))))
+  (put 'div '(integer integer)
+       (lambda (x y) (tag (round (/ x y)))))     ; 向下取整
+  (put 'equ? '(integer integer) =)
+  (put '=zero? '(integer) (lambda (x) (= x 0)))
+  (put 'exp '(integer integer)
        ; using primitive expt
-       (lambda (x y) (attach-tag 'scheme-number (expt x y))))
-  (put 'raise '(scheme-number) (lambda (x) make-rational x 1))
-  (put 'make 'scheme-number (lambda (x) (attach-tag 'scheme-number x)))
-  'done)
+       (lambda (x y) (attach-tag 'integer (expt x y))))
+  (put 'raise '(integer)
+       (lambda (x) (make-rational x 1)))
+  (put 'make 'integer
+       (lambda (x) (attach-tag 'integer x))))
 
-(define (make-scheme-number n)
-  ((get 'make 'scheme-number) n))
+(define (make-integer n)
+  ((get 'make 'integer) n))
 
 ;; 有理数
 (define (install-rational-package)
@@ -123,13 +126,36 @@
   (put 'equ? '(rational rational)
        (lambda (x y) (equ? x y)))
   (put '=zero? '(rational) (lambda (x) (= (numer x) 0)))
-  (put 'raise '(rational) (lambda (x) (make-complex-from-real-imag x 0)))
+  (put 'raise '(rational)
+       (lambda (x) (make-real (/ (numer x) (denom x)))))
   (put 'make 'rational
        (lambda (n d) (tag (make-rat n d))))
   'done)
 
 (define (make-rational n d)
   ((get 'make 'rational) n d))
+
+;; 实数，用小数形式近似表示
+(define (install-real-package)
+  (define (tag x) (attach-tag 'real x))
+  (put 'add '(real real)
+       (lambda (x y) (tag (+ x y))))
+  (put 'sub '(real real)
+       (lambda (x y) (tag (- x y))))
+  (put 'mul '(real real)
+       (lambda (x y) (tag (* x y))))
+  (put 'div '(real real)
+       (lambda (x y) (tag (/ x y))))
+  (put 'equ? '(real real)
+       (lambda (x y) (= x y)))
+  (put '=zero? '(real)
+       (lambda (x) (= x 0)))
+  (put 'raise '(real)
+       (lambda (x) (make-complex-from-real-imag x 0)))
+  (put 'make 'real (lambda (x) (tag (* 1.0 x)))))
+
+(define (make-real r)
+  ((get 'make 'real) r))
 
 
 ;; 复数
@@ -241,11 +267,58 @@
   (make-complex-from-real-imag (contents r) 0))
 
 
-(install-rectangular-package)
-(install-polar-package)
-(install-complex-package)
-(define c1 (make-complex-from-real-imag 3 4))
-(define c2 (make-complex-from-real-imag 5 12))
+(install-integer-package) 
+(install-rational-package)
+(install-real-package)
+(install-rectangular-package) 
+(install-polar-package) 
+(install-complex-package) 
+  
+(define n1 (make-integer 1)) 
+(define n2 (make-integer 2)) 
+  
+(define rat1 (make-rational 2 3)) 
+(define rat2 (make-rational 2 5)) 
 
-(trace apply-generic)
-(exp c1 c2)
+(define r1 (make-real 5))
+(define r2 (make-real 3.2))
+
+(define c1 (make-complex-from-real-imag 10 0))
+(define c2 (make-complex-from-real-imag 10 -20))
+
+(newline)
+(display "测试样例")
+(newline)
+
+(add n1 rat1)
+(add rat1 n1)
+(add r2 rat1)
+(add c2 rat2)
+(sub n1 r1)
+(sub r1 n1)
+(mul n1 c1)
+(mul c1 n1)
+(div n1 c2)
+(div c2 n2)
+
+; 检查对 apply-generic 修改是否影响到了前面的其他过程
+(newline)
+(display "检查对 apply-generic 修改是否影响到了前面的其他过程")
+(newline)
+(add n1 n2)
+(sub n1 n2)
+(mul n1 n2)
+(div n1 n2)
+(add rat1 (raise n1))
+(sub (raise n2) rat2)
+(mul rat1 (raise n2))
+(div (raise n1) rat2)
+(add r1 (raise rat1))
+(sub (raise rat1) r2)
+(mul r1 (raise rat2))
+(div (raise rat2) r2)
+(add c1 (raise r1))
+(sub (raise r1) c2)
+(mul c1 (raise r2))
+(div (raise r2) c2)
+(exp n2 n2)

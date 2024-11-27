@@ -1,6 +1,5 @@
 #lang racket
 
-(require racket/trace)
 (require "../Modules/base.rkt")
 
 
@@ -59,23 +58,29 @@
 (define (exp x y) (apply-generic 'exp x y))
 (define (raise x) (apply-generic 'raise x))
 
-;; 数字运算包
-(define (install-scheme-number-package)
-  (put 'add '(scheme-number scheme-number) +)
-  (put 'sub '(scheme-number scheme-number) -)
-  (put 'mul '(scheme-number scheme-number) *)
-  (put 'div '(scheme-number scheme-number) /)
-  (put 'equ? '(scheme-number scheme-number) =)
-  (put '=zero? '(scheme-number) (lambda (x) (= x 0)))
-  (put 'exp '(scheme-number scheme-number)
+;; 整数运算包
+(define (install-integer-package)
+  (define (tag x) (attach-tag 'integer x))
+  (put 'add '(integer integer)
+       (lambda (x y) (tag (+ x y))))
+  (put 'sub '(integer integer)
+       (lambda (x y) (tag (- x y))))
+  (put 'mul '(integer integer)
+       (lambda (x y) (tag (* x y))))
+  (put 'div '(integer integer)
+       (lambda (x y) (tag (/ x y))))
+  (put 'equ? '(integer integer) =)
+  (put '=zero? '(integer) (lambda (x) (= x 0)))
+  (put 'exp '(integer integer)
        ; using primitive expt
-       (lambda (x y) (attach-tag 'scheme-number (expt x y))))
-  (put 'raise '(scheme-number) (lambda (x) make-rational x 1))
-  (put 'make 'scheme-number (lambda (x) (attach-tag 'scheme-number x)))
-  'done)
+       (lambda (x y) (attach-tag 'integer (expt x y))))
+  (put 'raise '(integer)
+       (lambda (x) (make-rational x 1)))
+  (put 'make 'integer
+       (lambda (x) (attach-tag 'integer x))))
 
-(define (make-scheme-number n)
-  ((get 'make 'scheme-number) n))
+(define (make-integer n)
+  ((get 'make 'integer) n))
 
 ;; 有理数
 (define (install-rational-package)
@@ -122,13 +127,35 @@
   (put 'equ? '(rational rational)
        (lambda (x y) (equ? x y)))
   (put '=zero? '(rational) (lambda (x) (= (numer x) 0)))
-  (put 'raise '(rational) (lambda (x) (make-complex-from-real-imag x 0)))
+  (put 'raise '(rational) (lambda (x) (make-real (/ (numer x) (denom x)))))
   (put 'make 'rational
        (lambda (n d) (tag (make-rat n d))))
   'done)
 
 (define (make-rational n d)
   ((get 'make 'rational) n d))
+
+;; 实数
+(define (install-real-package)
+  (define (tag x) (attach-tag 'real x))
+  (put 'add '(real real)
+       (lambda (x y) (tag (+ x y))))
+  (put 'sub '(real real)
+       (lambda (x y) (tag (- x y))))
+  (put 'mul '(real real)
+       (lambda (x y) (tag (* x y))))
+  (put 'div '(real real)
+       (lambda (x y) (tag (/ x y))))
+  (put 'equ? '(real real)
+       (lambda (x y) (= x y)))
+  (put '=zero? '(real)
+       (lambda (x) (= x 0)))
+  (put 'raise '(real)
+       (lambda (x) (make-complex-from-real-imag x 0)))
+  (put 'make 'real (lambda (x) (tag x))))
+
+(define (make-real r)
+  ((get 'make 'real) r))
 
 
 ;; 复数
@@ -240,11 +267,27 @@
   (make-complex-from-real-imag (contents r) 0))
 
 
-(install-rectangular-package)
-(install-polar-package)
-(install-complex-package)
-(define c1 (make-complex-from-real-imag 3 4))
-(define c2 (make-complex-from-real-imag 5 12))
+(install-integer-package) 
+(install-rational-package)
+(install-real-package)
+(install-rectangular-package) 
+(install-polar-package) 
+(install-complex-package) 
+  
+(define n1 (make-integer 1)) 
+(define n2 (make-integer 2)) 
+  
+(define r1 (make-rational 2 3)) 
+(define r2 (make-rational 2 5)) 
 
-(trace apply-generic)
-(exp c1 c2)
+(define real1 (make-real 5))
+(define real2 (make-real 3.2))
+
+(raise n1)
+(raise n2)
+
+(raise r1)
+(raise r2)
+
+(raise real1)
+(raise real2)
