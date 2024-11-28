@@ -260,12 +260,6 @@
 (define (magnitude z) (apply-generic 'magnitude z)) 
 (define (angle z) (apply-generic 'angle z))
 
-(define (scheme-number->rational n)
-  (make-rational (contents n) 1))
-
-(define (rational->complex r)
-  (make-complex-from-real-imag (contents r) 0))
-
 
 (install-integer-package) 
 (install-rational-package)
@@ -284,7 +278,7 @@
 (define r2 (make-real 3.2))
 
 (define c1 (make-complex-from-real-imag 10 0))
-(define c2 (make-complex-from-real-imag 10 -20))
+(define c2 (make-complex-from-mag-ang 10 -20))
 
 (newline)
 (display "测试样例")

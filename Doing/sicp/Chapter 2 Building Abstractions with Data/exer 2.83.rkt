@@ -260,12 +260,6 @@
 (define (magnitude z) (apply-generic 'magnitude z)) 
 (define (angle z) (apply-generic 'angle z))
 
-(define (scheme-number->rational n)
-  (make-rational (contents n) 1))
-
-(define (rational->complex r)
-  (make-complex-from-real-imag (contents r) 0))
-
 
 (install-integer-package) 
 (install-rational-package)

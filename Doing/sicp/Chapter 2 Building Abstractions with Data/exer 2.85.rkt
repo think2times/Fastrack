@@ -37,24 +37,23 @@
   (define (tower-raise origin target)
     (let ((o-type (type-tag origin))
           (t-type (type-tag target)))
-      (cond ((equal? o-type t-type) origin)
+      (cond ((eq? o-type t-type)    ; 如果参数类型相同,不需要
+             origin)
             ((get 'raise (list o-type))
-             (tower-raise ((get 'raise (list o-type)) (contents origin) target)))
+             (tower-raise ((get 'raise (list o-type)) (contents origin)) target))
             (else false))))
 
   (let ((proc (get op (type-tags args)))) 
     (if proc 
-        (drop (apply proc (map contents args)))
+        (apply proc (map contents args))
         (if (= (length args) 2)
             ;; 假设类型以简单的 tower 形式排序,从低到高
-            (let ((curr (car args))
-                  (next (cadr args)))
-              (cond ((eq? (type-tag curr) (type-tag next))
-                     (no-method (type-tags args)))
-                    ((tower-raise curr next)
-                     (apply-generic op (tower-raise curr next) next))
-                    ((tower-raise curr next)
-                     (apply-generic op (tower-raise next curr) curr))
+            (let ((a1 (car args))
+                  (a2 (cadr args)))
+              (cond ((tower-raise a1 a2)
+                     (apply-generic op (tower-raise a1 a2) a2))
+                    ((tower-raise a2 a1)
+                     (apply-generic op a1 (tower-raise a2 a1)))
                     (else (no-method (type-tags args)))))
             (no-method (type-tags args))))))
 
@@ -79,7 +78,7 @@
   (put 'mul '(integer integer)
        (lambda (x y) (tag (* x y))))
   (put 'div '(integer integer)
-       (lambda (x y) (tag (/ x y))))
+       (lambda (x y) (tag (round (/ x y)))))     ; 四舍五入
   (put 'equ? '(integer integer) =)
   (put '=zero? '(integer) (lambda (x) (= x 0)))
   (put 'exp '(integer integer)
@@ -140,7 +139,7 @@
   (put '=zero? '(rational)
        (lambda (x) (= (numer x) 0)))
   (put 'raise '(rational)
-       (lambda (x) (make-real (* 1.0 (/ (numer x) (denom x))))))
+       (lambda (x) (make-real (/ (numer x) (denom x)))))
   (put 'project '(rational)
        (lambda (x) (make-integer (round (/ (numer x) (denom x))))))
   (put 'make 'rational
@@ -167,10 +166,9 @@
        (lambda (x) (make-complex-from-real-imag x 0)))
   (put 'project '(real)
        ;; 实数转为有理数没啥简单的好办法
-       ;; 我就直接默认实数都转为分母为1的有理数
-       ;; 测试的时候实数全选整数
-       (lambda (x) (make-rational x 1)))
-  (put 'make 'real (lambda (x) (tag x))))
+       ;; 我采用了对实数四舍五入然后转为分母为1的有理数的逻辑
+       (lambda (x) (make-rational (round x) 1)))
+  (put 'make 'real (lambda (x) (tag (* 1.0 x)))))
 
 (define (make-real r)
   ((get 'make 'real) r))
@@ -279,14 +277,72 @@
 (define (angle z) (apply-generic 'angle z))
 
 
-(install-rectangular-package)
-(install-integer-package)
+(install-integer-package) 
 (install-rational-package)
 (install-real-package)
-(install-complex-package)
+(install-rectangular-package) 
+(install-polar-package) 
+(install-complex-package) 
   
-(define int-val (make-integer 10))
-(define rat-val (make-rational 1 2))
-(define real-val (make-real 2))
-(define complex-val-1 (make-complex-from-real-imag 10 0))
-(define complex-val-2 (make-complex-from-real-imag 10 -20))
+(define n1 (make-integer 1)) 
+(define n2 (make-integer 2)) 
+  
+(define rat1 (make-rational 2 3)) 
+(define rat2 (make-rational 2 5)) 
+
+(define r1 (make-real 5))
+(define r2 (make-real 3.2))
+
+(define c1 (make-complex-from-real-imag 12 0))
+(define c2 (make-complex-from-mag-ang 10 60))
+
+(newline)
+(display "测试样例")
+(newline)
+
+(display "测试 project")
+(newline)
+(project rat1)
+(project rat2)
+(project r1)
+(project r2)
+(project c1)
+(project c2)
+
+
+; 检查对 apply-generic 修改是否影响到了前面的其他过程
+(newline)
+(display "检查对 apply-generic 修改是否影响到了前面的其他过程")
+(newline)
+
+(add n1 n2)
+(sub n1 n2)
+(mul n1 n2)
+(div n1 n2)
+(add rat1 (raise n1))
+(sub (raise n2) rat2)
+(mul rat1 (raise n2))
+(div (raise n1) rat2)
+(add r1 (raise rat1))
+(sub (raise rat1) r2)
+(mul r1 (raise rat2))
+(div (raise rat2) r2)
+(add c1 (raise r1))
+(sub (raise r1) c2)
+(mul c1 (raise r2))
+(div (raise r2) c2)
+(exp n2 n2)
+
+(add n1 rat1)
+(add rat1 n1)
+(add r2 rat1)
+(add c2 rat2)
+(sub n1 r1)
+(sub r1 n1)
+(newline)
+(display "因为复数乘法都是用 magnitude 和 angle 表示的,所以类型都是 polar")
+(newline)
+(mul n1 c1)
+(mul c1 n1)
+(div n1 c2)
+(div c2 n2)
