@@ -57,3 +57,12 @@
 
 ### 22th
 > Today I met a considerably triky question when I was learning sicp. I hope I can solve it after work.
+
+### 25th
+> I just realized I haven't written diary last two days. I even forgot why I forgot.
+
+### 26th
+> I was busy all day. The things that I have to do one after another.
+
+### 27th
+> Today is good, I finished watching videos task in the morning and finished 2 exercises of sicp.
