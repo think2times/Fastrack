@@ -16,46 +16,45 @@
       (cdr datum)
       (error "Bad tagged datum: CONTENTS" datum)))
 
-(define (drop x)
-  (let ((project-proc (get 'project (type-tag x))))
-    (if project-proc
-        (let ((project-number (project-proc (contents x))))
-          (if (equ? project-number (raise project-number))
-              (drop project-number)
-              x))
-        x)))
+; 将当前的类型升级为上一级,如果不存在对应的转换函数,返回 false
+(define (tower-raise origin target)
+  (let ((o-type (type-tag origin))
+        (t-type (type-tag target)))
+    (cond ((eq? o-type t-type)    
+           origin)
+          ((get 'raise (list o-type))
+           (tower-raise ((get 'raise (list o-type)) (contents origin)) target))
+          (else false))))
+
+;; 在不失精度地前提下,把一个数的类型降到最底层
+(define (drop origin)
+  (if (eq? (type-tag origin) 'integer)
+      origin
+      (let ((project-number (project origin)))
+        (if (equ? origin (raise project-number))
+            (drop project-number)
+            origin))))
 
 (define (apply-generic op . args) 
   (define (no-method type-tags) 
     (error "No method for these types" 
            (list op type-tags)))
-  
-  (define (type-tags args) 
-    (map type-tag args))
 
-  ; 将当前的类型升级为上一级,如果不存在对应的转换函数,返回 false
-  (define (tower-raise origin target)
-    (let ((o-type (type-tag origin))
-          (t-type (type-tag target)))
-      (cond ((eq? o-type t-type)    ; 如果参数类型相同,不需要
-             origin)
-            ((get 'raise (list o-type))
-             (tower-raise ((get 'raise (list o-type)) (contents origin)) target))
-            (else false))))
-
-  (let ((proc (get op (type-tags args)))) 
-    (if proc 
-        (apply proc (map contents args))
-        (if (= (length args) 2)
-            ;; 假设类型以简单的 tower 形式排序,从低到高
-            (let ((a1 (car args))
-                  (a2 (cadr args)))
-              (cond ((tower-raise a1 a2)
-                     (apply-generic op (tower-raise a1 a2) a2))
-                    ((tower-raise a2 a1)
-                     (apply-generic op a1 (tower-raise a2 a1)))
-                    (else (no-method (type-tags args)))))
-            (no-method (type-tags args))))))
+  (let ((type-tags (map type-tag args)))
+    (let ((proc (get op type-tags))) 
+      (if proc 
+          (drop (apply proc (map contents args)))
+          (if (and (= (length args) 2)
+                   (not (equal? (car type-tags) (cadr type-tags))))    ; 如果参数类型相同,不需要转换
+              ;; 假设类型以简单的 tower 形式排序,从低到高
+              (let ((a1 (car args))
+                    (a2 (cadr args)))
+                (cond ((tower-raise a1 a2)
+                       (apply-generic op (tower-raise a1 a2) a2))
+                      ((tower-raise a2 a1)
+                       (apply-generic op a1 (tower-raise a2 a1)))
+                      (else (no-method type-tags))))
+              (no-method type-tags))))))
 
 
 (define (add x y) (apply-generic 'add x y))
@@ -180,6 +179,7 @@
   (define (real-part z) (car z))
   (define (imag-part z) (cdr z))
   (define (make-from-real-imag x y) (cons x y))
+  
   (define (magnitude z)
     (sqrt (+ (square (real-part z))
              (square (imag-part z)))))
@@ -187,6 +187,7 @@
     (atan (imag-part z) (real-part z)))
   (define (make-from-mag-ang r a)
     (cons (* r (cos a)) (* r (sin a))))
+  
   ;; interface to the rest of the system
   (define (tag x) (attach-tag 'rectangular x))
   (put 'real-part '(rectangular) real-part)
@@ -203,11 +204,13 @@
   (define (magnitude z) (car z))
   (define (angle z) (cdr z))
   (define (make-from-mag-ang r a) (cons r a))
+  
   (define (real-part z) (* (magnitude z) (cos (angle z))))
   (define (imag-part z) (* (magnitude z) (sin (angle z))))
   (define (make-from-real-imag x y)
     (cons (sqrt (+ (square x) (square y)))
           (atan y x)))
+  
   ;; interface to the rest of the system
   (define (tag x) (attach-tag 'polar x))
   (put 'real-part '(polar) real-part)
@@ -294,7 +297,7 @@
 (define r2 (make-real 3.2))
 
 (define c1 (make-complex-from-real-imag 12 0))
-(define c2 (make-complex-from-mag-ang 10 60))
+(define c2 (make-complex-from-mag-ang 10 (/ pi 3)))
 
 (newline)
 (display "测试样例")
@@ -308,6 +311,16 @@
 (project r2)
 (project c1)
 (project c2)
+
+(newline)
+(display "测试 drop")
+(newline)
+(drop rat1)
+(drop rat2)
+(drop r1)
+(drop r2)
+(drop c1)
+(drop c2)
 
 
 ; 检查对 apply-generic 修改是否影响到了前面的其他过程
@@ -338,7 +351,7 @@
 (add r2 rat1)
 (add c2 rat2)
 (sub n1 r1)
-(sub r1 n1)
+(sub r2 n2)
 (newline)
 (display "因为复数乘法都是用 magnitude 和 angle 表示的,所以类型都是 polar")
 (newline)
