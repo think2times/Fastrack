@@ -26,14 +26,27 @@
            (tower-raise ((get 'raise (list o-type)) (contents origin)) target))
           (else false))))
 
+(define (raise origin)
+  (let ((raise-proc (get 'raise (list (type-tag origin)))))
+    (if raise-proc
+        (raise-proc (contents origin))
+        false)))
+
+(define (project origin)
+  (let ((project-proc (get 'project (list (type-tag origin)))))
+    (if project-proc
+        (project-proc (contents origin))
+        false)))
+
 ;; 在不失精度地前提下,把一个数的类型降到最底层
 (define (drop origin)
-  (if (eq? (type-tag origin) 'integer)
-      origin
+  (if (pair? origin)    ; 过滤 false 等没有 type-tag 的参数
       (let ((project-number (project origin)))
-        (if (equ? origin (raise project-number))
+        (if (and project-number
+                 (equ? origin (raise project-number)))
             (drop project-number)
-            origin))))
+            origin))
+      origin))
 
 (define (apply-generic op . args) 
   (define (no-method type-tags) 
@@ -64,8 +77,6 @@
 (define (equ? x y) (apply-generic 'equ? x y))
 (define (=zero? x) (apply-generic '=zero? x))
 (define (exp x y) (apply-generic 'exp x y))
-(define (raise x) (apply-generic 'raise x))
-(define (project x) (apply-generic 'project x))
 
 ;; 整数运算包
 (define (install-integer-package)
@@ -82,11 +93,11 @@
   (put '=zero? '(integer) (lambda (x) (= x 0)))
   (put 'exp '(integer integer)
        ; using primitive expt
-       (lambda (x y) (attach-tag 'integer (expt x y))))
+       (lambda (x y) (tag (expt x y))))
   (put 'raise '(integer)
        (lambda (x) (make-rational x 1)))
   (put 'make 'integer
-       (lambda (x) (attach-tag 'integer x))))
+       (lambda (x) (tag x))))
 
 (define (make-integer n)
   ((get 'make 'integer) n))
