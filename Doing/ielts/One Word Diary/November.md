@@ -66,3 +66,12 @@
 
 ### 27th
 > Today is good, I finished watching videos task in the morning and finished 2 exercises of sicp.
+
+### 28th
+> I feel particularly angry about Li hangliang after I watched the lasted update of TV show See You Again 4, he really had no pride. He is a shame of man.
+
+### 29th
+> Today I was asked to work overtime for preparing contracts of previous project, that's very bad.
+
+### 30th
+> I attended my friend's wedding, he was particularly handsome today. And I could see how happy he was when the ceremony was continuing.
