@@ -12,3 +12,10 @@
 
 ### 5th
 > I had always been sold the concept of good good study, day day up.
+
+### 6th
+> I told Tian yuefeng that I love Qiu shuxin and asked for help about what to do next. I want to know which is better between tell her directly and sound out her feelings of me. This torture of missing a woman is beyond my expectations.
+
+### 7th
+> I was disappointed in a love affair with Qiu shuxin. I expressed my love to Qiu shuxin, but she refused. It's maybe not a love because we had never been in a relation.
+> AI edition: I'm heartbroken. I confessed my feelings to Qiu Shuxin today, but she rejected me outright. There seems to be no room for reconciliation. Perhaps I was too impulsive. It's hard to even call it a heartbreak since we were never together.
