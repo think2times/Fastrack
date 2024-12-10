@@ -19,3 +19,9 @@
 ### 7th
 > I was disappointed in a love affair with Qiu shuxin. I expressed my love to Qiu shuxin, but she refused. It's maybe not a love because we had never been in a relation.
 > AI edition: I'm heartbroken. I confessed my feelings to Qiu Shuxin today, but she rejected me outright. There seems to be no room for reconciliation. Perhaps I was too impulsive. It's hard to even call it a heartbreak since we were never together.
+
+### 8th
+> Yesterday Qiu shuxin and I deleted each other, but I didn't want that. So I helped her do many things like giving her apple, serving her water and searching materials with her. Finally, she agreed to be a normal friend of mine, maybe that's a new milestone.
+
+### 9th
+> Today I was particularly busy. I was preoccupied with finding materials of history contracts all day. That's feeling bad expecially when Qiu shuxin didn't want to work with me.
