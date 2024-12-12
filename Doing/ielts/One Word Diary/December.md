@@ -25,3 +25,12 @@
 
 ### 9th
 > Today I was particularly busy. I was preoccupied with finding materials of history contracts all day. That's feeling bad expecially when Qiu shuxin didn't want to work with me.
+
+### 10th
+> I was tired all day. There were too many work to do. It seemed we could never complete it. I think it is undermining my health and energy, because I don't want to do anything now.
+
+### 11th
+> I worked hard today. It's two o'clock when I got home. It's so crazy because we couldn't harness anything, we could only obey leader's instructions.
+
+### 12th
+> Tian yuefeng asked if we had seen the latest update of See You Again just now. I have met too many things since last saturday. It seemed I haven't have carefree days for a long time.
