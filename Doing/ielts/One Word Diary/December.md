@@ -34,3 +34,6 @@
 
 ### 12th
 > Tian yuefeng asked if we had seen the latest update of See You Again just now. I have met too many things since last saturday. It seemed I haven't have carefree days for a long time.
+
+### 13th
+> The degradation of my relationship with Qiu shuxin made me suffer a lot, she even didn't agree to eat lunch with me and that made me particularly upset. Albeit I reconnect to my old friend Fu can, I don't feel very better now.
