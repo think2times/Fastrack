@@ -40,3 +40,6 @@
 
 ### 14th
 > Today I met my old friend Fu can, and we both felt heartfelt happy. We talked about our lives, jobs, experiences and so on and this alleviated my pain of degradation of my relation with Qiu shuxin.
+
+### 15th
+> I asked a student if she want to add course in weekdays. She refused immediately, but she changed her mind after. She wanted to study math rather physics with me, and I promise I will help her.
