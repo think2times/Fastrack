@@ -43,3 +43,6 @@
 
 ### 15th
 > I asked a student if she want to add course in weekdays. She refused immediately, but she changed her mind after. She wanted to study math rather physics with me, and I promise I will help her.
+
+### 16th
+> I didn't do many things today, but the time was drawing on. The pain of rejection by Qiu shuxin has mitigated much more. I hope I can harness my emotion soon.
