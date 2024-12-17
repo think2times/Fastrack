@@ -46,3 +46,6 @@
 
 ### 16th
 > I didn't do many things today, but the time was drawing on. The pain of rejection by Qiu shuxin has mitigated much more. I hope I can harness my emotion soon.
+
+### 17th
+> Qiu shuxin's attitude to me is much better than last week, and she asked me to cook egg rice for her. I don't know what she means and should I cook it for her?
