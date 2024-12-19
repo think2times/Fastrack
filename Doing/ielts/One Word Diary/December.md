@@ -49,3 +49,6 @@
 
 ### 17th
 > Qiu shuxin's attitude to me is much better than last week, and she asked me to cook egg rice for her. I don't know what she means and should I cook it for her?
+
+### 18th
+> I ate dinner with my friends Tian yuefeng and Qiu shuxin. We talked a lot about my relation with Qiu shuxin and she rejected again because she thought being dating with me is not remunerative for her. I felt very disappointed because she had no love to me. I should let it go.
