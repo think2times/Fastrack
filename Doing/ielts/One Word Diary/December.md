@@ -52,3 +52,6 @@
 
 ### 18th
 > I ate dinner with my friends Tian yuefeng and Qiu shuxin. We talked a lot about my relation with Qiu shuxin and she rejected again because she thought being dating with me is not remunerative for her. I felt very disappointed because she had no love to me. I should let it go.
+
+### 19th
+> I couldn't do any complicated work these days because the rejection of Qiu shuxin. I am regret to unthoughtful expression to her now. I don't know how to get rid of this situation. I hate such a hesitant me.
