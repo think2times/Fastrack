@@ -55,3 +55,12 @@
 
 ### 19th
 > I couldn't do any complicated work these days because the rejection of Qiu shuxin. I am regret to unthoughtful expression to her now. I don't know how to get rid of this situation. I hate such a hesitant me.
+
+### 20th
+> I found there is no value in thinking about my relation with Qiu shuxin. I should do something to occupy my time and energy rather than assessing her thought. I should love myself more and try to give full play to make myself happy.
+
+### 21th
+> I told the failure of persuit to Qiu shuxin to my mom and I felt much more ease. I should asked my parents and friends for advice before making an important decision. I shouldn't turn a blind eye on their suggestions, they are very useful sometimes. I think I can treat Qiu shuxin in a normal way now.
+
+### 22th
+> I have insisted in reciting English words for 202 days. My mood is much better than last three weeks. 
