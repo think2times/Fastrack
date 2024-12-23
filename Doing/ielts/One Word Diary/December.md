@@ -64,3 +64,6 @@
 
 ### 22th
 > I have insisted in reciting English words for 202 days. My mood is much better than last three weeks. 
+
+### 23th
+> I asked Qiu shuxin to bring her switch to office because I wanted to play it this morning, but she refused. I strived for at noon, and she rejected me again straightforwardly. Finally, I forewent this require and felt disappointed and angry to her. Am I wrong?
