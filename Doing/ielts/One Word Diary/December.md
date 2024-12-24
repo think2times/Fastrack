@@ -67,3 +67,6 @@
 
 ### 23th
 > I asked Qiu shuxin to bring her switch to office because I wanted to play it this morning, but she refused. I strived for at noon, and she rejected me again straightforwardly. Finally, I forewent this require and felt disappointed and angry to her. Am I wrong?
+
+### 24th
+> I shared my recent thoughts with Tian yuefeng and Qiu shuxin. I portrayed my emotion after rejected by Qiu shuxin without fraudulent. Now I felt particularly relax. 
