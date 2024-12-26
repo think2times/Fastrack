@@ -70,3 +70,9 @@
 
 ### 24th
 > I shared my recent thoughts with Tian yuefeng and Qiu shuxin. I portrayed my emotion after rejected by Qiu shuxin without fraudulent. Now I felt particularly relax. 
+
+### 25th
+> I begin to read The Miracles of the Namiya General Store, written by Keigo Higashino. I felt happy, relax and learning something. I should never stop reading and learning. I should become preoccupied with my dreams even though I don't know what I really want now. I couldn't beat by the emotion of failure. I think I'm becoming better.
+
+### 26th
+> Tian yuefeng suggested us to make a plan for the new year and I had no reason to frown upon this idea. In fact, I have wanted to make a plan for a long time. There is a good time to do it recently, because people are always willing to make some changes in a new year. I searched on the zhihu website to find a good way to discover the deep longing inside me. I tried it, but I failed, because I can't find a target that makes me cry. However, I found another way to seek for my life target this afternoon. That is trying and insisting 100 days.
