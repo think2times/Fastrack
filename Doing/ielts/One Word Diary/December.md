@@ -79,3 +79,25 @@
 
 ### 27th
 > I have unthoughtfully sent messages to 22 girls since yesterday, but I only got less than 10 response, and only two were willing to talk with me. However, one of the two girls asked me to post my photo and she didn't reply after receive my photo. The good news is I'm communicating with the other girl.
+
+### 28th
+> I got my mandarin certificate this morning and I hope I can get my teacher certificate next year. I planned to ask for help from the doctors about the issue of my skin, but I don't make an appointment and the doctor's timetable is full. So I came to library and borrowed five books and bought two high-energy snacks when I left the library. 
+
+> I learned that one should be grateful if he want to be happy. A viable way is to write at least five things for which you are grateful every night before going to bed. I will try this from today.
+
+- Gratitude:
+    - the woman who told me that I should make an appointment before asking help from a doctor
+    - the bus driver who told me that I was not on the wrong bus
+    - teacher Tang invited me to eat her hamburger
+    - the man in the library who told me where is the toilet
+    - my little brother who made dinner for us
+
+### 29th
+> I always feel tired recently because I'm ensnared by too many things include working, learning skills, tutoring and preparing blind date. Maybe I should stop doing something to save time.
+
+- Gratitude:
+    - the tea that Liu Tongyu's mother provided for me was very delicious
+    - the sun that I usually turn a blind eye to made me feel very comfortable when I went home this noon
+    - the meditation made me feel better
+    - my father who made dinner for us
+    - the restaurant's manager who told me where is the nearest toilet
