@@ -90,7 +90,7 @@
     - the bus driver who told me that I was not on the wrong bus
     - teacher Tang invited me to eat her hamburger
     - the man in the library who told me where is the toilet
-    - my little brother who made dinner for us
+    - my little brother made dinner for us
 
 ### 29th
 > I always feel tired recently because I'm ensnared by too many things include working, learning skills, tutoring and preparing blind date. Maybe I should stop doing something to save time.
@@ -99,5 +99,15 @@
     - the tea that Liu Tongyu's mother provided for me was very delicious
     - the sun that I usually turn a blind eye to made me feel very comfortable when I went home this noon
     - the meditation made me feel better
-    - my father who made dinner for us
-    - the restaurant's manager who told me where is the nearest toilet
+    - my father made a fancy dinner for us
+    - the free snacks that the restaurant's manager provided for me
+
+### 30th
+> I found Qiu Shuxin was so stupid to mention her ex-boyfriend frequently. I know she want to let me give up. In fact, I have eradicated her since she said her ex-boyfriend was preferable to me. Another thing that I thought her was silly is she said I was just her colleague and our another co-colleague Wang Jiani was her friend, even though we met each other every weekday and they only saw others about once a month.
+
+- Gratitude:
+    - mom prepared breakfirst for us, I had thought I should do that
+    - the photos which Qiu Shuxin took for me
+    - the invitation to the New Year's Eve party from Wang Jiani
+    - my grandfather introduced a blind-date to me
+    - yogurt that Qiu Shuxin gived to me
