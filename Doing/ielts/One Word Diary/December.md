@@ -111,3 +111,13 @@
     - the invitation to the New Year's Eve party from Wang Jiani
     - my grandfather introduced a blind-date to me
     - yogurt that Qiu Shuxin gived to me
+
+### 31th
+> Today is a terrible day. Qiu Shuxin and I went to cross-year party, but she almost didn't talk to me. I regreted to agree to the party! Even worse, Wang Jiani and her friends were late over one hour, so we decided to leave. Qiu shuxin and her friend went to concert in Huijia Times Square, and I made an decision that I will not come out with Qiu Shuxin unless I must go. 
+
+- Gratitude:
+    - year-end bonus
+    - sharing session
+    - the waitor re-hot my French fries
+    - the moment when I watch Harvard Happines course
+    - the beautiful spot of Train Home Street
