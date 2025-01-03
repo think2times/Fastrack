@@ -76,3 +76,48 @@
 
 ### 26th
 > Tian yuefeng suggested us to make a plan for the new year and I had no reason to frown upon this idea. In fact, I have wanted to make a plan for a long time. There is a good time to do it recently, because people are always willing to make some changes in a new year. I searched on the zhihu website to find a good way to discover the deep longing inside me. I tried it, but I failed, because I can't find a target that makes me cry. However, I found another way to seek for my life target this afternoon. That is trying and insisting 100 days.
+
+### 27th
+> I have unthoughtfully sent messages to 22 girls since yesterday, but I only got less than 10 response, and only two were willing to talk with me. However, one of the two girls asked me to post my photo and she didn't reply after receive my photo. The good news is I'm communicating with the other girl.
+
+### 28th
+> I got my mandarin certificate this morning and I hope I can get my teacher certificate next year. I planned to ask for help from the doctors about the issue of my skin, but I don't make an appointment and the doctor's timetable is full. So I came to library and borrowed five books and bought two high-energy snacks when I left the library. 
+
+> I learned that one should be grateful if he want to be happy. A viable way is to write at least five things for which you are grateful every night before going to bed. I will try this from today.
+
+- Gratitude:
+    - the woman who told me that I should make an appointment before asking help from a doctor
+    - the bus driver who told me that I was not on the wrong bus
+    - teacher Tang invited me to eat her hamburger
+    - the man in the library who told me where is the toilet
+    - my little brother made dinner for us
+
+### 29th
+> I always feel tired recently because I'm ensnared by too many things include working, learning skills, tutoring and preparing blind date. Maybe I should stop doing something to save time.
+
+- Gratitude:
+    - the tea that Liu Tongyu's mother provided for me was very delicious
+    - the sun that I usually turn a blind eye to made me feel very comfortable when I went home this noon
+    - the meditation made me feel better
+    - my father made a fancy dinner for us
+    - the free snacks that the restaurant's manager provided for me
+
+### 30th
+> I found Qiu Shuxin was so stupid to mention her ex-boyfriend frequently. I know she want to let me give up. In fact, I have eradicated her since she said her ex-boyfriend was preferable to me. Another thing that I thought her was silly is she said I was just her colleague and our another co-colleague Wang Jiani was her friend, even though we met each other every weekday and they only saw others about once a month.
+
+- Gratitude:
+    - mom prepared breakfirst for us, I had thought I should do that
+    - the photos which Qiu Shuxin took for me
+    - the invitation to the New Year's Eve party from Wang Jiani
+    - my grandfather introduced a blind-date to me
+    - yogurt that Qiu Shuxin gived to me
+
+### 31th
+> Today is a terrible day. Qiu Shuxin and I went to cross-year party, but she almost didn't talk to me. I regreted to agree to the party! Even worse, Wang Jiani and her friends were late over one hour, so we decided to leave. Qiu shuxin and her friend went to concert in Huijia Times Square, and I made an decision that I will not come out with Qiu Shuxin unless I must go. 
+
+- Gratitude:
+    - year-end bonus
+    - sharing session
+    - the waitor re-hot my French fries
+    - the moment when I watch Harvard Happines course
+    - the beautiful spot of Train Home Street
