@@ -43,9 +43,19 @@
 ### 5th
 > This noon, a boy jumped up and down, shouting happily, "The bus's here!" while the 5201 bus was coming. I was surprised that a kid would be so joyful just because the coming bus. And I didn't feel that happy for a long time. I hope I can get this simple happiness someday. I shouldn't close my eyes for little good things in my daily life.
 
-- Gratitude
+- Gratitude:
     - the little boy cheered with joy as the bus arrived
     - the waiter at 8.30 Shop who permitted me to use their toilet
     - the clean floor my mom mopped
     - Jia Mengyao's grandmother who is 76 years old and very very healthy
     - the attitude to the work that I learned from Tal Ben Shahar's Happiness course
+
+### 6th
+> I tried the 90 minutes hard work with 15 minutes break method today, and it improved my efficiency markedly.
+
+- Gratitude:
+    - half of an orange and an apple that Qiu Shuxin shared to me
+    - the dumplings my mod prepared for us
+    - Huang Wenqian's invitation to sit and talk with her
+    - Yang Chaoyue and Meng Ziyi's slide that made me laugh
+    - the blossom bud that I expected to see her bloom
