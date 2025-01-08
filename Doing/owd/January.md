@@ -59,3 +59,20 @@
     - Huang Wenqian's invitation to sit and talk with her
     - Yang Chaoyue and Meng Ziyi's slide that made me laugh
     - the blossom bud that I expected to see her bloom
+
+### 7th
+> I don't know I am not happy now, but I don't feel good. I processed my plan well, I tried to make new friends. Maybe I need time to see the consequence of these changes. I hope the day will come soon. I am ensnared by the upset these days.
+
+- Gratitude:
+    - sharing session with Tian Yuefeng and Qiu Shuxin
+    - the hearty dinner that dad cooked for us
+    ![a hearty dinner](./Images/A%20hearty%20dinner.jpg)
+    - tonight's moon which looks misty is beautiful
+    - Li Mengyuan, one of my students, has grown by leaps and bounds in mathmatics these days
+    - the moment when I start up hadoop successfully
+
+### 8th
+
+- Gratitude
+    - dad have finished cooking dumplings for us when I got up
+    - dad cleaned up the rubbish and replaced with new rubbish bags
