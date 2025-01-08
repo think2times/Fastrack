@@ -72,7 +72,11 @@
     - the moment when I start up hadoop successfully
 
 ### 8th
+> 
 
 - Gratitude
     - dad have finished cooking dumplings for us when I got up
     - dad cleaned up the rubbish and replaced with new rubbish bags
+    - the flower bud is blossoming
+    - my Swan Lake picture was delivered to my office
+    - this morning's sun doesn't shine directly into my eyes, so I needn't to draw the curtain
