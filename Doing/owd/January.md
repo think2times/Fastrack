@@ -72,7 +72,7 @@
     - the moment when I start up hadoop successfully
 
 ### 8th
-> 
+> I asked Fu Can if I should install Hadoop on windows 10 PC, and he told me I needn't to learn all the book, just look through it and try some projects with Python. I accepted because I didn't know java well. I'm preparing for a new job as a big data development these days, my salary is too low now. I hope I can keep abreast of Fu Can soon. There are too many tedious things in my daily work and I think my status is hazardous now.
 
 - Gratitude
     - dad have finished cooking dumplings for us when I got up
@@ -80,3 +80,5 @@
     - the flower bud is blossoming
     - my Swan Lake picture was delivered to my office
     - this morning's sun doesn't shine directly into my eyes, so I needn't to draw the curtain
+    - the birthday cake for mom was very delicious
+    - played cards with mom and my little brother is enjoyable
