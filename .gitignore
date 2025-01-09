@@ -136,7 +136,7 @@ dmypy.json
 
 # practice file
 test.*
-Untitled.ipynb
+*/Untitled.ipynb
 *.bak
 *.tmp
 
@@ -148,3 +148,6 @@ Learning/SICP/Modules
 # swap-face
 Projects/swap-face/models
 Projects/voice-changer
+
+# covid-19 dataset
+*.csv

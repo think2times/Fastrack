@@ -74,7 +74,7 @@
 ### 8th
 > I asked Fu Can if I should install Hadoop on windows 10 PC, and he told me I needn't to learn all the book, just look through it and try some projects with Python. I accepted because I didn't know java well. I'm preparing for a new job as a big data development these days, my salary is too low now. I hope I can keep abreast of Fu Can soon. There are too many tedious things in my daily work and I think my status is hazardous now.
 
-- Gratitude
+- Gratitude:
     - dad have finished cooking dumplings for us when I got up
     - dad cleaned up the rubbish and replaced with new rubbish bags
     - the flower bud is blossoming
@@ -82,3 +82,17 @@
     - this morning's sun doesn't shine directly into my eyes, so I needn't to draw the curtain
     - the birthday cake for mom was very delicious
     - played cards with mom and my little brother is enjoyable
+
+### 9th
+> I'm nervous now because too many things are hidding in my mind. I can't concentrate on only one of them even if I attach great importance to something. Maybe I need a rest.
+
+> After taking a nap at noon, I felt very good in the begining of this afternoon. I contacted with Fu Can to have a meet and hoped that he could company with me to buy some clothes and shoes for my blind-date soon. However, he was busy today, I must choose clothes by myself or ask someone else to help me.
+
+> This afternoon I was too inefficient, I didn't finish anything I should do. I must do some extra work after worktime. Too many materials need to prepare for this weekend's tutor course.
+
+- Gratitude:
+    - I found a string with small glowing bulbs hanging on it, I picked it up from the snow and gave it to a little boy
+    - Tal Ben Shahar's course of how to treat failure encouraged me
+    - took a nap at noon made me relax
+    - Yang Zi covered his eyes with his hands while crying and this made me smile
+    - Huang Shengyi didn't get off the bus surprised me and made me very happy
