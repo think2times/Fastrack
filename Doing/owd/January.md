@@ -66,7 +66,7 @@
 - Gratitude:
     - sharing session with Tian Yuefeng and Qiu Shuxin
     - the hearty dinner that dad cooked for us
-    ![a hearty dinner](./Images/A%20hearty%20dinner.jpg)
+    ![a hearty dinner](./Images/20250107-A%20hearty%20dinner.jpg)
     - tonight's moon which looks misty is beautiful
     - Li Mengyuan, one of my students, has grown by leaps and bounds in mathmatics these days
     - the moment when I start up hadoop successfully
@@ -78,9 +78,11 @@
     - dad have finished cooking dumplings for us when I got up
     - dad cleaned up the rubbish and replaced with new rubbish bags
     - the flower bud is blossoming
+    ![](./Images/20250108-A%20blossom%20buds.jpg)
     - my Swan Lake picture was delivered to my office
     - this morning's sun doesn't shine directly into my eyes, so I needn't to draw the curtain
     - the birthday cake for mom was very delicious
+    ![](./Images/20250108-Mom's%20birthday.jpg)
     - played cards with mom and my little brother is enjoyable
 
 ### 9th
