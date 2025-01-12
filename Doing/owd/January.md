@@ -98,3 +98,36 @@
     - took a nap at noon made me relax
     - Yang Zi covered his eyes with his hands while crying and this made me smile
     - Huang Shengyi didn't get off the bus surprised me and made me very happy
+
+### 10th
+> I found the secret of happiness: focus. Whatever you are doing, just do it, don't think about anything else. I felt very well today. It seems that I am going to achieve a further betterment in everything.
+
+- Gratitude:
+    - I talked a lot with Huang Wenqian and I know her much more
+    - Tian Yuefeng shared a big data course to me
+    - I bought porker with mom for pork with Chinese cabbage and vermicelli
+    - took a nap at noon made me very comfortable
+    - cleaned up the office made me happy
+    - exercised in the office is good
+
+### 11th
+> I spent much money today for my new shoes and clothes which were prepared for my blind-date. My mom and I visited two malls over three hours. She gave prominence to improve my height and this made me embarrassed. My legs and feet felt were aching after the long shopping.
+
+- Gratitude:
+    - Mom bought two jeans for me
+    - I bought a pair of shoes which were particularly comfortable
+    - Ganmianpi is very delicious
+    - two oranges that Ms Tang gave me
+    - ate dinner with my family
+
+### 12th
+> I talked with my blind-date and we were arranged to meet at the cafe nearby at 8 PM on next Sunday. After finishing my tutor course this afternoon, I went to the cafe and found it's a little noisy, but I brought to light another cafe which is a little far. But the atmosphere is very good and suit for communication. I expect to meet her very much.
+
+- Gratitude:
+    - the fried chicken leg my little brother bought
+    - my blind-date who agreed to meet next sunday
+    - The moon looked particularly round tonight, it really looked beautiful.
+    - a very warm cafe
+    ![](./Images/20250112-A%20warm%20cafe.jpg)
+    - China knot along the road
+    ![](./Images/20250112-China%20knot.jpg)
