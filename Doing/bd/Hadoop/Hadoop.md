@@ -31,3 +31,35 @@
 > 分布式与集群是不同的概念：它们的共同点是都有多台机器实现，但是分布式的每台机器部署不同的组件，而集群中的每台机器都部署相同的组件
 
 > 大数据可以通过分布式来解决存储和计算方面的难题
+
+## 06-Linux操作系统概述
+> Linux的起源和比较流行的发行版有哪些
+
+## 11-Linux文件系统基础知识
+> 在Linux中，万物皆文件，所以一切操作都可以认为是对文件的操作。
+
+> 当前目录、相对路径和绝对路径的区别
+
+## 12-Linux常用操作命令（1）-ls、cd、mkdir、rm
+- ls: list files
+    - ls -a
+    - ll = ls -l
+- cd: change directory
+    - 不加参数时，会回到用户的家目录
+- touch: 创建一个空文件
+- mkdir: make directory
+    - mkdir target_parents/target_dir -p: -p参数保证了父目录不存在时自动创建
+
+## 13-Linux常用操作命令（2）-mv、cp、cat、tail、管道、重定向
+- cp: copy file
+    - cp source_dir/ target_dir/ -r: -r参数可以复制整个目录
+- cat: concatenate
+- more: 以页的形式显示文件内容，按enter可以看下面一行，空格看下一页，b可以回到上一页
+- tail: 查看文件末尾部分的内容，默认显示10行
+    - tail -n target_file: 显示最后n行的内容，注意-n参数必须在tail和文件名之间，不能放在最后
+    - tail -f target_file: 实时显示动态追加到文件中的内容。只要文件有更新，该命令会不断输出最新的更新内容。-f的位置也可以放到最后
+- echo: 将内容输出到console控制台上
+- |: 管道操作，把前一个命令的结果作为输入传给后一个命令
+- 输出重定向命令
+    - command > target_file: 执行command，然后将执行结果存入target_file中，target_file中的内容会被新内容覆盖
+    - command >> target_file: 执行command，然后将执行结果存入target_file中，新内容会追加到target_file文件末尾
