@@ -131,3 +131,23 @@
     ![](./Images/20250112-A%20warm%20cafe.jpg)
     - China knot along the road
     ![](./Images/20250112-China%20knot.jpg)
+
+### 13th
+> I ate lunch with Tian Yuefeng and Ge Furong this noon. They were really the loved Red-Brised Beef Ribs and the Da Pan Ji my dad cooked, and Tian Yuefeng bought Spicy ox tendon noodles, stir-fried shredded potatoes and pumpkin soup. We talked about the embezzlements which were brought to light in our company recently. Then I learned some Linux courses this afternoon and I really attained something.
+
+- Gratitude:
+    - Tal Ben Shahar's course made me happy and peaceful as always
+    - a row of streetlights when I went home seemed to welcome me
+    - small talk with Zhai Haijun
+    - the moon broke though the clouds
+    - mom hemmed my pants
+
+### 14th
+> I watched a movie named the silence of the lambs which is a very classical masterpiece, the bad main character was very impressive and daunting. I finished my learning plan of big data, but I thought it's not enough.
+
+- Gratitude:
+    - Xu Zhisheng and Shen Yue's short videos about high school
+    - I found one Moyan's book named Life and Death are wearing me out that I have wanted to see for a long time
+    - took a short tap at noon made me very relax
+    - Tian Yuefeng agreed to pick up one cloth for me tomorrow
+    - I didn't know why, but I was very happy when I got out of the employee shuttle as if I was on friday
