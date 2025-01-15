@@ -63,3 +63,95 @@
 - 输出重定向命令
     - command > target_file: 执行command，然后将执行结果存入target_file中，target_file中的内容会被新内容覆盖
     - command >> target_file: 执行command，然后将执行结果存入target_file中，新内容会追加到target_file文件末尾
+
+## 14-Linux常用操作命令（3）-tar命令解压缩包
+- 打包、解包
+    - -c或--create: 建立新的备份文件
+    - -x或--extract或--get: 从备份文件中还原文件
+    - -v或--verbose: 显示指令执行过程
+    - -f <备份文件> 或 --file=<备份文件> 指定备份文件
+- 压缩
+    - -z或--gzip或--ungzip 通过gzip压缩或解压备份文件
+
+## 15-Linux常用系统命令--时间日期、内存磁盘使用率、进程查看
+- 日期、日历
+    - date: 查看当天的日期
+    - cal(calendar): 查看当前的公历
+- 内存、磁盘使用率
+    - free: 显示内存状态，可以加上-h使显示的内容可读性更高
+    - df(disk free): 显示磁盘使用情况，重点关注根目录/对应的磁盘信息，也可以用-h来提高可读性
+- 进程查看
+    - ps(process status): 显示当前的进程状态，ps -ef可以查看本机运行的所有进程
+    - kill -进程号: 可以根据进程号结束对应的进程
+
+## 16-vim编辑器介绍、3种工作模式
+- vi作为Linux内置的文本编辑器，有三种工作模式：
+    - 命令模式：使用vi命令默认进入命令模式，不能编辑文本，但是可以进行复制、粘贴、删除等操作
+    - 编辑模式：可以按 i, a, o 今日编辑模式，对文件内容进行插入、修改、删除等操作，可以通过按esc进入命令模式
+    - 底部命令模式：以 : 开始，主要用于文件的保存退出等
+
+## 17-vim基本操作命令
+- 移动光标
+    - h: 光标向左移动一格
+    - l: 光标向右移动一格
+    - j: 光标向下移动一格
+    - k: 光标向上移动一格
+    - 0: 光标移动到行首
+    - $: 光标移动到行尾
+    - gg: 光标移动到文件开头
+    - G: 光标移动到文件末尾
+- 复制粘贴
+    - yy: 复制光标所在行
+    - nyy: 复制当前行往下n行
+    - p: 把复制的内容粘贴到当前行的下一行
+    - P: 把复制的内容粘贴到当前行的上一行
+- 删除、撤销
+    - dd: 删除光标所在行
+    - ndd: 删除当前行往下n行
+    - u: 撤销上一步的操作
+    - ctrl+r: 反撤销
+
+# 02_Apache Hadoop、HDFS
+## 01-课程内容大纲-学习目标
+
+## 02-Apache Hadoop介绍、发展简史、现状
+> hadoop之父：Doug Cutting，起源于Nutch项目，受到谷歌3篇论文的启发，主要由HDFS分布式文件管理系统、YARN资源和任务管理调度平台和MapReduce计算框架组成，目前HDFS和YARN仍然使用广泛，而MapReduce由于设计上的缺陷，逐渐退居二线
+
+## 03-Apache Hadoop特性优点、国内外应用
+> 优点：扩展性强、成本低、效率高、可靠性强
+
+## 04-Apache Hadoop发行版本、架构变迁
+> 开源社区版：优点是官方出品，更新快，缺点是不稳定，兼容性不足; 商业版：优点是稳定，缺点是收费，更新不及时
+
+## 05-Apache Hadoop安装部署--集群组成介绍
+> Hadoop集群 = HDFS集群 + YARN集群; 这两个集群在逻辑上隔离，在物理上却可能部署在一起。另外没有MapReduce集群，它是一个计算框架
+
+## 06-Apache Hadoop安装部署--服务器基础环境设置
+> 配置Linux服务器环境，安装jdk并添加到环境变量
+
+## 07-Apache Hadoop安装部署--安装包结构
+> 上传hadoop安装包，了解安装包结构
+
+## 08-Apache Hadoop安装部署--修改配置文件、同步安装包与环境变量
+> 配置文件路径: hadoop安装目录/etc/hadoop
+
+- hadoop-env.sh: 配置java环境变量，配置hdfs和yarn节点的默认用户为root
+- xxxx-site.xml: 表示用户自定义的配置，会覆盖default中的默认配置
+    - core-site.xml: 核心模块
+    - hdfs-site.xml: hdfs文件系统模块
+    - mapred-site.xml: MapReduce模块配置
+    - yarn-site.xml: YARN模块配置
+- workers
+
+## 09-Apache Hadoop安装部署--format初始化操作
+> 注意初始化命令多次执行会删除之前的数据
+
+## 10-Apache Hadoop安装部署--集群启停命令、Web UI页面
+> 启动的时候可能会遇到namenode或datanode无法启动的情况，解决方法是停止所有服务，把logs，tmp/dfs/data，tmp/dfs/name目录下所有文件都删除，然后重新启动hadoop服务
+
+> hdfs网页端：http://namenode服务器所在ip:9870/
+
+> YARN网页端：http://resourcemanager服务器所在ip:8088/
+
+## 11-Apache Hadoop安装部署--初体验
+> 用hadoop自带的jar包执行计算pi和单词统计，发现完成这样简单的任务的速度并不快，而且每次都要先连接YARN集群中的ResourceManager，再计算的时候是先进行Map运算，然后再进行Reduce运算，面对小数据量的任务hadoop不仅没有优势，反而会有劣势
