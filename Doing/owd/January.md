@@ -159,5 +159,17 @@
     - Tian Yuefeng and Qiu Shuxin selected a handsome undershirt for me
     - height-increasing insoles mom bought for me
     - finished hadoop's installation made me feel fulfillment
-    - the dinner is very delicious
+    - the dinner in Huang Ji Huang is very delicious
     - talk with Tian Yuefeng and Qiu Shuxin made me relax and comfortable
+
+### 16th
+> My little brother's final exam scores got a great advance. He increased his rank over 70 than mid-term. I'm very happy because our diligence were not in vain.
+
+> I read a good book named Finding Flow, which recommanded us to give full play to our advantage and focus on it. I think that's exactly right.
+
+- Gratitude:
+    - the egg fried rice mom cooked was very very delicious
+    - Finding Flow is attractive for me even though I just read the preface
+    - morning's employee shuttle arrived early which saved us 10 more minutes than before
+    - the foreigners in the Rednote who came from tiktok posted many excellent pictures and videos
+    - Wang Lei's company for a urgent requirement
