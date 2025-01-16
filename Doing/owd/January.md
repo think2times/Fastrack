@@ -151,3 +151,13 @@
     - took a short tap at noon made me very relax
     - Tian Yuefeng agreed to pick up one cloth for me tomorrow
     - I didn't know why, but I was very happy when I got out of the employee shuttle as if I was on friday
+
+### 15th
+> The relationship between Qiu Shuxin and I continued to exacerbation, but we created an appearance of superficial harmony in unison. I don't think it's right, but I don't know how to treat her properly, too.
+
+- Gratitude:
+    - Tian Yuefeng and Qiu Shuxin selected a handsome undershirt for me
+    - height-increasing insoles mom bought for me
+    - finished hadoop's installation made me feel fulfillment
+    - the dinner is very delicious
+    - talk with Tian Yuefeng and Qiu Shuxin made me relax and comfortable
