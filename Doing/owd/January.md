@@ -173,3 +173,13 @@
     - morning's employee shuttle arrived early which saved us 10 more minutes than before
     - the foreigners in the Rednote who came from tiktok posted many excellent pictures and videos
     - Wang Lei's company for a urgent requirement
+
+### 17th
+> Our family ate dinner together at Zhu Xi Yi Hao tonight and the food was delious and cheap. But I didn't really feel happy because my dad always did deviant things like walking extremely slowly, sitting far from my mom, going to toilet frequently etc. I don't want to eat dinner with my parents outside ever.
+
+- Gratitude:
+    - breakfirst that dad cooked
+    - another flower buds will blossom soon
+    - microwave oven that Yue Ming provided for me
+    - sharing session with Tian Yuefeng and Qiu Shuxin
+    - Wang Lei, Lian Zeyang, Liu Ran and Lan Bo who helped me develop the invoice system
