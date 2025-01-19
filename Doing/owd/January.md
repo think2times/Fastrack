@@ -183,3 +183,23 @@
     - microwave oven that Yue Ming provided for me
     - sharing session with Tian Yuefeng and Qiu Shuxin
     - Wang Lei, Lian Zeyang, Liu Ran and Lan Bo who helped me develop the invoice system
+
+### 18th
+> I tried a new method to meditate today and it's better than before. I usually meditated with the video, however it gave me little help these days. So I didn't play video today, just meditated with a 10 minutes stopwatch, and that helped a lot. I felt refreshment when I finished meditation.
+
+- Gratitude:
+    - I finished a vocabulary book in Momo, and started a new one
+    - I finished reading the book Finding Flow
+    - the update of an anime named Fan Ren Xiu Xian Zhuan, it's really interesting
+    - mom cooked pork with tofu and vermicelli, that was delicious
+    - I learned that how to live in harmony with work to make a better life from the book named Finding Flow
+
+### 19th
+> I met my blind-date this noon and we ate lunch at Lu Gang You Yue together. I didn't like her, but I didn't hate her either. The food was delicious and I considered to eat with other friends next time. She said she was happy about talking with me, but she didn't want to develop love relationship with me. She transfered 70 RMB to me, but I rejected because it only cost 116 RMB, and I eat much more than her. So I said I treated her and we could be friends.
+
+- Gratitude:
+    - the anime named Ling Xue Xiu Xian is really interesting
+    - the lunch is very good
+    - the printer in the 8.30 O'clock is very convenient
+    - meditation on the bed is also useful and comfortable
+    - exercise made me feel exhaust in physics and relax in mind
