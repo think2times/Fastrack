@@ -203,3 +203,14 @@
     - the printer in the 8.30 O'clock is very convenient
     - meditation on the bed is also useful and comfortable
     - exercise made me feel exhaust in physics and relax in mind
+
+### 20th
+> I bring to light that my new way of meditation is really useful. I did meditation twice today, and I felt relax and comfortable each time. I also changed my record of meditation, and I would add one time after doing meditation every time.
+
+- Gratitude:
+    - two other flower buds had blossomed
+    ![](./Images/20250120-Other%20two%20flower%20buds%20blossomed.jpg)
+    - the activation code for newest version of finalshell
+    - I made a plan for my little brother and he accepted it
+    - The egg tart my little brother bought
+    - I bought a box of tissue this morning and it arrived afternoon, it's very convenient
