@@ -214,3 +214,13 @@
     - I made a plan for my little brother and he accepted it
     - The egg tart my little brother bought
     - I bought a box of tissue this morning and it arrived afternoon, it's very convenient
+
+### 21th
+> I found that when I watch an interesting video, I can't help continuing to do it until finished it, the same can be said about reading a novel. However, there was a little difference in implement my plan. I always give up a plan when I met difficulties.
+
+- Gratitude:
+    - dad made breakfirst for us
+    - mod bought many sweets and beverage
+    - the anime Ling Xue Xiu Xian is really really interesting, it made me laugh many times
+    - the flowers and sun made me feel comfortable
+    - talking about how to learn big data with Tian Yuefeng made me know much more clear about it
