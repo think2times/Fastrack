@@ -224,3 +224,43 @@
     - the anime Ling Xue Xiu Xian is really really interesting, it made me laugh many times
     - the flowers and sun made me feel comfortable
     - talking about how to learn big data with Tian Yuefeng made me know much more clear about it
+
+### 22th
+> I must adapt my teach method for Li Mengyuan, she was happy and expectant when she saw me. However, she felt bored and wanted to stop when the course is nearly over.
+
+- Gratitude:
+    - I understood what is happiness when mom told me she had cooked breakfirst for us
+    - Too many interesting slides of the anime Ling Xue Xiu Xian
+    - 700 RMB food subsidy
+    - went through the crossroad quickly is exciting, just like playing a level-based game
+    - this morning's sun was gentle
+
+### 23th
+> The tempo of learning big data is a little slow, but I can't help watching funny animes. I don't know why I am so happy these days, but I really felt much better than before.
+
+- Gratitude:
+    - Spring Festival Couplets that Li Mengyuan's mother gave to me
+    - falling snowflakes
+    - took two meditations made me feel relax each time
+    - took a tap at noon really helped
+    - walked on the snow is fantistic
+
+### 24th
+> I didn't catch up our shuttle bus this morning and I didn't want to go to work by taxi because it's expensive. So I asked my manager Ge Furong for leave and he agreed directly. He is always kind to us. I did a meditation by stop watch and it's useful.
+
+- Gratitude:
+    - sharing session with Tian Yuefeng
+    - Ge Furong agreed my apply for leave
+    - interesting anime
+    - chicken leg that mom bought yesterday
+    - the apple is very sweet
+
+### 25th
+> I found that I am happy when I help others. I put great importance on my mind health and I got great advance recently.
+
+- Gratitude:
+    - held the door for three strangers
+    - I bought many candies and chocolates this afternoon
+    - I chose the wrong exit of the subway station, but I played the level-based game again, that's really fun
+    - the newest update of Fan Ren Xiu Xian Zhuan anime
+    - the shop assistant invite me tasting before buying
