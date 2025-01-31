@@ -264,3 +264,57 @@
     - I chose the wrong exit of the subway station, but I played the level-based game again, that's really fun
     - the newest update of Fan Ren Xiu Xian Zhuan anime
     - the shop assistant invite me tasting before buying
+
+### 26th
+> I noticed the new Chinese lantern that I might turn a blind eye to in the past just when I went into the department building.
+
+- Gratitude:
+    - got many gifts from Spring Festival activities by Ni Jiayu and her teammate
+    ![](./Images/20250126-gifts%20from%20Spring%20Festival%20activities.jpg)
+    - Qiu Shuxin called me to go down stairs and took part in Spring Festival's activities
+    - I found a 'Golden Egg' in the firefighting facilities
+    - almost all flower buds blossomed
+    ![](./Images/20250126-almost%20all%20flower%20buds%20blossomed.jpg)
+    - Mo Yan's book Sheng Si Pi Lao is really really good 
+
+### 27th
+> I played a very interesting video game named Bioshock Infinite all day, it's so amazing. I don't think I misspent the time because I am very happy.
+
+- Gratitude:
+    - Bioshock Infinite
+    - got up when I didn't want to sleep is really good
+    - the candies and chocolate and French fries are delicious
+    - the noodles mom cooked tonight is delicious too
+    - exercise made me feel relax and comfortable
+
+### 28th
+> I finished the Bioshock Infinite, but I didn't understand the story very well. I knew that I should play bioshock 1 first, then infinite and two dlcs. However, it need tens of hours and I felt a little tired. So I will not play it now.
+
+- Gratitude:
+    - mom made a whole table full of dishes which include marinated pig feet, tossed celery, marinated beef, and each of these was delicious
+    ![](./Images/20250128-a%20whole%20table%20full%20of%20dishes.jpg)
+    - enjoy a restful sleep and wake up naturally
+    - exercise made me thought today is meaningful
+    - Sheng Si Pi Lao was really good
+    - continued to recite English words
+
+### 29th
+> My parents and two brothers visited my grandfather, and other relatives came too. We ate and drank to celebrate the Spring Festival.
+
+- Gratitude:
+    - new year's money from mom, grandfather and two aunts
+    - playing Chinese chess with my uncle
+    - a whole table full of dishes by my families
+    - Tian Yuefeng asked me to create a team for English study
+    - white spirit my grandfather offered
+    - Wan Fangxiao and Wan Panpan visited us this morning
+
+### 30th
+> Mom asked me to visit my uncle and aunt many times this morning until I agreed. It might be a boring day if I didn't go, because I didn't have something meaningful to do. I would play video games all day, then I would feel egregious of the way I spent my time.
+
+- Gratitude:
+    - visited my uncle and aunt
+    - playing chess with my uncle
+    - visited Wan Huina, Liu Jie and their daughter
+    - a whole table full of dishes by my aunt
+    - new year's money from another grandfather and aunt
