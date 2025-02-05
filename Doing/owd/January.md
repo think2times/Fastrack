@@ -318,3 +318,15 @@
     - visited Wan Huina, Liu Jie and their daughter
     - a whole table full of dishes by my aunt
     - new year's money from another grandfather and aunt
+
+### 31th
+> Today is the last day of January in 2025, I didn't squander it. I went to the XinJiang library and borrowed two books. Then I read Sheng Si Pi Lao from 3 p.m. to 7 p.m.
+
+- Gratitude:
+    - a beautiful bookmark from XinJiang library
+    ![](./Images/20250131-bookmark.jpg)
+    - clocked as 11357th discover of The River of Arts
+    ![](./Images/20250131-clock%20record.jpg)
+    - the red lanterns hung on the tree in the XinJiang library
+    - read Sheng Si Pi Lao
+    - dad cooked a very delicious soup as dinner
