@@ -46,3 +46,7 @@
 ### 10th
 - all flower buds have blossomed
 ![](./Images/20250210-all%20flower%20buds%20blossomed.jpg)
+- the fireworks after tutoring course
+![](./Images/20250210-fireworks-1.jpg)
+![](./Images/20250210-fireworks-2.jpg)
+- mom cooked special meal for me
