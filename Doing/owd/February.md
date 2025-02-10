@@ -42,3 +42,7 @@
 - Mom helped me wash hair to prevent my wound from water
 - Mom and my brother helped me change the dressing on the wound
 - Mom made kang-baked pancake for me
+
+### 10th
+- all flower buds have blossomed
+![](./Images/20250210-all%20flower%20buds%20blossomed.jpg)
