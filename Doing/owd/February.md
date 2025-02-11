@@ -50,3 +50,7 @@
 ![](./Images/20250210-fireworks-1.jpg)
 ![](./Images/20250210-fireworks-2.jpg)
 - mom cooked special meal for me
+
+### 11th
+- Taking a meditation when I was bathing in the sunlight was very comfortable
+- Today's rice was really delicious
