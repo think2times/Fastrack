@@ -54,3 +54,4 @@
 ### 11th
 - Taking a meditation when I was bathing in the sunlight was very comfortable
 - Today's rice was really delicious
+- My little brother bought two new patches for the wound
