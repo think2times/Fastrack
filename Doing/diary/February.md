@@ -60,3 +60,10 @@
 - The fireworks were really beautiful
 - I felt Titanic was a great movie when I watched it again today
 - I found that delicacy is important for me because I can't eat spicy food these days
+
+### 13th
+> 今天我决定把写日记改为用汉字，因为英语经常没法准确描述真实的情况，把用当天学过的单词造句单独做为另一项任务。
+
+- 今天的冥想格外有效，冥想之后感觉全身舒适，内心轻松
+- 妈妈炒的豆角炒肉和米饭都特别香
+- 丁涟峰帮我洗头，洗得挺认真的
