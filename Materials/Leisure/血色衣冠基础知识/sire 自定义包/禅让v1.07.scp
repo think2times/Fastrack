@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomModifyPackage>
+	<PackageName>禅让v1.07</PackageName>
+	<PackageAuthor>kilszfdjs</PackageAuthor>
+	<PackageDiscription>将评定改为禅让，需要一定行动力和技巧 （感谢-名one家帮忙修改了行动力部分）。</PackageDiscription>
+	<CustomModifyItems>
+		<CustomModifyItem>
+			<Caption>禅让</Caption>
+			<Enabled>TRUE</Enabled>
+			<Codes>
+				<Code>
+					<Description>代码</Description>
+					<Address>00575B3D</Address><!--长度:5-->
+					<EnableCode>E9 BE 44 4A 00</EnableCode>
+					<DisableCode>8D 44 24 10 56</DisableCode>
+				</Code>	
+				<Code>
+					<Description>代码</Description>
+					<Address>00A1A000</Address><!--长度:246-->
+					<EnableCode>B8 60 FF A1 00 A3 50 FF A1 00 B8 00 FF A1 00 A3 54 FF A1 00 BD 02 00 00 00 6A 01 6A 00 6A 00 68 70 FF A1 00 E8 D7 B4 AD FF 83 C4 10 55 68 50 FF A1 00 E8 C9 AB C5 FF 83 C4 08 83 F8 01 0F 84 9B 00 00 00 8B CE E8 66 DE A6 FF 50 B9 58 19 20 07 E8 4B 6A A7 FF 8B 88 A2 00 00 00 81 F9 10 27 00 00 0F 82 5F 00 00 00 50 8B CE 8B 06 FF 50 44 50 B9 58 19 20 07 E8 56 6A A7 FF 0F B6 48 2C 81 F9 C8 00 00 00 8B C8 58 0F 82 39 00 00 00 50 B8 C8 00 00 00 28 41 2C 58 81 A8 A2 00 00 00 10 27 00 00 6A 00 6A 00 50 B9 5C 89 55 07 E8 D0 EF A9 FF 6A FF 6A FF 6A FF 6A FF 6A FF 6A 15 E8 4F 33 C6 FF E9 6C C1 B5 FF 6A 01 6A 00 6A 00 68 0B FF A1 00 E8 7A B3 AD FF 83 C4 10 E9 54 C1 B5 FF 6A 01 6A 00 6A 00 68 B0 FF A1 00 E8 62 B3 AD FF 83 C4 10 E9 3C C1 B5 FF</EnableCode>
+					<DisableCode>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</DisableCode>
+				</Code>	
+				<Code>
+					<Description>代码</Description>
+					<Address>00A1FF00</Address><!--长度:6-->
+					<EnableCode>A1 40 A7 5F A1 40</EnableCode>
+					<DisableCode>00 00 00 00 00 00</DisableCode>
+				</Code>	
+				<Code>
+					<Description>代码</Description>
+					<Address>00A1FF0B</Address><!--长度:62-->
+					<EnableCode>B1 7A AA BA A6 E6 B0 CA A4 4F A9 CE A7 DE A5 A9 A4 A3 A8 AC A1 49 A1 5D AE F8 AF D3 A2 B1 A2 AF A2 AF C2 49 A6 E6 B0 CA A4 4F A9 4D A2 B0 A2 AF A2 AF A2 AF A2 AF C2 49 A7 DE A5 A9 A1 5E</EnableCode>
+					<DisableCode>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</DisableCode>
+				</Code>	
+				<Code>
+					<Description>代码</Description>
+					<Address>00A1FF50</Address><!--长度:22-->
+					<EnableCode>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 A1 40 AC 4F A1 40</EnableCode>
+					<DisableCode>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</DisableCode>
+				</Code>	
+				<Code>
+					<Description>代码</Description>
+					<Address>00A1FF70</Address><!--长度:14-->
+					<EnableCode>AC 4F A7 5F AD 6E B6 69 A6 E6 C1 49 C5 FD</EnableCode>
+					<DisableCode>00 00 00 00 00 00 00 00 00 00 00 00 00 00</DisableCode>
+				</Code>	
+				<Code>
+					<Description>代码</Description>
+					<Address>00A1FFB0</Address><!--长度:12-->
+					<EnableCode>B1 7A A8 FA AE F8 A4 46 C1 49 C5 FD</EnableCode>
+					<DisableCode>00 00 00 00 00 00 00 00 00 00 00 00</DisableCode>
+				</Code>	
+				<Code>
+					<Description>代码</Description>
+					<Address>007EB234</Address><!--长度:4-->
+					<EnableCode>C1 49 C5 FD</EnableCode>
+					<DisableCode>B5 FB A9 77</DisableCode>
+				</Code>	
+			</Codes>
+			<Params>
+				<Param>
+					<Name>所需技巧</Name>
+					<Address>00A1A05D;00A1A09D</Address>
+					<Length>4</Length>
+					<Type>Number</Type>
+					<Value>10000</Value>
+					<Min>0</Min>
+					<Max>65535</Max>
+				</Param>
+				<Param>
+					<Name>所需行动力</Name>
+					<Address>00A1A080;00A1A08F</Address>
+					<Length>4</Length>
+					<Type>Number</Type>
+					<Value>200</Value>
+					<Min>0</Min>
+					<Max>255</Max>
+				</Param>
+			</Params>
+		</CustomModifyItem>
+		<CustomModifyItem>
+			<Caption>行动力msg（需与上面一致）</Caption>
+			<Enabled>TRUE</Enabled>
+			<Params>
+				<Param>
+					<Name>百位</Name>
+					<Address>00A1FF27</Address>
+					<Length>2</Length>
+					<Type>ValueList</Type>
+					<Value>3</Value>
+					<ValueList>
+						<Item name="空">A140</Item>
+						<Item name="0">A2AF</Item>
+						<Item name="1">A2B0</Item>
+						<Item name="2">A2B1</Item>
+					</ValueList>
+				</Param>
+				<Param>
+					<Name>十位</Name>
+					<Address>00A1FF29</Address>
+					<Length>2</Length>
+					<Type>ValueList</Type>
+					<Value>1</Value>
+					<ValueList>
+						<Item name="空">A140</Item>
+						<Item name="0">A2AF</Item>
+						<Item name="1">A2B0</Item>
+						<Item name="2">A2B1</Item>
+						<Item name="3">A2B2</Item>
+						<Item name="4">A2B3</Item>
+						<Item name="5">A2B4</Item>
+						<Item name="6">A2B5</Item>
+						<Item name="7">A2B6</Item>
+						<Item name="8">A2B7</Item>
+						<Item name="9">A2B8</Item>
+					</ValueList>
+				</Param>
+				<Param>
+					<Name>个位</Name>
+					<Address>00A1FF2B</Address>
+					<Length>2</Length>
+					<Type>ValueList</Type>
+					<Value>1</Value>
+					<ValueList>
+						<Item name="空">A140</Item>
+						<Item name="0">A2AF</Item>
+						<Item name="1">A2B0</Item>
+						<Item name="2">A2B1</Item>
+						<Item name="3">A2B2</Item>
+						<Item name="4">A2B3</Item>
+						<Item name="5">A2B4</Item>
+						<Item name="6">A2B5</Item>
+						<Item name="7">A2B6</Item>
+						<Item name="8">A2B7</Item>
+						<Item name="9">A2B8</Item>
+					</ValueList>
+				</Param>
+			</Params>
+		</CustomModifyItem>
+		<CustomModifyItem>
+			<Caption>技巧msg（需与上面一致）</Caption>
+			<Enabled>TRUE</Enabled>
+			<Params>
+				<Param>
+					<Name>万位</Name>
+					<Address>00A1FF37</Address>
+					<Length>2</Length>
+					<Type>ValueList</Type>
+					<Value>2</Value>
+					<ValueList>
+						<Item name="空">A140</Item>
+						<Item name="0">A2AF</Item>
+						<Item name="1">A2B0</Item>
+						<Item name="2">A2B1</Item>
+						<Item name="3">A2B2</Item>
+						<Item name="4">A2B3</Item>
+						<Item name="5">A2B4</Item>
+						<Item name="6">A2B5</Item>
+						<Item name="7">A2B6</Item>
+						<Item name="8">A2B7</Item>
+						<Item name="9">A2B8</Item>
+					</ValueList>
+				</Param>
+				<Param>
+					<Name>千位</Name>
+					<Address>00A1FF39</Address>
+					<Length>2</Length>
+					<Type>ValueList</Type>
+					<Value>1</Value>
+					<ValueList>
+						<Item name="空">A140</Item>
+						<Item name="0">A2AF</Item>
+						<Item name="1">A2B0</Item>
+						<Item name="2">A2B1</Item>
+						<Item name="3">A2B2</Item>
+						<Item name="4">A2B3</Item>
+						<Item name="5">A2B4</Item>
+						<Item name="6">A2B5</Item>
+						<Item name="7">A2B6</Item>
+						<Item name="8">A2B7</Item>
+						<Item name="9">A2B8</Item>
+					</ValueList>
+				</Param>
+				<Param>
+					<Name>百位</Name>
+					<Address>00A1FF3B</Address>
+					<Length>2</Length>
+					<Type>ValueList</Type>
+					<Value>1</Value>
+					<ValueList>
+						<Item name="空">A140</Item>
+						<Item name="0">A2AF</Item>
+						<Item name="1">A2B0</Item>
+						<Item name="2">A2B1</Item>
+						<Item name="3">A2B2</Item>
+						<Item name="4">A2B3</Item>
+						<Item name="5">A2B4</Item>
+						<Item name="6">A2B5</Item>
+						<Item name="7">A2B6</Item>
+						<Item name="8">A2B7</Item>
+						<Item name="9">A2B8</Item>
+					</ValueList>
+				</Param>
+				<Param>
+					<Name>十位</Name>
+					<Address>00A1FF3D</Address>
+					<Length>2</Length>
+					<Type>ValueList</Type>
+					<Value>1</Value>
+					<ValueList>
+						<Item name="空">A140</Item>
+						<Item name="0">A2AF</Item>
+						<Item name="1">A2B0</Item>
+						<Item name="2">A2B1</Item>
+						<Item name="3">A2B2</Item>
+						<Item name="4">A2B3</Item>
+						<Item name="5">A2B4</Item>
+						<Item name="6">A2B5</Item>
+						<Item name="7">A2B6</Item>
+						<Item name="8">A2B7</Item>
+						<Item name="9">A2B8</Item>
+					</ValueList>
+				</Param>
+				<Param>
+					<Name>个位</Name>
+					<Address>00A1FF3F</Address>
+					<Length>2</Length>
+					<Type>ValueList</Type>
+					<Value>1</Value>
+					<ValueList>
+						<Item name="空">A140</Item>
+						<Item name="0">A2AF</Item>
+						<Item name="1">A2B0</Item>
+						<Item name="2">A2B1</Item>
+						<Item name="3">A2B2</Item>
+						<Item name="4">A2B3</Item>
+						<Item name="5">A2B4</Item>
+						<Item name="6">A2B5</Item>
+						<Item name="7">A2B6</Item>
+						<Item name="8">A2B7</Item>
+						<Item name="9">A2B8</Item>
+					</ValueList>
+				</Param>
+			</Params>
+		</CustomModifyItem>
+	</CustomModifyItems>
+</CustomModifyPackage>

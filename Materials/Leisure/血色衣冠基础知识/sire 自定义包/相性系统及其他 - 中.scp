@@ -1,0 +1,938 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomModifyPackage>
+	<PackageName>自定义示范包</PackageName>
+	<PackageAuthor>ryan_knight_12</PackageAuthor>
+	<PackageDiscription>相性系统及其他原武侠小包</PackageDiscription>
+	<CustomModifyItems>
+		<CustomModifyItem>
+      <Caption>禁忌之恋</Caption>
+      <Enabled>FALSE</Enabled>
+      <Codes>
+        <Code>
+          <Description>代码</Description>
+          <Address>0048D51C</Address>
+          <!--长度:6-->
+          <EnableCode>90 90 90 90 90 90</EnableCode>
+          <DisableCode>0F 85 65 01 00 00</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>0048D616</Address>
+          <!--长度:2-->
+          <EnableCode>90 90</EnableCode>
+          <DisableCode>75 6F</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>0048D624</Address>
+          <!--长度:2-->
+          <EnableCode>90 90</EnableCode>
+          <DisableCode>75 61</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>0048D636</Address>
+          <!--长度:2-->
+          <EnableCode>90 90</EnableCode>
+          <DisableCode>75 4F</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>0048D644</Address>
+          <!--长度:2-->
+          <EnableCode>90 90</EnableCode>
+          <DisableCode>75 41</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>0048D5A6</Address>
+          <!--长度:6-->
+          <EnableCode>90 90 90 90 90 90</EnableCode>
+          <DisableCode>0F 85 DB 00 00 00</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>0048D5B8</Address>
+          <!--长度:6-->
+          <EnableCode>90 90 90 90 90 90</EnableCode>
+          <DisableCode>0F 85 C9 00 00 00</DisableCode>
+        </Code>
+      </Codes>
+    </CustomModifyItem>
+    <CustomModifyItem Origin="武侠2.5合集">
+      <Caption>德国骨科</Caption>
+      <Enabled>FALSE</Enabled>
+      <Codes>
+        <Code>
+          <Description>代码</Description>
+          <Address>0048D58A</Address>
+          <!--长度:6-->
+          <EnableCode>90 90 90 90 90 90</EnableCode>
+          <DisableCode>0F 85 F7 00 00 00</DisableCode>
+        </Code>
+      </Codes>
+    </CustomModifyItem>
+    <CustomModifyItem Origin="武侠2.5合集">
+      <Caption>父爱如山</Caption>
+      <Enabled>FALSE</Enabled>
+      <Codes>
+        <Code>
+          <Description>代码</Description>
+          <Address>0048D57A</Address>
+          <!--长度:6-->
+          <EnableCode>90 90 90 90 90 90</EnableCode>
+          <DisableCode>0F 85 07 01 00 00</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>0048D5D8</Address>
+          <!--长度:6-->
+          <EnableCode>90 90 90 90 90 90</EnableCode>
+          <DisableCode>0F 85 A9 00 00 00</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>0048D5E8</Address>
+          <!--长度:6-->
+          <EnableCode>90 90 90 90 90 90</EnableCode>
+          <DisableCode>0F 85 99 00 00 00</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>0048D5FE</Address>
+          <!--长度:6-->
+          <EnableCode>90 90 90 90 90 90</EnableCode>
+          <DisableCode>0F 85 83 00 00 00</DisableCode>
+        </Code>
+      </Codes>
+    </CustomModifyItem>
+    <CustomModifyItem Origin="武侠2.5合集">
+      <Caption>老当益壮</Caption>
+      <Enabled>TRUE</Enabled>
+      <Codes>
+        <Code>
+          <Description>代码</Description>
+          <Address>0048D53B</Address>
+          <!--长度:6-->
+          <EnableCode>90 90 90 90 90 90</EnableCode>
+          <DisableCode>0F 8F 46 01 00 00</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>0048D5C8</Address>
+          <!--长度:6-->
+          <EnableCode>90 90 90 90 90 90</EnableCode>
+          <DisableCode>0F 85 B9 00 00 00</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>0048D658</Address>
+          <!--长度:2-->
+          <EnableCode>90 90</EnableCode>
+          <DisableCode>75 2D</DisableCode>
+        </Code>
+      </Codes>
+    </CustomModifyItem>
+    <CustomModifyItem Origin="武侠2.5合集">
+      <Caption>弱水三千</Caption>
+      <Enabled>FALSE</Enabled>
+      <Codes>
+        <Code>
+          <Description>代码</Description>
+          <Address>0048D4E2</Address>
+          <!--长度:6-->
+          <EnableCode>90 90 90 90 90 90</EnableCode>
+          <DisableCode>0F 8E 9F 01 00 00</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>0048D4F6</Address>
+          <!--长度:6-->
+          <EnableCode>90 90 90 90 90 90</EnableCode>
+          <DisableCode>0F 85 8B 01 00 00</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>0048D4E2</Address>
+          <!--长度:6-->
+          <EnableCode>90 90 90 90 90 90</EnableCode>
+          <DisableCode>0F 8E 9F 01 00 00</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>005C7E75</Address>
+          <!--长度:2-->
+          <EnableCode>90 90</EnableCode>
+          <DisableCode>7E 38</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>005C835D</Address>
+          <!--长度:5-->
+          <EnableCode>90 90 90 90 90</EnableCode>
+          <DisableCode>BB 01 00 00 00</DisableCode>
+        </Code>
+      </Codes>
+    </CustomModifyItem>
+    <CustomModifyItem Origin="武侠2.5合集">
+      <Caption>红颜知己</Caption>
+      <Enabled>TRUE</Enabled>
+      <Codes>
+        <Code>
+          <Description>代码</Description>
+          <Address>005C8C93</Address>
+          <!--长度:8-->
+          <EnableCode>90 90 FF 44 24 10 90 90</EnableCode>
+          <DisableCode>74 06 FF 44 24 10 EB 04</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>005C8D2A</Address>
+          <!--长度:2-->
+          <EnableCode>90 90</EnableCode>
+          <DisableCode>75 57</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>005C8DE9</Address>
+          <!--长度:2-->
+          <EnableCode>90 90</EnableCode>
+          <DisableCode>75 03</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>005C98DD</Address>
+          <!--长度:2-->
+          <EnableCode>EB 08</EnableCode>
+          <DisableCode>74 08</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>005C9A7E</Address>
+          <!--长度:2-->
+          <EnableCode>EB 02</EnableCode>
+          <DisableCode>75 02</DisableCode>
+        </Code>
+      </Codes>
+    </CustomModifyItem>
+    <CustomModifyItem Origin="武侠2.5合集">
+      <Caption>都是弟弟</Caption>
+      <Enabled>FALSE</Enabled>
+      <Codes>
+        <Code>
+          <Description>代码</Description>
+          <Address>005C8C65</Address>
+          <!--长度:2-->
+          <EnableCode>90 90</EnableCode>
+          <DisableCode>7E 38</DisableCode>
+        </Code>
+      </Codes>
+    </CustomModifyItem>
+    <CustomModifyItem Origin="武侠2.5合集">
+      <Caption>如虎添翼</Caption>
+      <Enabled>TRUE</Enabled>
+      <Codes>
+        <Code>
+          <Description>代码</Description>
+          <Address>005C8C59</Address>
+          <!--长度:12-->
+          <EnableCode>E8 02 74 39 00 83 F8 03 7C 04 EB 3A</EnableCode>
+          <DisableCode>8B 46 64 85 C0 7C 07 3D 4B 04 00 00</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>005C98EB</Address>
+          <!--长度:5-->
+          <EnableCode>E9 10 67 39 00</EnableCode>
+          <DisableCode>39 56 54 75 08</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>005C9974</Address>
+          <!--长度:5-->
+          <EnableCode>E9 D2 66 39 00</EnableCode>
+          <DisableCode>8B 44 BC 40 50</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>005C9A82</Address>
+          <!--长度:5-->
+          <EnableCode>E9 0C 66 39 00</EnableCode>
+          <DisableCode>8D 54 24 10 52</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>00960000</Address>
+          <!--长度:288-->
+          <EnableCode>8B 4B 64 8B 46 64 83 F9 FF 0F 84 16 00 00 00 83 F8 FF 0F 84 1D 00 00 00 39 C8 0F 84 19 00 00 00 E9 08 00 00 00 39 C8 0F 84 0C 00 00 00 C7 44 BC 40 00 00 00 00 F7 5C BC 40 8B 54 24 1C 39 56 54 0F 85 B2 98 C6 FF E9 A5 98 C6 FF 8B 44 BC 40 83 F8 FF 0F 85 02 00 00 00 31 C0 50 E9 19 99 C6 FF 53 31 DB 31 D2 8B 46 64 85 C0 0F 8C 1F 00 00 00 52 B9 58 19 20 07 E8 85 0A B3 FF 8B 40 64 3B 46 64 0F 94 C0 00 C3 42 81 FA 4B 04 00 00 7E E1 8B C3 5B C3 8D 54 24 10 52 E8 17 00 00 00 83 C4 04 85 C0 0F 85 02 00 00 00 31 ED 8D 54 24 10 52 E9 D3 99 C6 FF 55 53 8B 5C 24 0C 8B 43 04 56 83 CE FF 4E 31 ED 45 85 C0 57 89 44 24 14 0F 84 44 00 00 00 8D 44 24 14 50 8B CB E8 F2 BD B1 FF 8B 38 57 E8 4A A5 B1 FF 83 C4 04 85 C0 0F 84 1D 00 00 00 83 FE FE 0F 85 08 00 00 00 8B 77 64 E9 0C 00 00 00 23 77 64 85 F6 0F 8C 01 00 00 00 45 8B 44 24 14 85 C0 75 BC 5F 5E 83 E5 01 8B C5 5B 5D C3</EnableCode>
+          <DisableCode>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</DisableCode>
+        </Code>
+      </Codes>
+    </CustomModifyItem>
+    <CustomModifyItem Origin="褒奖武将相性筛选(20200601)">
+      <Caption>149相性</Caption>
+      <Enabled>TRUE</Enabled>
+      <Codes>
+        <Code>
+          <Description>代码</Description>
+          <Address>005B58FA</Address>
+          <!--长度:5-->
+          <EnableCode>E9 01 A7 39 00</EnableCode>
+          <DisableCode>80 BE AC 00 00</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>00950000</Address>
+          <!--长度:74-->
+          <EnableCode>8B 06 8B CE FF 50 48 85 C0 0F 84 29 00 00 00 80 BE AC 00 00 00 64 19 C0 0F 84 E5 58 C6 FF 8B CE E8 1B 9D B3 FF 50 8B CE E8 53 9F B3 FF 3B 05 46 00 95 00 E9 C9 58 C6 FF 80 BE AC 00 00 00 64 19 C0 E9 BB 58 C6 FF 4C 00 00 00</EnableCode>
+          <DisableCode>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</DisableCode>
+        </Code>
+      </Codes>
+      <Params>
+        <Param>
+          <Name>是否对电脑生效</Name>
+          <Address>00950009</Address>
+          <Length>6</Length>
+          <Type>ValueList</Type>
+          <Value>0</Value>
+          <ValueList>
+            <Item name="否">0F 84 29 00 00 00</Item>
+            <Item name="是">90 90 90 90 90 90</Item>
+          </ValueList>
+        </Param>
+        <Param>
+          <Name>相性差</Name>
+          <Address>00950046</Address>
+          <Length>4</Length>
+          <Type>Number</Type>
+          <Value>35</Value>
+          <Min>0</Min>
+          <Max>76</Max>
+        </Param>
+      </Params>
+    </CustomModifyItem>
+    <CustomModifyItem Origin="登庸武将相性筛选(20200601)">
+      <Caption>149相性</Caption>
+      <Enabled>TRUE</Enabled>
+      <Codes>
+        <Code>
+          <Description>代码</Description>
+          <Address>004CF79D</Address>
+          <!--长度:5-->
+          <EnableCode>E9 D6 08 48 00</EnableCode>
+          <DisableCode>8B 4C 24 14 56</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>00950078</Address>
+          <!--长度:186-->
+          <EnableCode>53 B9 58 19 20 07 E8 1D 0A B4 FF 8B F8 57 E8 A5 A5 B2 FF 83 C4 04 85 C0 0F 84 11 F7 B7 FF 8B 07 8B CF FF 50 48 85 C0 0F 84 77 00 00 00 8B 47 04 50 B9 58 19 20 07 E8 4D 0A B4 FF 8B F8 50 E8 75 A5 B2 FF 83 C4 04 85 C0 0F 84 E1 F6 B7 FF A1 2A 01 95 00 A3 2E 01 95 00 8B 87 79 01 00 00 3B 05 26 01 95 00 0F 8C 19 00 00 00 2B 05 26 01 95 00 B1 02 F6 F1 B1 01 F6 E1 03 05 2A 01 95 00 A3 2E 01 95 00 57 B9 58 19 20 07 E8 0A 12 B4 FF 50 8B CE E8 72 9E B3 FF 3B 05 2E 01 95 00 19 C0 0F 84 8B F6 B7 FF 8B 4C 24 14 56 E9 7C F6 B7 FF 50 00 00 00 0B 00 00 00 FF 00 00 00</EnableCode>
+          <DisableCode>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</DisableCode>
+        </Code>
+      </Codes>
+      <Params>
+        <Param>
+          <Name>是否对电脑生效</Name>
+          <Address>0095009F</Address>
+          <Length>6</Length>
+          <Type>ValueList</Type>
+          <Value>0</Value>
+          <ValueList>
+            <Item name="否">0F 84 77 00 00 00</Item>
+            <Item name="是">90 90 90 90 90 90</Item>
+          </ValueList>
+        </Param>
+        <Param>
+          <Name>魅力阈值</Name>
+          <Address>00950126</Address>
+          <Length>4</Length>
+          <Type>Number</Type>
+          <Value>80</Value>
+          <Min>0</Min>
+          <Max>250</Max>
+        </Param>
+        <Param>
+          <Name>相性差</Name>
+          <Address>0095012A</Address>
+          <Length>4</Length>
+          <Type>Number</Type>
+          <Value>25</Value>
+          <Min>0</Min>
+          <Max>76</Max>
+        </Param>
+        <Param>
+          <Name>每X点</Name>
+          <Address>009500E9</Address>
+          <Length>1</Length>
+          <Type>Number</Type>
+          <Value>1</Value>
+          <Min>0</Min>
+          <Max>255</Max>
+        </Param>
+        <Param>
+          <Name>增加Y点</Name>
+          <Address>009500ED</Address>
+          <Length>1</Length>
+          <Type>Number</Type>
+          <Value>1</Value>
+          <Min>0</Min>
+          <Max>255</Max>
+        </Param>
+      </Params>
+    </CustomModifyItem>
+    <CustomModifyItem Origin="显示相性、喜好武将和厌恶武将(20200601)">
+      <Caption>显示相性、喜好武将和厌恶武将</Caption>
+      <Enabled>TRUE</Enabled>
+      <Codes>
+        <Code>
+          <Description>代码</Description>
+          <Address>008BD490</Address>
+          <EnableCode>40 01 95 00 13</EnableCode>
+          <DisableCode>A8 CF 8B 00 07</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>00950140</Address>
+          <EnableCode>01 00 00 00 15 00 00 00 4A 00 00 00 56 00 00 00 2F 00 00 00 39 00 00 00 06 00 00 00 11 00 00 00 58 00 00 00 59 00 00 00 1E 00 00 00 1F 00 00 00 20 00 00 00 21 00 00 00 22 00 00 00 7A 00 00 00 7B 00 00 00 7C 00 00 00 7D 00 00 00</EnableCode>
+          <DisableCode>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</DisableCode>
+        </Code>
+      </Codes>
+    </CustomModifyItem>
+    <CustomModifyItem Origin="相性差影响能力，季初相性变化149相性版(20200601)">
+      <Caption>相性差影响能力</Caption>
+      <Enabled>TRUE</Enabled>
+      <Codes>
+        <Code>
+          <Description>代码</Description>
+          <Address>0048A22B</Address>
+          <!--长度:5-->
+          <EnableCode>E9 40 66 4C 00</EnableCode>
+          <DisableCode>8B 87 A4 00 00</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>00950870</Address>
+          <!--长度:229-->
+          <EnableCode>8B 07 8B CF FF 50 48 85 C0 0F 84 BB 00 00 00 6A 0E 8B CF E8 58 97 B3 FF 85 C0 0F 84 AA 00 00 00 8B CF E8 A9 94 B3 FF 8B F0 56 8B CF E8 6F 80 B3 FF 85 C0 0F 85 91 00 00 00 56 8B CF E8 DF 7E B3 FF 85 C0 0F 85 81 00 00 00 56 8B CF E8 0F 7F B3 FF 85 C0 0F 85 71 00 00 00 56 8B CF E8 1F B5 B3 FF 85 C0 0F 85 61 00 00 00 56 8B CF E8 9F 96 B3 FF A3 51 09 95 00 3B 05 45 09 95 00 0F 8E 48 00 00 00 A1 51 09 95 00 2B 05 45 09 95 00 B1 02 F6 F1 B1 01 F6 E1 03 05 49 09 95 00 3B 05 4D 09 95 00 0F 8F 12 00 00 00 29 C3 0F 89 1B 00 00 00 BB 01 00 00 00 E9 11 00 00 00 2B 1D 4D 09 95 00 0F 89 05 00 00 00 BB 01 00 00 00 8B 87 A4 00 00 00 E9 EC 98 B3 FF FF 00 00 00 FF 00 00 00 FF 00 00 00 FF 00 00 00</EnableCode>
+          <DisableCode>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</DisableCode>
+        </Code>
+      </Codes>
+      <Params>
+        <Param>
+          <Name>是否对电脑生效</Name>
+          <Address>00950879</Address>
+          <Length>6</Length>
+          <Type>ValueList</Type>
+          <Value>0</Value>
+          <ValueList>
+            <Item name="否">0F 84 BB 00 00 00</Item>
+            <Item name="是">90 90 90 90 90 90</Item>
+          </ValueList>
+        </Param>
+        <Param>
+          <Name>相性差阈值</Name>
+          <Address>00950945</Address>
+          <Length>4</Length>
+          <Type>Number</Type>
+          <Value>40</Value>
+          <Min>0</Min>
+          <Max>76</Max>
+        </Param>
+        <Param>
+          <Name>下降基础值</Name>
+          <Address>00950949</Address>
+          <Length>4</Length>
+          <Type>Number</Type>
+          <Value>0</Value>
+          <Min>0</Min>
+          <Max>255</Max>
+        </Param>
+        <Param>
+          <Name>每X点</Name>
+          <Address>009508FE</Address>
+          <Length>1</Length>
+          <Type>Number</Type>
+          <Value>2</Value>
+          <Min>0</Min>
+          <Max>255</Max>
+        </Param>
+        <Param>
+          <Name>下降Y点</Name>
+          <Address>00950902</Address>
+          <Length>1</Length>
+          <Type>Number</Type>
+          <Value>1</Value>
+          <Min>0</Min>
+          <Max>255</Max>
+        </Param>
+        <Param>
+          <Name>下降上限</Name>
+          <Address>0095094D</Address>
+          <Length>4</Length>
+          <Type>Number</Type>
+          <Value>10</Value>
+          <Min>0</Min>
+          <Max>255</Max>
+        </Param>
+      </Params>
+    </CustomModifyItem>
+    <CustomModifyItem Origin="相性差影响能力，季初相性变化149相性版(20200601)">
+      <Caption>季初相性变化主体</Caption>
+      <Enabled>TRUE</Enabled>
+      <Codes>
+        <Code>
+          <Description>代码</Description>
+          <Address>0058E611</Address>
+          <!--长度:5-->
+          <EnableCode>E9 6A 1C 3C 00</EnableCode>
+          <DisableCode>8B CE E8 58 A6</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>00950280</Address>
+          <!--长度:1024-->
+          <EnableCode>B9 58 19 20 07 E8 46 27 B3 FF 85 C0 0F 84 02 05 00 00 8B 06 8B CE FF 50 48 85 C0 0F 84 F3 04 00 00 89 1D A0 07 95 00 89 3D A4 07 95 00 8B 1D C0 07 95 00 C7 05 BC 07 95 00 00 00 00 00 8B 44 24 10 A3 A8 07 95 00 8B CE E8 73 9A B3 FF A3 AC 07 95 00 50 B9 58 19 20 07 E8 23 08 B4 FF A3 B0 07 95 00 50 E8 48 A3 B2 FF 83 C4 04 85 C0 0F 84 8E 04 00 00 8B 06 8B CE FF 50 40 50 B9 58 19 20 07 E8 9B 07 B4 FF A3 B4 07 95 00 50 E8 20 A3 B2 FF 83 C4 04 85 C0 0F 84 66 04 00 00 8B CE E8 4E 89 B3 FF 85 C0 0F 85 B1 01 00 00 8B 3D B0 07 95 00 0F B6 8F 79 01 00 00 3B 0D C4 07 95 00 0F 8E 06 00 00 00 03 1D C8 07 95 00 8B 3D AC 07 95 00 57 8B CE E8 B9 85 B3 FF 85 C0 0F 84 10 00 00 00 C7 05 BC 07 95 00 01 00 00 00 03 1D CC 07 95 00 57 8B CE E8 19 84 B3 FF 85 C0 0F 84 10 00 00 00 C7 05 BC 07 95 00 01 00 00 00 03 1D D0 07 95 00 57 8B CE E8 39 84 B3 FF 85 C0 0F 84 10 00 00 00 C7 05 BC 07 95 00 01 00 00 00 03 1D D4 07 95 00 57 8B CE E8 39 BA B3 FF 85 C0 0F 84 10 00 00 00 C7 05 BC 07 95 00 01 00 00 00 03 1D D8 07 95 00 EB 3C 90 90 90 83 F8 00 0F 84 10 00 00 00 C7 05 BC 07 95 00 01 00 00 00 03 1D DC 07 95 00 6A 23 8B 0D B4 07 95 00 E8 E6 0D B3 FF 85 C0 0F 84 0B 00 00 00 03 1D E0 07 95 00 E9 7C 01 00 00 83 3D BC 07 95 00 01 0F 84 6F 01 00 00 83 BE F0 00 00 00 00 0F 84 22 00 00 00 83 BE F4 00 00 00 04 0F 84 6F 00 00 00 57 8B CE E8 A4 85 B3 FF 85 C0 0F 84 45 01 00 00 E9 81 00 00 00 8B 1D E8 07 95 00 03 1D EC 07 95 00 83 BE F4 00 00 00 04 0F 84 15 00 00 00 57 8B CE E8 76 85 B3 FF 85 C0 0F 85 26 00 00 00 E9 FF 01 00 00 03 1D F0 07 95 00 57 8B CE E8 5B 85 B3 FF 85 C0 0F 84 E9 01 00 00 03 1D F4 07 95 00 E9 DE 01 00 00 03 1D F4 07 95 00 E9 D3 01 00 00 8B 1D E8 07 95 00 03 1D F0 07 95 00 57 8B CE E8 29 85 B3 FF 85 C0 0F 84 B7 01 00 00 03 1D F4 07 95 00 E9 AC 01 00 00 8B 1D E8 07 95 00 03 1D F4 07 95 00 E9 9B 01 00 00 C7 05 BC 07 95 00 00 00 00 00 6A 23 8B 0D B4 07 95 00 E8 EE 0C B3 FF 85 C0 0F 84 05 00 00 00 E9 82 02 00 00 8B 3D AC 07 95 00 57 8B CE E8 03 84 B3 FF 85 C0 0F 84 05 00 00 00 E9 67 02 00 00 57 8B CE E8 6E 82 B3 FF 85 C0 0F 84 05 00 00 00 E9 52 02 00 00 57 8B CE E8 99 82 B3 FF 85 C0 0F 84 05 00 00 00 E9 3D 02 00 00 57 8B CE E8 A4 B8 B3 FF 85 C0 0F 85 2D 02 00 00 83 BE F0 00 00 00 00 0F 84 E8 FE FF FF 83 BE F4 00 00 00 04 0F 84 35 FF FF FF 57 8B CE E8 6A 84 B3 FF 85 C0 0F 85 4C FF FF FF 8B 1D E8 07 95 00 E9 ED 00 00 00 8B 3D B0 07 95 00 0F B6 47 69 3B 46 69 0F 84 E5 01 00 00 3B 1D E4 07 95 00 0F 8E 06 00 00 00 8B 1D E4 07 95 00 A1 AC 07 95 00 50 8B CE E8 C5 99 B3 FF A3 B8 07 95 00 39 D8 0F 8E 23 00 00 00 0F B6 4F 69 0F B6 46 69 29 C8 0F 89 02 00 00 00 F7 D8 3B 05 B8 07 95 00 0F 84 11 00 00 00 E9 30 00 00 00 0F B6 47 69 88 46 69 E9 8A 01 00 00 0F B6 4F 69 0F B6 46 69 39 C1 0F 8C 0A 00 00 00 01 D8 88 46 69 E9 70 01 00 00 29 D8 88 46 69 E9 66 01 00 00 0F B6 4F 69 0F B6 46 69 39 C1 0F 8C 05 00 00 00 E9 25 00 00 00 01 D8 3D 96 00 00 00 0F 8D 08 00 00 00 88 46 69 E9 3C 01 00 00 2D 96 00 00 00 83 C0 00 88 46 69 E9 2C 01 00 00 29 D8 0F 89 11 00 00 00 F7 D8 B9 96 00 00 00 29 C1 88 4E 69 E9 13 01 00 00 88 46 69 E9 0B 01 00 00 A1 AC 07 95 00 8B 3D B0 07 95</EnableCode>
+          <DisableCode>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>00950680</Address>
+          <!--长度:380-->
+          <EnableCode>00 50 8B CE E8 F7 98 B3 FF 83 F8 4B 0F 84 EF 00 00 00 A3 B8 07 95 00 3B 1D F8 07 95 00 0F 8E 06 00 00 00 8B 1D F8 07 95 00 01 D8 83 F8 4B 0F 8E 2B 00 00 00 0F B6 4F 69 83 F9 4B 0F 8C 0F 00 00 00 0F B6 47 69 83 E8 4B 88 46 69 E9 B1 00 00 00 0F B6 47 69 83 C0 4B 88 46 69 E9 A2 00 00 00 0F B6 4F 69 0F B6 46 69 29 C8 0F 89 02 00 00 00 F7 D8 3B 05 B8 07 95 00 0F 84 05 00 00 00 E9 5B 00 00 00 0F B6 4F 69 0F B6 46 69 39 C1 0F 8C 05 00 00 00 E9 25 00 00 00 01 D8 3D 96 00 00 00 0F 8D 08 00 00 00 88 46 69 E9 55 00 00 00 2D 96 00 00 00 83 C0 00 88 46 69 E9 45 00 00 00 29 D8 0F 89 11 00 00 00 F7 D8 B9 96 00 00 00 29 C1 88 4E 69 E9 2C 00 00 00 88 46 69 E9 24 00 00 00 0F B6 4F 69 0F B6 46 69 39 C1 0F 8C 0A 00 00 00 01 D8 88 46 69 E9 0A 00 00 00 29 D8 88 46 69 E9 00 00 00 00 8B 1D A0 07 95 00 8B 3D A4 07 95 00 8B CE E8 3C 9B B3 FF 8B CE E8 D5 84 B3 FF E9 78 DE C3 FF FF 00 00 00 FF 00 00 00 FF 00 00 00 FF 00 00 00 FF 00 00 00 FF 00 00 00 FF 00 00 00 00 00 00 00 01 00 00 00 50 00 00 00 01 00 00 00 01 00 00 00 01 00 00 00 01 00 00 00 01 00 00 00 01 00 00 00 01 00 00 00 0A 00 00 00 01 00 00 00 01 00 00 00 01 00 00 00 01 00 00 00 0A 00 00 00</EnableCode>
+          <DisableCode>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</DisableCode>
+        </Code>
+      </Codes>
+      <Params>
+        <Param>
+          <Name>是否对电脑生效</Name>
+          <Address>0095029B</Address>
+          <Length>6</Length>
+          <Type>ValueList</Type>
+          <Value>1</Value>
+          <ValueList>
+            <Item name="否">0F 84 F3 04 00 00</Item>
+            <Item name="是">90 90 90 90 90 90</Item>
+          </ValueList>
+        </Param>
+      </Params>
+    </CustomModifyItem>
+    <CustomModifyItem Origin="相性差影响能力，季初相性变化149相性版(20200601)">
+      <Caption>季初相性变化相性靠近</Caption>
+      <Enabled>FALSE</Enabled>
+      <Params>
+        <Param>
+          <Name>靠近基础值</Name>
+          <Address>009507C0</Address>
+          <Length>4</Length>
+          <Type>Number</Type>
+          <Value>0</Value>
+          <Min>0</Min>
+          <Max>255</Max>
+        </Param>
+        <Param>
+          <Name>君主魅力加成阈值</Name>
+          <Address>009507C4</Address>
+          <Length>4</Length>
+          <Type>Number</Type>
+          <Value>90</Value>
+          <Min>0</Min>
+          <Max>255</Max>
+        </Param>
+        <Param>
+          <Name>君主魅力加成值</Name>
+          <Address>009507C8</Address>
+          <Length>4</Length>
+          <Type>Number</Type>
+          <Value>0</Value>
+          <Min>0</Min>
+          <Max>255</Max>
+        </Param>
+        <Param>
+          <Name>亲善君主加成值</Name>
+          <Address>009507CC</Address>
+          <Length>4</Length>
+          <Type>Number</Type>
+          <Value>0</Value>
+          <Min>0</Min>
+          <Max>255</Max>
+        </Param>
+        <Param>
+          <Name>君主配偶加成值</Name>
+          <Address>009507D0</Address>
+          <Length>4</Length>
+          <Type>Number</Type>
+          <Value>1</Value>
+          <Min>0</Min>
+          <Max>255</Max>
+        </Param>
+        <Param>
+          <Name>君主义兄弟加成值</Name>
+          <Address>009507D4</Address>
+          <Length>4</Length>
+          <Type>Number</Type>
+          <Value>1</Value>
+          <Min>0</Min>
+          <Max>255</Max>
+        </Param>
+        <Param>
+          <Name>君主子女父母加成值</Name>
+          <Address>009507D8</Address>
+          <Length>4</Length>
+          <Type>Number</Type>
+          <Value>1</Value>
+          <Min>0</Min>
+          <Max>255</Max>
+        </Param>
+        <Param>
+          <Name>仁政加成值</Name>
+          <Address>009507DC</Address>
+          <Length>4</Length>
+          <Type>Number</Type>
+          <Value>0</Value>
+          <Min>0</Min>
+          <Max>255</Max>
+        </Param>
+        <Param>
+          <Name>掌握人心值</Name>
+          <Address>009507E0</Address>
+          <Length>4</Length>
+          <Type>Number</Type>
+          <Value>0</Value>
+          <Min>0</Min>
+          <Max>255</Max>
+        </Param>
+        <Param>
+          <Name>靠近上限值</Name>
+          <Address>009507E4</Address>
+          <Length>4</Length>
+          <Type>Number</Type>
+          <Value>0</Value>
+          <Min>0</Min>
+          <Max>255</Max>
+        </Param>
+      </Params>
+    </CustomModifyItem>
+    <CustomModifyItem Origin="相性差影响能力，季初相性变化149相性版(20200601)">
+      <Caption>季初相性变化相性远离</Caption>
+      <Enabled>TRUE</Enabled>
+      <Params>
+        <Param>
+          <Name>远离基础值</Name>
+          <Address>009507E8</Address>
+          <Length>4</Length>
+          <Type>Number</Type>
+          <Value>0</Value>
+          <Min>0</Min>
+          <Max>255</Max>
+        </Param>
+        <Param>
+          <Name>义理容易背叛加成值</Name>
+          <Address>009507EC</Address>
+          <Length>4</Length>
+          <Type>Number</Type>
+          <Value>1</Value>
+          <Min>0</Min>
+          <Max>255</Max>
+        </Param>
+        <Param>
+          <Name>野望高加成值</Name>
+          <Address>009507F0</Address>
+          <Length>4</Length>
+          <Type>Number</Type>
+          <Value>1</Value>
+          <Min>0</Min>
+          <Max>255</Max>
+        </Param>
+        <Param>
+          <Name>厌恶君主加成值</Name>
+          <Address>009507F4</Address>
+          <Length>4</Length>
+          <Type>Number</Type>
+          <Value>1</Value>
+          <Min>0</Min>
+          <Max>255</Max>
+        </Param>
+        <Param>
+          <Name>远离上限值</Name>
+          <Address>009507F8</Address>
+          <Length>4</Length>
+          <Type>Number</Type>
+          <Value>3</Value>
+          <Min>0</Min>
+          <Max>255</Max>
+        </Param>
+      </Params>
+    </CustomModifyItem>
+    <CustomModifyItem Origin="功绩解锁特技显示五功阶-适配解锁包2.4(20200601)">
+      <Caption>五功阶</Caption>
+      <Enabled>TRUE</Enabled>
+      <Codes>
+        <Code>
+          <Description>代码</Description>
+          <Address>008BD460</Address>
+          <EnableCode>90 01 95 00 11</EnableCode>
+          <DisableCode>20 CF 8B 00 0A</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>00950190</Address>
+          <EnableCode>01 00 00 00 14 00 00 00 44 00 00 00 45 00 00 00 46 00 00 00 47 00 00 00 48 00 00 00 28 00 00 00 2A 00 00 00  0A 00 00 00 29 00 00 00 2B 00 00 00 2C 00 00 00 2D 00 00 00 12 00 00 00 16 00 00 00 3A 00 00 00</EnableCode>
+          <DisableCode>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</DisableCode>
+        </Code>
+        <Code>
+          <Description>功阶1</Description>
+          <Address>008AB7F8</Address>
+          <EnableCode>28 CA 7E 00 00 00 00 00 02</EnableCode>
+          <DisableCode>80 CA 7E 00 08 00 00 00 00</DisableCode>
+        </Code>
+        <Code>
+          <Description>功阶2</Description>
+          <Address>008AB9E8</Address>
+          <EnableCode>1C CA 7E 00 00 00 00 00 02</EnableCode>
+          <DisableCode>F0 C9 7E 00 04 00 00 00 00</DisableCode>
+        </Code>
+        <Code>
+          <Description>功阶3</Description>
+          <Address>008ABA08</Address>
+          <EnableCode>10 CA 7E 00 00 00 00 00 02</EnableCode>
+          <DisableCode>E0 C9 7E 00 08 00 00 00 00</DisableCode>
+        </Code>
+        <Code>
+          <Description>功阶4</Description>
+          <Address>008ABA18</Address>
+          <EnableCode>04 CA 7E 00 00 00 00 00 02</EnableCode>
+          <DisableCode>44 A7 7E 00 0E 00 00 00 00</DisableCode>
+        </Code>
+        <Code>
+          <Description>功阶5</Description>
+          <Address>008ABA28</Address>
+          <EnableCode>F8 C9 7E 00 00 00 00 00 02</EnableCode>
+          <DisableCode>D8 C9 7E 00 0E 00 00 00 00</DisableCode>
+        </Code>
+      </Codes>
+    </CustomModifyItem>
+    <CustomModifyItem Origin="5战法显示">
+      <Caption>测试</Caption>
+      <Enabled>TRUE</Enabled>
+      <Codes>
+        <Code>
+          <Description>代码</Description>
+          <Address>0062EAD0</Address>
+          <!--长度:6-->
+          <EnableCode>E9 83 00 00 00 90</EnableCode>
+          <DisableCode>53 B9 58 19 20 07</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>0062EA94</Address>
+          <!--长度:6-->
+          <EnableCode>8B 87 D6 EA 62 00</EnableCode>
+          <DisableCode>8B 87 44 B9 8B 00</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>0062EAA3</Address>
+          <!--长度:6-->
+          <EnableCode>8B 97 D6 EA 62 00</EnableCode>
+          <DisableCode>8B 97 44 B9 8B 00</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>0062EAD6</Address>
+          <!--长度:20-->
+          <EnableCode>D6 18 00 00 D8 18 00 00 DA 18 00 00 DC 18 00 00 DE 18 00 00</EnableCode>
+          <DisableCode>E8 25 20 E6 FF 8B F8 57 E8 4D BB E4 FF 83 C4 04 85 C0 74 3A</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>0062E9B0</Address>
+          <!--长度:2-->
+          <EnableCode>6A 0B</EnableCode>
+          <DisableCode>6A 1F</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>0062E9BD</Address>
+          <!--长度:3-->
+          <EnableCode>83 C7 18</EnableCode>
+          <DisableCode>83 C7 2C</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>0062EA7E</Address>
+          <!--长度:3-->
+          <EnableCode>83 C0 18</EnableCode>
+          <DisableCode>83 C0 2C</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>0062EABB</Address>
+          <!--长度:6-->
+          <EnableCode>83 C3 18 83 FF 14</EnableCode>
+          <DisableCode>83 C3 2C 83 FF 0C</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>0062E9AB</Address>
+          <!--长度:5-->
+          <EnableCode>BB 05 00 00 00</EnableCode>
+          <DisableCode>BB 03 00 00 00</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>0062EA29</Address>
+          <!--长度:3-->
+          <EnableCode>83 FB 05</EnableCode>
+          <DisableCode>83 FB 03</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>00816F58</Address>
+          <!--长度:96-->
+          <EnableCode>88 00 00 00 DB 18 02 00 AA 18 9B 01 09 00 60 01 9E 00 4A 00 16 00 00 00 88 00 00 00 DC 18 06 00 DB 18 FF FF FF FF 05 00 03 00 40 00 10 00 50 00 88 00 00 00 DD 18 02 00 AA 18 9B 01 09 00 60 01 B8 00 4A 00 16 00 00 00 88 00 00 00 DE 18 06 00 DD 18 FF FF FF FF 05 00 03 00 40 00 10 00 50 00</EnableCode>
+          <DisableCode>88 00 00 00 DB 18 02 00 AA 18 89 01 09 00 14 01 9E 00 4A 00 16 00 00 00 88 00 00 00 DC 18 06 00 DB 18 FF FF FF FF 05 00 03 00 40 00 10 00 50 00 88 00 00 00 DD 18 02 00 AA 18 9B 01 09 00 60 01 9E 00 22 00 16 00 00 00 88 00 00 00 DE 18 06 00 DD 18 FF FF FF FF 05 00 03 00 18 00 10 00 90 01</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>006462A3</Address>
+          <!--长度:6-->
+          <EnableCode>8B 86 EA EA 62 00</EnableCode>
+          <DisableCode>8B 86 10 AC 85 00</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>00646290</Address>
+          <!--长度:6-->
+          <EnableCode>8B 96 EA EA 62 00</EnableCode>
+          <DisableCode>8B 96 10 AC 85 00</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>0062EAEA</Address>
+          <!--长度:20-->
+          <EnableCode>FD 1E 00 00 FF 1E 00 00 01 1F 00 00 E1 1E 00 00 22 1F 00 00</EnableCode>
+          <DisableCode>8B CF E8 7F A1 E5 FF 85 C0 74 2F 8B 86 8C 01 00 00 8B BF 9C</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>006461F0</Address>
+          <!--长度:2-->
+          <EnableCode>6A 0B</EnableCode>
+          <DisableCode>6A 1F</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>006461FD</Address>
+          <!--长度:3-->
+          <EnableCode>83 C6 18</EnableCode>
+          <DisableCode>83 C6 2C</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>00646278</Address>
+          <!--长度:3-->
+          <EnableCode>83 C5 18</EnableCode>
+          <DisableCode>83 C5 2C</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>006462DA</Address>
+          <!--长度:3-->
+          <EnableCode>83 C3 18</EnableCode>
+          <DisableCode>83 C3 2C</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>006461E8</Address>
+          <!--长度:5-->
+          <EnableCode>BD 05 00 00 00</EnableCode>
+          <DisableCode>BD 03 00 00 00</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>0064623F</Address>
+          <!--长度:3-->
+          <EnableCode>83 FF 05</EnableCode>
+          <DisableCode>83 FF 03</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>006462DD</Address>
+          <!--长度:3-->
+          <EnableCode>83 FE 14</EnableCode>
+          <DisableCode>83 FE 0C</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>0081FB50</Address>
+          <!--长度:24-->
+          <EnableCode>A0 00 00 00 B0 1E 02 00 FF FF 89 01 09 00 47 02 10 01 2A 00 16 00 00 00</EnableCode>
+          <DisableCode>A0 00 00 00 B0 1E 02 00 FF FF 9B 01 09 00 73 02 10 01 2A 00 16 00 00 00</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>00820000</Address>
+          <!--长度:24-->
+          <EnableCode>A0 00 00 00 E2 1E 06 00 B0 1E FF FF FF FF 05 00 03 00 20 00 10 00 50 00</EnableCode>
+          <DisableCode>A0 00 00 00 E2 1E 06 00 FF FF FF FF FF FF 78 02 13 01 20 00 10 00 50 00</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>0081FB08</Address>
+          <!--长度:24-->
+          <EnableCode>A0 00 00 00 AD 1E 02 00 FF FF 9B 01 09 00 2B 03 2E 01 4A 00 16 00 00 00</EnableCode>
+          <DisableCode>A0 00 00 00 AD 1E 02 00 FF FF 89 01 09 00 47 02 10 01 2A 00 16 00 00 00</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>0081FFE8</Address>
+          <!--长度:24-->
+          <EnableCode>A0 00 00 00 E1 1E 06 00 AD 1E FF FF FF FF 05 00 03 00 40 00 10 00 50 00</EnableCode>
+          <DisableCode>A0 00 00 00 E1 1E 06 00 FF FF FF FF FF FF 4C 02 13 01 20 00 10 00 50 00</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>00820618</Address>
+          <!--长度:48-->
+          <EnableCode>A0 00 00 00 23 1F 02 00 FF FF 9B 01 09 00 73 02 10 01 1A 00 16 00 00 00 A0 00 00 00 24 1F 06 00 23 1F FF FF FF FF 05 00 03 00 10 00 10 00 50 00</EnableCode>
+          <DisableCode>A0 00 00 00 23 1F 02 00 FF FF 9B 01 09 00 F9 02 10 01 1A 00 16 00 00 00 A0 00 00 00 24 1F 06 00 FF FF FF FF FF FF FE 02 13 01 10 00 10 00 50 00</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>008205E8</Address>
+          <!--长度:24-->
+          <EnableCode>A0 00 00 00 21 1F 02 00 FF FF 9B 01 09 00 7D 03 2E 01 4A 00 16 00 00 00</EnableCode>
+          <DisableCode>A0 00 00 00 21 1F 02 00 FF FF 89 01 09 00 AD 02 10 01 4A 00 16 00 00 00</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>00820240</Address>
+          <!--长度:24-->
+          <EnableCode>A0 00 00 00 FA 1E 02 00 FF FF 89 01 09 00 AD 02 10 01 2A 00 16 00 00 00</EnableCode>
+          <DisableCode>A0 00 00 00 FA 1E 02 00 FF FF 89 01 09 00 AD 02 2E 01 2A 00 16 00 00 00</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>00820270</Address>
+          <!--长度:24-->
+          <EnableCode>A0 00 00 00 FC 1E 02 00 FF FF 9B 01 09 00 D9 02 10 01 4A 00 16 00 00 00</EnableCode>
+          <DisableCode>A0 00 00 00 FC 1E 02 00 FF FF 9B 01 09 00 D9 02 2E 01 4A 00 16 00 00 00</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>008202A0</Address>
+          <!--长度:24-->
+          <EnableCode>A0 00 00 00 FE 1E 02 00 FF FF 9B 01 09 00 2B 03 10 01 4A 00 16 00 00 00</EnableCode>
+          <DisableCode>A0 00 00 00 FE 1E 02 00 FF FF 9B 01 09 00 2B 03 2E 01 4A 00 16 00 00 00</DisableCode>
+        </Code>
+        <Code>
+          <Description>代码</Description>
+          <Address>008202D0</Address>
+          <!--长度:24-->
+          <EnableCode>A0 00 00 00 00 1F 02 00 FF FF 9B 01 09 00 7D 03 10 01 4A 00 16 00 00 00</EnableCode>
+          <DisableCode>A0 00 00 00 00 1F 02 00 FF FF 9B 01 09 00 7D 03 2E 01 4A 00 16 00 00 00</DisableCode>
+        </Code>
+      </Codes>
+    </CustomModifyItem>
+  </CustomModifyItems>
+</CustomModifyPackage>
