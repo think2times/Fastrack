@@ -2,6 +2,7 @@
  * CS:APP Data Lab 
  * 
  * <Please put your name and userid here>
+ * Name: Zero Ding
  * 
  * bits.c - Source file with your solutions to the Lab.
  *          This is the file you will hand in to your instructor.
@@ -143,7 +144,8 @@ NOTES:
  *   Rating: 1
  */
 int bitXor(int x, int y) {
-  return 2;
+  // A | B = ~(~A & ~B)
+  return ~(~(x & ~y) & ~(y & ~x));
 }
 /* 
  * tmin - return minimum two's complement integer 
@@ -152,8 +154,8 @@ int bitXor(int x, int y) {
  *   Rating: 1
  */
 int tmin(void) {
-
-  return 2;
+  // 最小的有符号数就是首位是1，其他位全是0
+  return (1 << 31);
 
 }
 //2
@@ -165,7 +167,8 @@ int tmin(void) {
  *   Rating: 1
  */
 int isTmax(int x) {
-  return 2;
+  // |Tmin| = Tmax + 1
+  return !((1 << 31) + x + 1);
 }
 /* 
  * allOddBits - return 1 if all odd-numbered bits in word set to 1
@@ -176,7 +179,12 @@ int isTmax(int x) {
  *   Rating: 2
  */
 int allOddBits(int x) {
-  return 2;
+  /*
+   * 既然要奇数位全是 1 的数，那就先得到偶数位全是 1 的数，即 0x55555555
+   * 然后用 x | 0x55555555 得到 0xFFFFFFFF，即 -1
+   * 最后判断加 1 是否为 0 即可
+   */
+  return !((x | ((((0x55 << 8) | 0x55) << 16) | ((0x55 << 8) | 0x55))) + 1);
 }
 /* 
  * negate - return -x 
