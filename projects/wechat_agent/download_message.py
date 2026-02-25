@@ -1,81 +1,94 @@
-import time
 import csv
+import time
 from playwright.sync_api import sync_playwright
 
-# 配置文件名和路径
-USER_DATA_DIR = "./wechat_session"  # 存储登录状态的文件夹
-OUTPUT_FILE = "wechat_messages.csv"
-
-def scrape_wechat_mp():
+def run_wechat_perfect_scroll():
     with sync_playwright() as p:
-        # 1. 启动持久化浏览器
-        # headless=False 必须为 False，否则你看不见二维码，无法扫码登录
         context = p.chromium.launch_persistent_context(
-            user_data_dir=USER_DATA_DIR,
+            user_data_dir="./wechat_session",
             headless=False,
-            args=["--start-maximized"]
+            viewport={'width': 1400, 'height': 900}
         )
-        
         page = context.new_page()
         page.goto("https://mp.weixin.qq.com/")
 
-        # 2. 判断是否需要登录
-        # 如果检测到登录页面的特征，就等待用户扫码
-        if page.locator(".login__type__container").is_visible():
-            print("请在打开的浏览器中扫码登录...")
-            # 等待登录成功跳转到首页（通常 URL 会包含 token）
-            page.wait_for_url("**/cgi-bin/home?**", timeout=0)
-            print("登录成功！")
+        # 1. 进入私信
+        page.wait_for_selector("text=互动管理", timeout=60000)
+        page.get_by_text("互动管理").click()
+        page.get_by_text("私信").first.click()
+        time.sleep(5) 
 
-        # 3. 跳转到“消息管理”页面
-        # 注意：微信后台的 URL 带有 token，不能直接写死，需要从当前 URL 提取或点击侧边栏
-        print("正在前往消息管理页面...")
-        page.locator("a:has-text('消息管理')").click()
-        page.wait_for_load_state("networkidle")
+        # 定位 Frame
+        target_frame = next((f for f in page.frames if "message" in f.url), None)
+        if not target_frame: return
 
-        # 4. 循环抓取页面内容
-        messages_data = []
+        # 点击“全部”
+        try:
+            target_frame.get_by_text("全部", exact=True).click()
+            time.sleep(3)
+        except: pass
+
+        all_data = []
+        processed_keys = set()
         
-        while True:
-            # 等待列表加载
-            page.wait_for_selector(".message_item")
-            
-            # 获取当前页所有消息块
-            items = page.locator(".message_item").all()
-            for item in items:
-                # 提取用户名、时间、内容（选择器需根据实际后台结构微调）
-                # 微信后台结构复杂，建议通过 .inner_text() 获取整块文本再正则解析，或者精确定位
-                nickname = item.locator(".nickname").inner_text()
-                msg_time = item.locator(".time").inner_text()
-                content = item.locator(".msg_content").inner_text()
-                
-                messages_data.append({
-                    "nickname": nickname,
-                    "time": msg_time,
-                    "content": content
-                })
-            
-            print(f"已抓取 {len(messages_data)} 条数据...")
+        # 结束逻辑相关变量
+        no_new_data_streak = 0  # 连续无新数据的计数器
+        MAX_STREAK = 6          # 连续 6 次没新数据才退出
+        MAX_STEPS = 200         # 最大安全循环上限
 
-            # 5. 翻页逻辑
-            next_button = page.locator("a.btn.next") # 这里的选择器需根据实际翻页按钮 ID 确定
-            if next_button.is_visible() and next_button.is_enabled():
-                next_button.click()
-                time.sleep(2) # 关键：一定要慢，避免触发反爬
+        print(">>> 启动‘深度物理滚动’模式...")
+
+        for step in range(MAX_STEPS):
+            # 获取数据
+            nicks = target_frame.locator(".user-info__name").all_inner_texts()
+            times = target_frame.locator(".user-info__time").all_inner_texts()
+            contents = target_frame.locator(".user-msg-text").all_inner_texts()
+
+            min_len = min(len(nicks), len(times), len(contents))
+            new_this_round = 0
+            
+            for i in range(min_len):
+                # 唯一键：昵称 + 时间 + 内容前10位（防止同一用户连续发多条）
+                key = f"{nicks[i]}_{times[i]}_{contents[i][:10]}"
+                if key not in processed_keys:
+                    all_data.append([times[i], nicks[i], contents[i]])
+                    processed_keys.add(key)
+                    new_this_round += 1
+            
+            print(f"步数 {step+1}: 抓到 {new_this_round} 条新数据，当前总计 {len(all_data)} 条")
+
+            # --- 核心滚动操作 ---
+            # 移动到左侧列表区域并滚动
+            page.mouse.move(300, 500) 
+            page.mouse.wheel(0, 2000) # 增大滚动幅度
+            
+            # --- 结束逻辑判定 ---
+            if new_this_round == 0:
+                no_new_data_streak += 1
+                print(f"    (警告: 连续 {no_new_data_streak}/{MAX_STREAK} 次未发现新消息，正在重试...)")
+                # 发现 0 条时，尝试“补救滚动”：模拟按下 End 键
+                page.keyboard.press("End")
+                time.sleep(4) # 给更长的加载时间
             else:
-                break # 没有下一页了
+                no_new_data_streak = 0 # 只要有新数据，计数器归零
+                time.sleep(2) # 正常速度
 
-        # 6. 保存数据
-        save_to_csv(messages_data)
-        print(f"抓取完成，数据已存入 {OUTPUT_FILE}")
+            if no_new_data_streak >= MAX_STREAK:
+                print(">>> 确认已抓取所有可见历史数据，准备退出...")
+                break
+
+        # 2. 最终保存
+        if all_data:
+            filename = 'wechat_complete_msgs.csv'
+            # 排序：按时间倒序或正序（可选）
+            # all_data.sort(key=lambda x: x[0]) 
+            with open(filename, 'w', newline='', encoding='utf-8-sig') as f:
+                writer = csv.writer(f)
+                writer.writerow(['时间', '昵称', '内容摘要'])
+                writer.writerows(all_data)
+            print(f"✅ 抓取圆满完成！共导出 {len(all_data)} 条记录。")
+
         context.close()
 
-def save_to_csv(data):
-    keys = data[0].keys() if data else []
-    with open(OUTPUT_FILE, 'w', newline='', encoding='utf-8-sig') as f:
-        dict_writer = csv.DictWriter(f, fieldnames=keys)
-        dict_writer.writeheader()
-        dict_writer.writerows(data)
-
 if __name__ == "__main__":
-    scrape_wechat_mp()
+    run_wechat_perfect_scroll()

@@ -152,3 +152,6 @@ Projects/voice-changer
 
 # covid-19 dataset
 *.csv
+
+# wechat agent
+wechat_session/
