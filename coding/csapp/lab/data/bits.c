@@ -167,8 +167,8 @@ int tmin(void) {
  *   Rating: 1
  */
 int isTmax(int x) {
-  // |Tmin| = Tmax + 1
-  return !((1 << 31) + x + 1);
+  // a ^ a = 0
+  return !(~(1 << 31) ^ x);
 }
 /* 
  * allOddBits - return 1 if all odd-numbered bits in word set to 1
@@ -180,11 +180,26 @@ int isTmax(int x) {
  */
 int allOddBits(int x) {
   /*
+   * 我的解法
    * 既然要奇数位全是 1 的数，那就先得到偶数位全是 1 的数，即 0x55555555
    * 然后用 x | 0x55555555 得到 0xFFFFFFFF，即 -1
    * 最后判断加 1 是否为 0 即可
    */
-  return !((x | ((((0x55 << 8) | 0x55) << 16) | ((0x55 << 8) | 0x55))) + 1);
+  //int evens = 0x55;
+  //evens = evens | (evens << 8);
+  //evens = evens | (evens << 16);
+  //return !((x | evens) + 1);
+
+  /*
+   * 标准答案，优点是避免了大常量的加法运算和有符号整数的溢出
+   * 构造偶数位全是 1 的掩码 mask，即 0xAAAAAAAA
+   * 用 x & mask，如果 x 的偶数位全是 1，那么结果应该就是 0xAAAAAAAA
+   * 将上一步的结果与 0xAAAAAAAA 进行异或操作，判断是否相同
+   */
+  int mask = 0xAA;
+  mask = mask | (mask << 8);
+  mask = mask | (mask << 16);
+  return !((x & mask) ^ mask);
 }
 /* 
  * negate - return -x 

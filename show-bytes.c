@@ -66,35 +66,13 @@ int bool_xor(int x, int y) {
     return result;
 }
 
+int fun2(unsigned x) {
+    return ((int) x << 24) >> 24;
+}
+
 int main() {
-    int val = 12345;
-    test_show_bytes(val);
-
-    // practice 2.7
-    const char *m = "mnopqr";
-    show_bytes((byte_pointer) m, strlen(m));
-
-    // practice 2.10
-    int a = 10;
-    int b = 11;
-    inplace_swap(&a, &b);
-    printf("\na is %d now, b is %d now. \n", a, b);
-
-    // practice 2.11
-    int my_numbers[] = {1, 2, 3, 4, 5};
-    int size = sizeof(my_numbers) / sizeof(my_numbers[0]);
-    reverse_array(my_numbers, size);
-
-    printf("\nReversed array: ");
-    for(int i = 0; i < size; i++) printf("%d ", my_numbers[i]);
-    printf("\n");
-
-    // page 104
-    short x = 12345;
-    short mx = -x;
-
-    show_bytes((byte_pointer) &x, sizeof(short));
-    show_bytes((byte_pointer) &mx, sizeof(short));
+    int x = 0xEDCBA987;
+    printf("0x%X\n", fun2(x));
 
     return 0;
 }
