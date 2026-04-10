@@ -37,7 +37,6 @@ def main(report_id, subcoms=None, bill_month=None):
     # 保存
     full_path = os.path.join(base_dir, cfg['folder'], cfg['file_name'])
     export_excel_package(report_df, cfg, full_path)
-    # export_sheet_excel(report_df, cfg, full_path)
     print(f"{report_id}报表已生成！")
 
 if __name__ == '__main__':
@@ -49,7 +48,7 @@ if __name__ == '__main__':
         os.makedirs(base_dir)
     
     for report_id in REPORTS.keys():
-        if report_id == '3-4':
+        if report_id == '3-13':
             main(report_id)
             break
-        #main(report_id)
+        main(report_id)

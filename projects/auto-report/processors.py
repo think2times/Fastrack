@@ -40,7 +40,46 @@ def standard_preprocess(df):
 
     return df
 
-def add_group_subtotals(df, config, subtotal_label_col='PARENT_SUBCOM_NAME'):
+def get_structure_weight(row, group_col):
+    """计算行的结构权重：明细行=1，小计行=2，合计行=0（绝对置顶）"""
+    val_first = str(row.get(group_col, ""))
+    # 探测第二列是否有“小计”字样
+    val_second = str(row.iloc[1]) if len(row) > 1 else ""
+    
+    if "合计" in val_first:
+        return 0  # 绝对置顶
+    if "小计" in val_first or "小计" in val_second:
+        return 2  # 组内沉底
+    return 1      # 普通明细保持中间
+
+def apply_structural_sort(df, cfg):
+    """根据 group_col 进行结构化排序，确保银行分组不散，小计行沉底，合计行置顶"""
+    sub_col = cfg.get('group_by')
+    if not (sub_col and sub_col in df.columns):
+        return df
+        
+    df = df.copy()
+    # 1. 记录当前的原始物理顺序（这是最关键的一步）
+    df['_original_order'] = range(len(df))
+
+    # 2. 计算结构权重，明细行=1，小计行=2，合计行=0（绝对置顶）
+    df['_sort_weight'] = df.apply(lambda r: get_structure_weight(r, sub_col), axis=1)
+
+    # 3. 核心排序逻辑：
+    # 注意：合计行因为 _sort_weight 为 0，会无视银行名排在最前（只要 sub_col 那里也是“合计”）
+    # 如果你想确保“合计”二字不参与银行名排序，可以参考之前的 _tmp_group 做法
+    df['_tmp_group'] = df[sub_col].apply(lambda x: "" if x == "合计" else x)
+    
+    # 第一优先级：HEADOFFICE_NAME (保证银行分组不散)
+    # 第二优先级：_sort_weight (保证 组内明细 -> 组内小计)
+    # 第三优先级：_original_order (关键！确保明细行按原本的物理顺序排列)
+    sort_keys = ['_tmp_group', '_sort_weight', '_original_order']
+    df = df.sort_values(by=sort_keys, ascending=True, kind='stable')
+    
+    # 4. 清理所有临时辅助列
+    return df.drop(columns=['_original_order', '_sort_weight', '_tmp_group'])
+
+def add_group_subtotals(df, config):
     """
     计算小计值并插入小计行，
     通过传入整个 config 字典，自动处理列名转换
@@ -68,21 +107,12 @@ def add_group_subtotals(df, config, subtotal_label_col='PARENT_SUBCOM_NAME'):
             mapped_c = col_map.get(c, c)
             if mapped_c in df.columns:
                 sum_cols.append(mapped_c) # 中文列名存在，用中文
-    
-    # label_col 是放置“小计”二字的列，也需要确保存在
-    if subtotal_label_col in df.columns:
-        label_col = subtotal_label_col
-    else:
-        label_col = col_map.get(subtotal_label_col, subtotal_label_col)
 
     new_rows = []
     for name, group in df.groupby(group_col, sort=False):
-        # 1. 明细行权重设为 0
-        group = group.copy()
-        group['SORT_WEIGHT'] = 0
         new_rows.append(group)
         
-        # 2. 计算小计
+        # 计算小计
         subtotal_series = group[sum_cols].sum()
         subtotal_row = {col: '' for col in df.columns}
         for col in sum_cols:
@@ -99,19 +129,13 @@ def add_group_subtotals(df, config, subtotal_label_col='PARENT_SUBCOM_NAME'):
             subtotal_row[cols[idx+1]] = "小计"
 
         # 将小计行转为 DataFrame 并追加，确保它紧跟在明细后面
-        subtotal_row['SORT_WEIGHT'] = 1  # 小计行权重设为 1，确保它在 0 之后
         new_rows.append(pd.DataFrame([subtotal_row]))
 
         # --- 针对 3-4 报表的特殊列重算 (使用映射后的中文名) ---
         if config.get('subtotal_hooks'):
             subtotal_row = config['subtotal_hooks'](subtotal_row)
     
-    # 合并后强制按 [分组列, 权重] 排序
-    df_result = pd.concat(new_rows, ignore_index=True)
-    df_result = df_result.sort_values(by=[group_col, 'SORT_WEIGHT'], kind='stable')
-    
-    # 删掉辅助列，防止出现在 Excel 里
-    return df_result.drop(columns=['SORT_WEIGHT'])
+    return pd.concat(new_rows, ignore_index=True)
 
 def add_summary(df, cfg, sum_cols=None):
     """
@@ -120,75 +144,67 @@ def add_summary(df, cfg, sum_cols=None):
     cfg: 当前报表的字典配置
     sum_cols: 需要求和的列名列表
     """
+    # 如果没传 sum_cols，就自动从 cfg 里拿
+    sum_cols = sum_cols or cfg.get('sum_cols', [])
 
-    if cfg.get('proc') in ['RPT_WLMQ_306', 'RPT_WLMQ_313']:
+    # 如果报表的字典没有配置 sum_cols，也没有传入 sum_cols 参数，就直接返回原 df，不添加合计行
+    if not sum_cols:
+        return df
+
+    # 3-6、3-13 这两个报表的特殊逻辑：不添加合计行，直接返回
+    if cfg.get('proc') in ['RPT_WLMQ_306', 'RPT_WLMQ_313'] or df.empty:
         return df
 
     # 准备数据
     report_df = df.copy()
+    summary_row = {}
 
-    # 如果没传 sum_cols，就自动从 cfg 里拿
-    if sum_cols is None:
-        sum_cols = cfg.get('sum_cols', [])
+    # 排除所有包含“小计”的行
+    exclude_pattern = '小计'
+    # 动态获取分组列
+    group_col = cfg.get('group_by')
+    # 检查是否需要进行合计，默认全表都是明细，不做任何排除
+    mask = pd.Series(True, index=df.index)
 
-    if cfg.get('sum_cols'):
-        summary_row = {}
+    if group_col and group_col in df.columns:
+        # 找到分组列的位置索引
+        idx = list(df.columns).index(group_col)
+        # 确定需要检查的范围：分组列和它右边那一列
+        check_cols = [group_col]
+        if idx + 1 < len(df.columns):
+            check_cols.append(df.columns[idx + 1])
+        # 向量化检查“小计”
+        mask = ~df[check_cols].astype(str).stack().str.contains(exclude_pattern).unstack().any(axis=1)
 
-        # 动态获取分组列（用于排除小计）
-        group_col_raw = cfg.get('group_by')
+    # 根据过滤后的 mask 来计算 sum_cols 的合计值，确保只对明细行进行求和，排除掉小计行
+    real_sum_cols = [col for col in sum_cols if col in report_df.columns]
+    summary_series = df.loc[mask, real_sum_cols].sum()
+    summary_row = {col: summary_series.get(col, 0) for col in real_sum_cols}
 
-        # 排除所有包含“小计”的行
-        if not group_col_raw:
-            # 情况 1：如果没有配置 group_by，说明全表都是明细，不做任何排除
-            mask = [True] * len(report_df)
-        elif group_col_raw not in report_df.columns:
-            # 情况 2：配置了 group_by 但在当前 DataFrame 中找不到（可能是列名还没 rename）
-            # 尝试检查一下 col_map，看是否能对上中文名
-            col_map = cfg.get('columns_map', {})
-            mapped_col = col_map.get(group_col_raw)
+    # 确定合计行的标签列（优先级：group_col -> columns_map 的第一个 Key）
+    label_col = group_col if group_col in df.columns else list(cfg.get('columns_map', {}).keys())[0]
+    summary_row[label_col] = '合计'
 
-            if mapped_col in report_df.columns:
-                mask = ~report_df[mapped_col].astype(str).str.contains('小计', na=False)
-            else:
-                # 实在找不到了，保底不排除
-                mask = [True] * len(report_df)
-        else:
-            # 情况 3：正常找到了 group_by 列
-            mask = ~report_df[group_col_raw].astype(str).str.contains('小计', na=False)
+    # 特殊逻辑：合计行单价重算 (针对 3-11)
+    # 以后新增 3-12, 3-13 报表只要有“单价”列就能自动处理
+    if '单价' in summary_row and '六费合计' in summary_row:
+        total_money = summary_row.get('六费合计', 0)
+        total_water = summary_row.get('水量', 0)
+        # 防止除以 0
+        summary_row['单价'] = round(total_money / total_water, 2) if total_water != 0 else 0
 
-        for col in sum_cols:
-            if col in report_df.columns:
-                # 只有在明细行中进行 sum
-                summary_row[col] = report_df.loc[mask, col].sum()
+    # 使用 report_df 的列名构造，并同步数据类型以消除警告
+    summary_df = pd.DataFrame([summary_row], columns=report_df.columns)
 
-        if group_col_raw and group_col_raw in df.columns:
-            # 使用英文 ID 赋值
-            summary_row[group_col_raw] = '合计'
-        else:
-            # 保底逻辑：如果没设 group_by，就填在第一列
-            first_col = df.columns[0]
-            summary_row[first_col] = '合计'
+    # 准备待合并列表
+    # 根据是否配置 sum_first 决定合计行放在最前（sum_first）还是最后
+    to_concat = [summary_df, report_df] if cfg.get('sum_first') else [report_df, summary_df]
 
-        # 特殊逻辑：合计行单价重算 (针对 3-11)
-        # 以后新增 3-12, 3-13 报表只要有“单价”列就能自动处理
-        if '单价' in summary_row and '六费合计' in summary_row:
-            total_money = summary_row.get('六费合计', 0)
-            total_water = summary_row.get('水量', 0)
-            # 防止除以 0
-            summary_row['单价'] = round(total_money / total_water, 2) if total_water != 0 else 0
+    # 核心过滤逻辑：只保留非空的 DataFrame
+    valid_dfs = [d for d in to_concat if d is not None and not d.empty]
 
-        # 使用 report_df 的列名构造，并同步数据类型以消除警告
-        summary_df = pd.DataFrame([summary_row], columns=report_df.columns)
-
-        # 准备待合并列表
-        # 根据是否配置 sum_first 决定合计行放在最前（sum_first）还是最后
-        to_concat = [summary_df, report_df] if cfg.get('sum_first') else [report_df, summary_df]
-
-        # 核心过滤逻辑：只保留非空的 DataFrame
-        valid_dfs = [d for d in to_concat if d is not None and not d.empty]
-
-        if valid_dfs:
-            report_df = pd.concat(valid_dfs, ignore_index=True)
+    if valid_dfs:
+        report_df = pd.concat(valid_dfs, ignore_index=True)
 
     return report_df
 
@@ -199,46 +215,39 @@ def prepare_multi_cursor_report(dfs, cfg):
     """
     # --- 第一步：前置清洗 (Pre-cleaning) ---
     # 在合并或组装之前，先把所有原始游标里的数字列该大写的写，该算的算
-    if isinstance(dfs, list):
-        # 此时 dfs 里的数据全是刚从数据库出来的数字，计算 SIX_TOTAL 极其安全
-        dfs = [standard_preprocess(d) for d in dfs]
-    else:
-        dfs = standard_preprocess(dfs)
+    # 此时 dfs 里的数据全是刚从数据库出来的数字，计算 SIX_TOTAL 极其安全
+    dfs = [standard_preprocess(d) for d in (dfs if isinstance(dfs, list) else [dfs])]
 
     # --- 第二步：组装与计算 (Assembly & Calculation) ---    
     report_package = {}
-
     # 标记是否已经在 calc_func 里处理过了
     has_processed = False 
-    if cfg.get('multi_source'):
-        # 既然是多数据源，就把选择权交给 calc_func
-        if 'calc_func' in cfg:
-            # 已经把游标处理、合并、计算全部做完了
-            df = cfg['calc_func'](dfs)
-            # 标记一下，防止后面重复跑 calc_func
-            has_processed = True
-        else:
-            # 如果没写函数，默认保底取第一个，防止程序崩溃
-            df = dfs[0] if dfs else pd.DataFrame()
+    # 既然是多数据源，就把选择权交给 calc_func，多数据源一定会有特殊逻辑需要处理
+    if cfg.get('multi_source') and 'calc_func' in cfg:
+        # 已经把游标处理、合并、计算全部做完了
+        df = cfg['calc_func'](dfs)
+        # 标记一下，防止后面重复跑 calc_func
+        has_processed = True
     else:
         # 标准模式：只取第一个游标
         df = dfs[0] if dfs else pd.DataFrame()# 假设第一个游标是核心明细数据
 
     # --- 第三步：后续处理 (Post-processing) ---
     # 检查是否需要增加组内小计
-    # 从字典获取配置
-    sub_col = cfg.get('group_by', '')
-    if sub_col and cfg.get('proc') != 'RPT_WLMQ_313':  # 3-13 的小计逻辑比较特殊，已经在 calc_func 中处理了
-        df = add_group_subtotals(df, cfg, sub_col)
+    if cfg.get('group_by') and cfg.get('proc') != 'RPT_WLMQ_313':  # 3-13 的小计逻辑比较特殊，已经在 calc_func 中处理了
+        df = add_group_subtotals(df, cfg)
 
-    # --- 计算全表合计 ---
+    # 计算全表合计
     all_df = add_summary(df, cfg)
 
-    # --- 处理各报表的特殊逻辑 ---
+    # 处理各报表的特殊逻辑
     if cfg.get('calc_func') and not has_processed:
         all_df = cfg['calc_func'](all_df)
     
-    # --- 第四步：翻译与装箱 (Renaming) ---
+    # --- 第四步：排序与翻译（Sort & Rename） ---
+    # 针对需要分组的报表，进行结构化排序，确保一级分组中顺序不变，小计行沉底，合计行置顶
+    all_df = apply_structural_sort(all_df, cfg)
+
     # 准备展示列名单，首先获取配置中定义的中文列名顺序
     display_cols = list(cfg['columns_map'].values())
     # 重命名列名, rename 会把英文 Key 替换为中文 Value
@@ -250,7 +259,7 @@ def prepare_multi_cursor_report(dfs, cfg):
         groups = df.groupby(split_col)
         for name, group_df in groups:
             sheet_name = str(name)[:12]
-            # 同样：先加合计 -> 再算单价 -> 最后改名
+            # 计算每个sheet的全表合计
             tmp_df = add_summary(group_df, cfg)
             if 'calc_func' in cfg:
                 tmp_df = cfg['calc_func'](tmp_df)
@@ -269,84 +278,59 @@ def process_306_data(dfs):
     """
 
     # 提取与费用相关的游标数据
-    df_sj = dfs[0].copy()  # 日期范围，可能用来区分本月/本年
-    df_ys = dfs[1].copy()
-    df_ss = dfs[2].copy()
-    df_tz = dfs[3].copy()
+    df_sj, df_ys, df_ss, df_tz = dfs[0], dfs[1], dfs[2], dfs[3]
+    t = df_sj.iloc[0] # bill_month, start_month 等等信息都在这里
 
-    # 1. 数据清洗：统一转大写，处理空值
+    # 数据清洗：统一转大写，处理空值
     for d in [df_ys, df_ss, df_tz]:
         d.columns = [c.upper() for c in d.columns]
     
-    # 2. 建立标签索引 (核心：利用 SQL 已有的 FEE_TYPE 标签)
-    # 将所有数据汇总到一个以 FEE_TYPE 为 Key 的字典中
-    data_map = {}
-
-    # 获取账期
-    bill_month = df_sj['BILLING_MONTH'].iloc[0]
-    start_month = df_sj['START_BILLING_MONTH'].iloc[0]
-    end_month = df_sj['END_BILLING_MONTH'].iloc[0]
-
-    # 基础条件定义 (将判断逻辑抽离，更直观) 
-    # 针对统计月 (Statistic)
-    is_stat_curr = df_ss['STATISTIC_BILLING_MONTH'] == bill_month
+    # 预计算所有基础维度的数据块 (Data Blocks)
+    def get_sums(df, cond, cols=PI_COLS):
+        return df.loc[cond, cols].sum() if cond is not None else df[cols].sum()
     
-    # 针对账务月 (Billing)
-    is_bill_curr = df_ss['BILLING_MONTH'] == bill_month
-    is_bill_not_curr = df_ss['BILLING_MONTH'] != bill_month
-    is_bill_in_year = df_ss['BILLING_MONTH'].between(start_month, end_month)
-    is_bill_before_year = df_ss['BILLING_MONTH'] < start_month
+    # 实收条件定义
+    is_stat_curr = df_ss['STATISTIC_BILLING_MONTH'] == t['BILLING_MONTH']
+    is_bill_curr = df_ss['BILLING_MONTH'] == t['BILLING_MONTH']
+    is_bill_year = df_ss['BILLING_MONTH'].between(t['START_BILLING_MONTH'], t['END_BILLING_MONTH'])
 
-    # 处理实收 (result_3) 
-    # 本月收回当月：统计是本月 且 账期是本月
-    data_map['本月收回当月各项费用'] = df_ss.loc[is_stat_curr & is_bill_curr, PI_COLS].sum()
-    
-    # 本月收回当年：统计是本月 且 账期不是本月 且 账期在财年内
-    data_map['本月收回当年各项费用'] = df_ss.loc[is_stat_curr & is_bill_not_curr & is_bill_in_year, PI_COLS].sum()
-    
-    # 本月收回往年：统计是本月 且 账期在财年之前
-    data_map['本月收回往年各项费用'] = df_ss.loc[is_stat_curr & is_bill_before_year, PI_COLS].sum()
-    
-    # 本年收回当年：账期在财年内 (不限统计月，即累计)
-    data_map['本年收回当年各项费用'] = df_ss.loc[is_bill_in_year, PI_COLS].sum()
-    
-    # 本年收回往年：账期在财年之前 (不限统计月，即累计)
-    data_map['本年收回往年各项费用'] = df_ss.loc[is_bill_before_year, PI_COLS].sum()
+    # 核心数据字典
+    raw_data = {
+        '本月应收': get_sums(df_ys, df_ys['BILLING_MONTH'] == t['BILLING_MONTH']),
+        '本年应收': get_sums(df_ys, None),
+        '本月实收当月': get_sums(df_ss, is_stat_curr & is_bill_curr),
+        '本月实收当年': get_sums(df_ss, is_stat_curr & (~is_bill_curr) & is_bill_year),
+        '本月实收往年': get_sums(df_ss, is_stat_curr & (df_ss['BILLING_MONTH'] < t['START_BILLING_MONTH'])),
+        '本年实收当年': get_sums(df_ss, is_bill_year),
+        '本年实收往年': get_sums(df_ss, df_ss['BILLING_MONTH'] < t['START_BILLING_MONTH']),
+        '本月调整当年': get_sums(df_tz, (df_tz['FEE_TYPE'] == '本月调整当年各项费用') & (df_tz['STATISTIC_BILLING_MONTH'] == t['BILLING_MONTH'])),
+        '本月调整往年': get_sums(df_tz, (df_tz['FEE_TYPE'] == '本月调整往年各项费用') & (df_tz['STATISTIC_BILLING_MONTH'] == t['BILLING_MONTH'])),
+        '当月违约金': get_sums(df_ss, is_stat_curr, cols=['ACTUAL_LATEFEE']),
+        '本年违约金': get_sums(df_ss, None, cols=['ACTUAL_LATEFEE']),
+    }
 
-    # 处理应收与调整
-    # 应收部分
-    data_map['本月应收各项费用'] = df_ys.loc[df_ys['BILLING_MONTH'] == bill_month, PI_COLS].sum()
-    data_map['本年应收小计'] = df_ys[PI_COLS].sum()
-
-    # 调整部分 (SQL 已打标签)
-    data_map['本月调整当年各项费用'] = df_tz.loc[(df_tz['FEE_TYPE'] == '本月调整当年各项费用') & (df_tz['STATISTIC_BILLING_MONTH'] == bill_month), PI_COLS].sum()
-    data_map['本月调整往年各项费用'] = df_tz.loc[(df_tz['FEE_TYPE'] == '本月调整往年各项费用') & (df_tz['STATISTIC_BILLING_MONTH'] == bill_month), PI_COLS].sum()
-
-    # 处理小计数据
-    data_map['本月应收小计'] = data_map['本月应收各项费用'] + data_map['本月调整当年各项费用'] + data_map['本月调整往年各项费用']
-    data_map['本月实收小计'] = data_map['本月收回当月各项费用'] + data_map['本月收回当年各项费用'] + data_map['本月收回往年各项费用']
-    data_map['本年实收小计'] = data_map['本年收回当年各项费用'] + data_map['本年收回往年各项费用']
-
-    # 违约金计算
-    data_map['当月违约金'] = df_ss.loc[is_stat_curr, 'ACTUAL_LATEFEE'].sum()
-    data_map['本年违约金'] = df_ss['ACTUAL_LATEFEE'].sum()
-
-    # 计算欠费
-    data_map['未收回的当月水费'] = data_map['本月应收小计'] - data_map['本月收回当月各项费用']
-    data_map['本年累计欠费'] = data_map['本年应收小计'] - data_map['本年收回当年各项费用']
-
-    # 计算当月收回率
-    # 逻辑：实收 / 应收，处理分母为 0 的情况
-    data_map['当月收回率 (%)'] = (
-        data_map['本月收回当月各项费用'] / 
-        data_map['本月应收小计'].replace(0, np.nan) * 100
-    ).fillna(0).round(2)
-
-    # 计算本年收回率
-    data_map['本年收回率 (%)'] = (
-        data_map['本年收回当年各项费用'] / 
-        data_map['本年应收小计'].replace(0, np.nan) * 100
-    ).fillna(0).round(2)
+    # 2. 派生指标计算 (Derived Metrics)
+    # 统一计算公式，减少 build_row 里的负担
+    data_map = {
+        '本月应收各项费用': raw_data['本月应收'],
+        '本月调整当年各项费用': raw_data['本月调整当年'],
+        '本月调整往年各项费用': raw_data['本月调整往年'],
+        '本月应收小计': raw_data['本月应收'] + raw_data['本月调整当年'] + raw_data['本月调整往年'],
+        '本月收回当月各项费用': raw_data['本月实收当月'],
+        '本月收回当年各项费用': raw_data['本月实收当年'],
+        '本月收回往年各项费用': raw_data['本月实收往年'],
+        '本月实收小计': raw_data['本月实收当月'] + raw_data['本月实收当年'] + raw_data['本月实收往年'],
+        '当月违约金': raw_data['当月违约金'],
+        '未收回的当月水费': (raw_data['本月应收'] + raw_data['本月调整当年'] + raw_data['本月调整往年']) - raw_data['本月实收当月'],
+        '当月收回率 (%)': (raw_data['本月实收当月'] / raw_data['本月应收'].replace(0, np.nan) * 100).fillna(0).round(2),
+        '本年应收小计': raw_data['本年应收'],
+        '本年收回当年各项费用': raw_data['本年实收当年'],
+        '本年收回往年各项费用': raw_data['本年实收往年'],
+        '本年实收小计': raw_data['本年实收当年'] + raw_data['本年实收往年'],
+        '本年违约金': raw_data['本年违约金'],
+        '本年累计欠费': raw_data['本年应收'] - raw_data['本年实收当年'],
+        '本年收回率 (%)': (raw_data['本年实收当年'] / raw_data['本年应收'].replace(0, np.nan) * 100).fillna(0).round(2)
+    }
 
     # 3. 定义报表的物理行顺序
     TIME_TYPE = ['本月', '本年']
@@ -372,67 +356,52 @@ def process_306_data(dfs):
         (TIME_TYPE[1], FEE_TYPE[2], '本年收回率 (%)'),
     ]
 
-    rows = []
-    for c1, c2, item_name in report_structure:
-        data = data_map.get(item_name, pd.Series(0, index=PI_COLS))
+    def build_row(c1, c2, item, data_map):
+        # 1. 获取预计算好的 Series (PI1_MONEY 到 PI6_MONEY)
+        data = data_map.get(item, pd.Series(0.0, index=PI_COLS)).copy()
 
-        # 检查 data 是否为纯数字 (float 或 int)
-        if isinstance(data, (float, int, np.float64, np.int64)):
-            # 如果是纯数字（如收回率或违约金），将其转换为 Series
-            # 假设我们将这个数字放在第一列（纯水费），其他列补 0
-            temp_val = data
-            # 创建 Series 时直接指定 np.dtype，省去后续把float类型的数据写入int64列的警告
-            data = pd.Series(0.0, index=PI_COLS, dtype=float)
-
-            # 业务逻辑判断：如果是违约金，通常放第一列；如果是收回率，通常全行显示一样或只显合计
-            if '率' in item_name:
-                data[:] = temp_val # 收回率整行填充
-            else:
-                data['PI1_MONEY'] = temp_val # 违约金等只放第一列
-
-        # --- 违约金处理逻辑 ---
+        # 2. 针对不同类型的行进行“内容重塑”
+        # --- 情况 A: 违约金行 ---
         current_late_fee = 0
-    
-        if item_name == "违约金":
-            # 如果是应收相关的行，取应收违约金（或者根据财务要求不显示）
-            current_late_fee = data_map.get('当月违约金', 0) if "当月" in item_name else data_map.get('本年违约金', 0)
-        # --------------------
+        if "违约金" in item:
+            # 提取数值（标量）
+            val = data_map.get('当月违约金' if "当月" in item else '本年违约金', 0)
+            current_late_fee = float(val.sum() if hasattr(val, 'sum') else val)
 
-        # 默认合计是 6 费之和
-        row_total = data.sum()
-    
-        # --- 特殊处理收回率行 ---
-        if '收回率' in item_name:
-            # 1. 此时 data 已经是上面算好的比例 Series (PI1_MONEY 到 PI6_MONEY)
-            # 2. 我们需要覆盖掉 row_total，改用刚才算的“合计收回率”
-            if '当月' in item_name:
-                row_total = (data_map['本月收回当月各项费用'].sum() / data_map['本月应收小计'].sum() * 100).round(2) if data_map['本月应收小计'].sum() != 0 else 0
-            else:
-                row_total = (data_map['本年收回当年各项费用'].sum() / data_map['本年应收小计'].sum() * 100).round(2) if data_map['本年应收小计'].sum() != 0 else 0
+            # 违约金行本身：清空六费，只在第一列显示违约金
+            data = pd.Series(0.0, index=PI_COLS)
+            data['PI1_MONEY'] = current_late_fee
 
-        if '收回率' in item_name:
-            # 确保 data 是计算好的标量或 Series，然后转字符串并加 %
-            # 注意：如果加了 %，该单元格在 Excel 里会变成“文本”格式
-            row = {
-                'C1': c1, 
-                'C2': c2, 
-                'FEE_TYPE': item_name, 
-                **{k: f"{v:.2f}%" for k, v in data.to_dict().items()},
-                'ACTUAL_LATEFEE': "", # 费率行违约金通常为空
-                'SIX_TOTAL': f"{row_total:.2f}%"
-                }
+            # 对于违约金行，合计就等于它本身，不要再加一遍 data.sum()
+            row_total = current_late_fee 
         else:
-            row = {
-                'C1': c1, 
-                'C2': c2, 
-                'FEE_TYPE': item_name, 
-                **data.to_dict(), 
-                'ACTUAL_LATEFEE': current_late_fee, # 映射到 columns_map 里的“违约金”
-                'SIX_TOTAL': row_total + current_late_fee # 合计包含违约金
+            # 普通行：合计 = 六费之和 + 该行关联的违约金(如果有)
+            row_total = float(data.sum()) + current_late_fee
+    
+        # --- 情况 B: 收回率行 ---
+        if '收回率' in item:
+            # 计算该行各费种的收回率，已经在 data_map 里算好了
+            # 我们只需要额外算一个“合计收回率”给 SIX_TOTAL 即可
+            num = data_map['本月收回当月各项费用'] if '当月' in item else data_map['本年收回当年各项费用']
+            den = data_map['本月应收小计'] if '当月' in item else data_map['本年应收小计']
+            row_total_val = (num.sum() / den.sum() * 100) if den.sum() != 0 else 0
+        
+            return {
+                'C1': c1, 'C2': c2, 'FEE_TYPE': item,
+                **{k: f"{v:.2f}%" for k, v in data.to_dict().items()},
+                'ACTUAL_LATEFEE': "", 
+                'SIX_TOTAL': f"{row_total_val:.2f}%"
             }
-        rows.append(row)
+        
+        # --- 情况 C: 普通金额行 (如应收、实收、调整、欠费) ---
+        return {
+            'C1': c1, 'C2': c2, 'FEE_TYPE': item,
+            **data.to_dict(),
+            'ACTUAL_LATEFEE': current_late_fee,
+            'SIX_TOTAL': row_total
+        }
 
-    return pd.DataFrame(rows)
+    return pd.DataFrame([build_row(*item, data_map) for item in report_structure])
 
 def process_313_data(dfs):
     """

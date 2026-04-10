@@ -15,6 +15,19 @@ year_month = f"{datetime.now().strftime('%Y年%m月')}"
 # 明确要累加的 6 个费用项
 PI_COLS = ['PI1_MONEY', 'PI2_MONEY', 'PI3_MONEY', 'PI4_MONEY', 'PI5_MONEY', 'PI6_MONEY']
 
+# 全局标准映射
+BASE_FEE_MAP = {
+    'PI1_MONEY': '纯水费',
+    'PI4_MONEY': '水资源税',
+    'PI5_MONEY': '水利投资费',
+    'PI6_MONEY': '管网维护费',
+    'PI2_MONEY': '污水处理费',
+    'PI3_MONEY': '垃圾处理费'
+}
+
+# 自动推导需要合计的六费列名
+SIX_FEE_COLS = list(BASE_FEE_MAP.keys())
+
 REPORTS = {
     '2-8': {
         'proc': 'RPT_WLMQ_208',
@@ -52,15 +65,10 @@ REPORTS = {
             'FEE_TYPE': '业务类型',
             'ACC_COUNT': '户数',
             'ACC_WATER': '售水量',
-            'PI1_MONEY': '纯水费',
-            'PI4_MONEY': '水资源税',
-            'PI5_MONEY': '水利投资费',
-            'PI6_MONEY': '管网维护费',
-            'PI2_MONEY': '污水处理费',
-            'PI3_MONEY': '垃圾处理费',
+            **BASE_FEE_MAP, # 自动展开六费映射
             'ACC_MONEY': '六费合计'
         },
-        'sum_cols': ['ACC_COUNT', 'ACC_WATER', 'PI1_MONEY', 'PI4_MONEY', 'PI5_MONEY', 'PI6_MONEY', 'PI2_MONEY', 'PI3_MONEY', 'ACC_MONEY'],
+        'sum_cols': ['ACC_COUNT', 'ACC_WATER', 'ACC_MONEY'] + SIX_FEE_COLS,
         'params': lambda sub, month: [sub, month]
     },
     '3-7': {
@@ -72,17 +80,12 @@ REPORTS = {
             'PARENT_SUBCOM_NAME': "分公司",
             'SUBCOM_NAME': "站点",
             'ACC_WATER': '售水量',
-            'PI1_MONEY': '纯水费',
-            'PI4_MONEY': '水资源税',
-            'PI5_MONEY': '水利投资费',
-            'PI6_MONEY': '管网维护费',
-            'PI2_MONEY': '污水处理费',
-            'PI3_MONEY': '垃圾处理费',
+            **BASE_FEE_MAP,
             'SIX_TOTAL': "六费合计"
         },
         'group_by': "PARENT_SUBCOM_NAME",   # 按此列分组计算小计
         'merge_cols': ['分公司'],
-        'sum_cols': ['ACC_WATER', 'PI1_MONEY', 'PI4_MONEY', 'PI5_MONEY', 'PI6_MONEY', 'PI2_MONEY', 'PI3_MONEY', 'SIX_TOTAL'],
+        'sum_cols': ['ACC_WATER', 'SIX_TOTAL'] + SIX_FEE_COLS,
         'params': lambda sub, month: [sub, month]
     },
     '3-11': {
@@ -98,16 +101,11 @@ REPORTS = {
             'PRICE_NAME': "用水性质",
             'ACC_COUNT': "户数",
             'ACC_WATER': "水量",
-            'PI1_MONEY': '纯水费',
-            'PI4_MONEY': '水资源税',
-            'PI5_MONEY': '水利投资费',
-            'PI6_MONEY': '管网维护费',
-            'PI2_MONEY': '污水处理费',
-            'PI3_MONEY': '垃圾处理费',
+            **BASE_FEE_MAP,
             'SIX_TOTAL': "六费合计",
             'UNIT_PRICE': "单价"
         },
-        'sum_cols': ['ACC_COUNT', 'ACC_WATER', 'PI1_MONEY', 'PI4_MONEY', 'PI5_MONEY', 'PI6_MONEY', 'PI2_MONEY', 'PI3_MONEY', 'SIX_TOTAL'],
+        'sum_cols': ['ACC_COUNT', 'ACC_WATER', 'SIX_TOTAL'] + SIX_FEE_COLS,
         'sum_first': True, # 合计行在第一行
         'split_by': 'PARENT_SUBCOM_NAME',
         'calc_func': lambda df: df.assign(
@@ -166,12 +164,7 @@ REPORTS = {
         'columns_map': {
             'SUBCOM_NAME1': "用户归属地",
             'SUBCOM_NAME2': "营业网点",
-            'PI1_MONEY': '纯水费',
-            'PI4_MONEY': '水资源税',
-            'PI5_MONEY': '水利投资费',
-            'PI6_MONEY': '管网维护费',
-            'PI2_MONEY': '污水处理费',
-            'PI3_MONEY': '垃圾处理费',
+            **BASE_FEE_MAP,
             'SIX_TOTAL': "六费合计", # 计算列
             'ACTUAL_LATEFEE': "违约金",
             'PT_PRESTORE_OUT_MONEY': "账户支出",
@@ -179,10 +172,7 @@ REPORTS = {
             'RATE': "纯账户预存/支出",
             'TOTAL_TRANSFER': "集团划账" # 计算列
         },
-        'sum_cols': [
-            'PI1_MONEY', 'PI4_MONEY', 'PI5_MONEY', 'PI6_MONEY', 'PI2_MONEY', 'PI3_MONEY', 
-            'SIX_TOTAL', 'ACTUAL_LATEFEE', 'PT_PRESTORE_OUT_MONEY', 'PT_PRESTORE_IN_MONEY', 'RATE', 'TOTAL_TRANSFER'
-        ],
+        'sum_cols': ['SIX_TOTAL', 'ACTUAL_LATEFEE', 'PT_PRESTORE_OUT_MONEY', 'PT_PRESTORE_IN_MONEY', 'RATE', 'TOTAL_TRANSFER'] + SIX_FEE_COLS,
         'sum_first': True,
         'calc_func': process_314_data,
         'params': lambda sub, month: [sub, month]
@@ -198,13 +188,7 @@ REPORTS = {
             'C1': '统计时间',            # 对应“本月/本年”合并列
             'C2': '费用类型',            # 对应“应收金额/实际收回”合并列
             'FEE_TYPE': "费用项目",
-            # 六费一金核心指标
-            'PI1_MONEY': '纯水费',
-            'PI4_MONEY': '水资源税',
-            'PI5_MONEY': '水利投资费',
-            'PI6_MONEY': '管网维护费',
-            'PI2_MONEY': '污水处理费',
-            'PI3_MONEY': '垃圾处理费',
+            **BASE_FEE_MAP,
             'SIX_TOTAL': "六费合计"
         },
         'sum_cols': [],   # 禁用框架合计行
@@ -223,12 +207,7 @@ REPORTS = {
         'columns_map': {
             'PAY_METHOD': '收费方式',
             'FEE_ITEM': '费用项目',
-            'PI1_MONEY': '纯水费',
-            'PI4_MONEY': '水资源税',
-            'PI5_MONEY': '水利投资费',
-            'PI6_MONEY': '管网维护费',
-            'PI2_MONEY': '污水处理费',
-            'PI3_MONEY': '垃圾处理费',
+            **BASE_FEE_MAP,
             'SIX_TOTAL': '应收费用'
         },
         'sum_cols': [],     # 不需要在这里定义 sum_cols，因为我们会在 calc_func 中自定义计算逻辑
@@ -252,12 +231,7 @@ REPORTS = {
             'ACC_WATER': "水量",
             'LAST_READING': "上次表底",
             'READING': "本次表底",
-            'PI1_MONEY': '纯水费',
-            'PI4_MONEY': '水资源税',
-            'PI5_MONEY': '水利投资费',
-            'PI6_MONEY': '管网维护费',
-            'PI2_MONEY': '污水处理费',
-            'PI3_MONEY': '垃圾处理费',
+            **BASE_FEE_MAP,
             'SIX_TOTAL': "六费合计",
             'EXTRA_MONEY': "损耗分摊费",
             'SEVEN_TOTAL': "七费合计",
@@ -265,7 +239,7 @@ REPORTS = {
             'METER_READER': "抄表员",
             'CHECK_TIME': "计费日期"
         },
-        'sum_cols': ['ACC_WATER', 'PI1_MONEY', 'PI4_MONEY', 'PI5_MONEY', 'PI6_MONEY', 'PI2_MONEY', 'PI3_MONEY', 'SIX_TOTAL', 'EXTRA_MONEY', 'SEVEN_TOTAL'],
+        'sum_cols': ['ACC_WATER', 'SIX_TOTAL', 'EXTRA_MONEY', 'SEVEN_TOTAL'] + SIX_FEE_COLS,
         'sum_first': True,
         'calc_func': lambda df: df.assign(
             SEVEN_TOTAL = lambda x: x['SIX_TOTAL'] + x['EXTRA_MONEY'].fillna(0)
@@ -308,12 +282,7 @@ REPORTS = {
             'CHECK_TIME': '开账日期',
             'BILLING_MONTH': "账期",
             'ACC_WATER': "水量",
-            'PI1_MONEY': '纯水费',
-            'PI4_MONEY': '水资源税',
-            'PI5_MONEY': '水利投资费',
-            'PI6_MONEY': '管网维护费',
-            'PI2_MONEY': '污水处理费',
-            'PI3_MONEY': '垃圾处理费',
+            **BASE_FEE_MAP,
             'SIX_TOTAL': "六费合计",
             'ACTUAL_LATEFEE': "违约金",
             'PST_PRESTORE_OUT_MONEY': "账户支出",
@@ -325,10 +294,7 @@ REPORTS = {
             'PAY_METHOD': "缴费方式",
             'PAY_SUBCOM': '缴费网点'
         },
-        'sum_cols': [
-            'ACC_WATER', 'PI1_MONEY', 'PI4_MONEY', 'PI5_MONEY', 'PI6_MONEY', 'PI2_MONEY', 
-            'PI3_MONEY', 'SIX_TOTAL', 'ACTUAL_LATEFEE', 'PST_PRESTORE_OUT_MONEY', 'PST_PRESTORE_IN_MONEY', 'PST_ACTUAL_MONEY'
-        ],
+        'sum_cols': ['ACC_WATER', 'SIX_TOTAL', 'ACTUAL_LATEFEE', 'PST_PRESTORE_OUT_MONEY', 'PST_PRESTORE_IN_MONEY', 'PST_ACTUAL_MONEY'] + SIX_FEE_COLS,
         'sum_first': True,
         'params': lambda sub, month: [sub, month]
     },
@@ -347,15 +313,10 @@ REPORTS = {
             'LAST_READING': "上次表底",
             'READING': "本次表底",
             'ACC_WATER': "水量",
-            'PI1_MONEY': '纯水费',
-            'PI4_MONEY': '水资源税',
-            'PI5_MONEY': '水利投资费',
-            'PI6_MONEY': '管网维护费',
-            'PI2_MONEY': '污水处理费',
-            'PI3_MONEY': '垃圾处理费',
+            **BASE_FEE_MAP,
             'SIX_TOTAL': "六费合计"
         },
-        'sum_cols': ['ACC_WATER', 'PI1_MONEY', 'PI4_MONEY', 'PI5_MONEY', 'PI6_MONEY', 'PI2_MONEY', 'PI3_MONEY', 'SIX_TOTAL'],
+        'sum_cols': ['ACC_WATER', 'SIX_TOTAL'] + SIX_FEE_COLS,
         'sum_first': True,
         'params': lambda sub, month: [sub, month, '']
     },
