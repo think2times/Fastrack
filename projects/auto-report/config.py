@@ -1,6 +1,5 @@
 import numpy as np
 from datetime import datetime
-from processors import process_306_data, process_313_data, process_314_data
 
 
 # 1. 数据库配置
@@ -26,7 +25,7 @@ BASE_FEE_MAP = {
 }
 
 # 自动推导需要合计的六费列名
-SIX_FEE_COLS = list(BASE_FEE_MAP.keys())
+BASE_FEE_COLS = list(BASE_FEE_MAP.keys())
 
 REPORTS = {
     '2-8': {
@@ -49,10 +48,6 @@ REPORTS = {
         },
         'sum_cols': ['TOTAL_COUNT', 'READ_COUNT', 'READ_WATER', 'ACC_WATER', 'ADJUST_WATER', 'ACTUAL_WATER'],
         'sum_first': True,
-        'calc_func': lambda df: df.assign(
-            # 使用 fillna(0) 防止 ACC_WATER 或 ADJUST_WATER 为空时计算出 NaN
-            ACTUAL_WATER = lambda x: x['ACC_WATER'].fillna(0) - x['ADJUST_WATER'].fillna(0)
-        ).round(2),
         # 定义该存储过程需要的参数“值”列表（不含最后的游标）
         'params': lambda sub, month: [sub, month, month, '']
     },
@@ -66,9 +61,9 @@ REPORTS = {
             'ACC_COUNT': '户数',
             'ACC_WATER': '售水量',
             **BASE_FEE_MAP, # 自动展开六费映射
-            'ACC_MONEY': '六费合计'
+            'ACC_MONEY': '应收费用'
         },
-        'sum_cols': ['ACC_COUNT', 'ACC_WATER', 'ACC_MONEY'] + SIX_FEE_COLS,
+        'sum_cols': ['ACC_COUNT', 'ACC_WATER', 'ACC_MONEY'] + BASE_FEE_COLS,
         'params': lambda sub, month: [sub, month]
     },
     '3-7': {
@@ -81,11 +76,11 @@ REPORTS = {
             'SUBCOM_NAME': "站点",
             'ACC_WATER': '售水量',
             **BASE_FEE_MAP,
-            'SIX_TOTAL': "六费合计"
+            'FEE_TOTAL': "应收费用"
         },
         'group_by': "PARENT_SUBCOM_NAME",   # 按此列分组计算小计
         'merge_cols': ['分公司'],
-        'sum_cols': ['ACC_WATER', 'SIX_TOTAL'] + SIX_FEE_COLS,
+        'sum_cols': ['ACC_WATER', 'FEE_TOTAL'] + BASE_FEE_COLS,
         'params': lambda sub, month: [sub, month]
     },
     '3-11': {
@@ -102,16 +97,12 @@ REPORTS = {
             'ACC_COUNT': "户数",
             'ACC_WATER': "水量",
             **BASE_FEE_MAP,
-            'SIX_TOTAL': "六费合计",
+            'FEE_TOTAL': "应收费用",
             'UNIT_PRICE': "单价"
         },
-        'sum_cols': ['ACC_COUNT', 'ACC_WATER', 'SIX_TOTAL'] + SIX_FEE_COLS,
+        'sum_cols': ['ACC_COUNT', 'ACC_WATER', 'FEE_TOTAL'] + BASE_FEE_COLS,
         'sum_first': True, # 合计行在第一行
         'split_by': 'PARENT_SUBCOM_NAME',
-        'calc_func': lambda df: df.assign(
-            # 单价 = 六费合计 / 水量，使用 np.where 处理售水量为 0 的情况防止报错
-            UNIT_PRICE = lambda x: np.where(x['ACC_WATER'] != 0, x['SIX_TOTAL'] / x['ACC_WATER'], 0)
-        ).round(2),
         'params': lambda sub, month: [sub, month]
     },
     '3-4': {
@@ -143,21 +134,10 @@ REPORTS = {
             row.update({'集团划账': row.get('账单金额', 0) + row.get('需划账违约金', 0)}),
             row # 注意：update返回None，所以要用元组并返回row本身
         )[1],
-        'calc_func': lambda df: df.assign(
-            # 本月银行入账 = 需划账费用
-            BANK_IN_MONEY = lambda x: x['PST_ACTUAL_MONEY'],
-            # 集团划账 = 账单金额 + 需划账违约金
-            TOTAL_TRANSFER = lambda x: x['ACC_MONEY'] + x['ACTUAL_LATEFEE']
-        ).sort_values(
-            # 排序：确保银行内部的分公司是连续的，方便后续合并单元格
-            by=['HEADOFFICE_NAME', 'COMPANY_NAME'], 
-            ascending=[True, True]
-        ).round(2),
         'params': lambda sub, month: [sub, month]
     },
     '3-14': {
         'proc': 'RPT_WLMQ_012',
-        'multi_source': True, # 标记位，True 表示存在多个游标
         'title': f"{year_month}实付集团各项费用汇总",
         'folder': "【实】付账报表（3-14号）（1）",
         'file_name': f"{year_month}付账报表.xlsx",
@@ -165,21 +145,19 @@ REPORTS = {
             'SUBCOM_NAME1': "用户归属地",
             'SUBCOM_NAME2': "营业网点",
             **BASE_FEE_MAP,
-            'SIX_TOTAL': "六费合计", # 计算列
+            'FEE_TOTAL': "应收费用",
             'ACTUAL_LATEFEE': "违约金",
             'PT_PRESTORE_OUT_MONEY': "账户支出",
             'PT_PRESTORE_IN_MONEY': "账户存入",
             'RATE': "纯账户预存/支出",
             'TOTAL_TRANSFER': "集团划账" # 计算列
         },
-        'sum_cols': ['SIX_TOTAL', 'ACTUAL_LATEFEE', 'PT_PRESTORE_OUT_MONEY', 'PT_PRESTORE_IN_MONEY', 'RATE', 'TOTAL_TRANSFER'] + SIX_FEE_COLS,
+        'sum_cols': ['FEE_TOTAL', 'ACTUAL_LATEFEE', 'PT_PRESTORE_OUT_MONEY', 'PT_PRESTORE_IN_MONEY', 'RATE', 'TOTAL_TRANSFER'] + BASE_FEE_COLS,
         'sum_first': True,
-        'calc_func': process_314_data,
         'params': lambda sub, month: [sub, month]
     },
     '3-6': {
         'proc': 'RPT_WLMQ_306',
-        'multi_source': True,  # 存在 4 个游标：时间范围、应收、实收、往期调整
         'title': f"{year_month}水费各项目收入汇总表",
         'folder': "【实】实收报表（3-6号）（7）",
         'file_name': f"{year_month}实收报表.xlsx",
@@ -189,17 +167,15 @@ REPORTS = {
             'C2': '费用类型',            # 对应“应收金额/实际收回”合并列
             'FEE_TYPE': "费用项目",
             **BASE_FEE_MAP,
-            'SIX_TOTAL': "六费合计"
+            'FEE_TOTAL': "应收费用"
         },
         'sum_cols': [],   # 禁用框架合计行
         'group_by': '',   # 禁用通用小计，改用下面的特殊逻辑
         'merge_cols': ['统计时间', '费用类型'],  # 按统计账期合并单元格
-        'calc_func': process_306_data,  # 核心：需要处理 4 个游标的逻辑函数
         'params': lambda sub, month: [sub, month]
     },
     '3-13': {
         'proc': 'RPT_WLMQ_313',
-        'multi_source': True,
         'title': f"{year_month}全额费用汇总表",
         'folder': '【实】全额费用实收报表（3-13号）（7）',
         'file_name': f"{year_month}全额费用报表.xlsx",
@@ -208,12 +184,11 @@ REPORTS = {
             'PAY_METHOD': '收费方式',
             'FEE_ITEM': '费用项目',
             **BASE_FEE_MAP,
-            'SIX_TOTAL': '应收费用'
+            'FEE_TOTAL': '应收费用'
         },
         'sum_cols': [],     # 不需要在这里定义 sum_cols，因为我们会在 calc_func 中自定义计算逻辑
         'group_by': 'PAY_METHOD', 
         'merge_cols': ['收费方式'],
-        'calc_func': process_313_data,
         'params': lambda sub, month: [sub, month]
     },
     '3-23': {
@@ -232,18 +207,15 @@ REPORTS = {
             'LAST_READING': "上次表底",
             'READING': "本次表底",
             **BASE_FEE_MAP,
-            'SIX_TOTAL': "六费合计",
+            'FEE_TOTAL': "应收费用",
             'EXTRA_MONEY': "损耗分摊费",
             'SEVEN_TOTAL': "七费合计",
             'BOOK_ID': "抄表册",
             'METER_READER': "抄表员",
             'CHECK_TIME': "计费日期"
         },
-        'sum_cols': ['ACC_WATER', 'SIX_TOTAL', 'EXTRA_MONEY', 'SEVEN_TOTAL'] + SIX_FEE_COLS,
+        'sum_cols': ['ACC_WATER', 'FEE_TOTAL', 'EXTRA_MONEY', 'SEVEN_TOTAL'] + BASE_FEE_COLS,
         'sum_first': True,
-        'calc_func': lambda df: df.assign(
-            SEVEN_TOTAL = lambda x: x['SIX_TOTAL'] + x['EXTRA_MONEY'].fillna(0)
-        ).round(2),
         'params': lambda sub, month: [sub, month, '']
     },
     '3-47': {
@@ -261,10 +233,6 @@ REPORTS = {
             'USER_NAME': "操作人",
             'PST_TIME': "操作时间"
         },
-        'calc_func': lambda df: df.assign(
-            # 预存报表通常直接取存储过程计算好的金额，此处可做简单的四舍五入
-            PST_MONEY = lambda x: x['PST_MONEY'].fillna(0).round(2)
-        ),
         'params': lambda sub, month: [sub, month]
     },
     '3-15': {
@@ -283,7 +251,7 @@ REPORTS = {
             'BILLING_MONTH': "账期",
             'ACC_WATER': "水量",
             **BASE_FEE_MAP,
-            'SIX_TOTAL': "六费合计",
+            'FEE_TOTAL': "应收费用",
             'ACTUAL_LATEFEE': "违约金",
             'PST_PRESTORE_OUT_MONEY': "账户支出",
             'PST_PRESTORE_IN_MONEY': "账户存入",
@@ -294,7 +262,7 @@ REPORTS = {
             'PAY_METHOD': "缴费方式",
             'PAY_SUBCOM': '缴费网点'
         },
-        'sum_cols': ['ACC_WATER', 'SIX_TOTAL', 'ACTUAL_LATEFEE', 'PST_PRESTORE_OUT_MONEY', 'PST_PRESTORE_IN_MONEY', 'PST_ACTUAL_MONEY'] + SIX_FEE_COLS,
+        'sum_cols': ['ACC_WATER', 'FEE_TOTAL', 'ACTUAL_LATEFEE', 'PST_PRESTORE_OUT_MONEY', 'PST_PRESTORE_IN_MONEY', 'PST_ACTUAL_MONEY'] + BASE_FEE_COLS,
         'sum_first': True,
         'params': lambda sub, month: [sub, month]
     },
@@ -314,9 +282,9 @@ REPORTS = {
             'READING': "本次表底",
             'ACC_WATER': "水量",
             **BASE_FEE_MAP,
-            'SIX_TOTAL': "六费合计"
+            'FEE_TOTAL': "应收费用"
         },
-        'sum_cols': ['ACC_WATER', 'SIX_TOTAL'] + SIX_FEE_COLS,
+        'sum_cols': ['ACC_WATER', 'FEE_TOTAL'] + BASE_FEE_COLS,
         'sum_first': True,
         'params': lambda sub, month: [sub, month, '']
     },

@@ -1,9 +1,8 @@
 import pandas as pd
 import numpy as np
 import re
+from config import PI_COLS
 
-
-PI_COLS = ['PI1_MONEY', 'PI2_MONEY', 'PI3_MONEY', 'PI4_MONEY', 'PI5_MONEY', 'PI6_MONEY']
 
 def clean_illegal_chars(val):
     if isinstance(val, str):
@@ -15,14 +14,14 @@ def clean_illegal_chars(val):
 
 def standard_preprocess(df):
     """
-    通用预处理：大写列名、计算六费合计、四舍五入
+    通用预处理：大写列名、计算应收费用、四舍五入
     """
     if df.empty:
         return df
-        
+    
     # 1. 统一大写列名，防止 SQL 字段大小写不一致
     df.columns = [c.upper() for c in df.columns]
-    
+
     # 2. 自动识别 PI_COLS 并计算 SIX_TOTAL
     # 只有当 DataFrame 中包含这些列时才计算，避免报错
     existing_pi_cols = [c for c in PI_COLS if c in df.columns]
@@ -30,10 +29,10 @@ def standard_preprocess(df):
         # 识别哪些行是纯数值行（排除掉收回率这种带 % 的字符串行）
         # 我们只对 PI1_MONEY 这一列是数值类型的行进行计算
         is_numeric_row = pd.to_numeric(df[existing_pi_cols[0]], errors='coerce').notnull()
-        
+
         # 只有数值行才计算 SIX_TOTAL，其他行（如收回率行）保持原样或设为 0
-        df.loc[is_numeric_row, 'SIX_TOTAL'] = df.loc[is_numeric_row, existing_pi_cols].fillna(0).sum(axis=1)
-    
+        df.loc[is_numeric_row, 'FEE_TOTAL'] = df.loc[is_numeric_row, existing_pi_cols].fillna(0).sum(axis=1)
+
     # 3. 只对数值型列（整数、浮点数）进行四舍五入
     numeric_cols = df.select_dtypes(include=['number']).columns
     df[numeric_cols] = df[numeric_cols].round(2)
@@ -208,31 +207,23 @@ def add_summary(df, cfg, sum_cols=None):
 
     return report_df
 
-def prepare_multi_cursor_report(dfs, cfg):
+def prepare_report_data(dfs, report_id):
     """
     处理多游标返回的 DataFrame 列表
-    dfs: [df_detail, df_summary, ...]
     """
-    # --- 第一步：前置清洗 (Pre-cleaning) ---
     # 在合并或组装之前，先把所有原始游标里的数字列该大写的写，该算的算
-    # 此时 dfs 里的数据全是刚从数据库出来的数字，计算 SIX_TOTAL 极其安全
+    # 此时 dfs 里的数据全是刚从数据库出来的数字，计算 FEE_TOTAL 极其安全
     dfs = [standard_preprocess(d) for d in (dfs if isinstance(dfs, list) else [dfs])]
 
-    # --- 第二步：组装与计算 (Assembly & Calculation) ---    
-    report_package = {}
-    # 标记是否已经在 calc_func 里处理过了
-    has_processed = False 
-    # 既然是多数据源，就把选择权交给 calc_func，多数据源一定会有特殊逻辑需要处理
-    if cfg.get('multi_source') and 'calc_func' in cfg:
-        # 已经把游标处理、合并、计算全部做完了
-        df = cfg['calc_func'](dfs)
-        # 标记一下，防止后面重复跑 calc_func
-        has_processed = True
-    else:
-        # 标准模式：只取第一个游标
-        df = dfs[0] if dfs else pd.DataFrame()# 假设第一个游标是核心明细数据
+    # 处理各个报表的特殊逻辑
+    df = process_report_logic(dfs, report_id)
 
-    # --- 第三步：后续处理 (Post-processing) ---
+    return df
+
+def generate_report_package(df, cfg):
+    """
+    生成报表数据包，包含合计、组内小计，以及分公司拆分后的 DataFrame
+    """
     # 检查是否需要增加组内小计
     if cfg.get('group_by') and cfg.get('proc') != 'RPT_WLMQ_313':  # 3-13 的小计逻辑比较特殊，已经在 calc_func 中处理了
         df = add_group_subtotals(df, cfg)
@@ -240,14 +231,10 @@ def prepare_multi_cursor_report(dfs, cfg):
     # 计算全表合计
     all_df = add_summary(df, cfg)
 
-    # 处理各报表的特殊逻辑
-    if cfg.get('calc_func') and not has_processed:
-        all_df = cfg['calc_func'](all_df)
-    
-    # --- 第四步：排序与翻译（Sort & Rename） ---
     # 针对需要分组的报表，进行结构化排序，确保一级分组中顺序不变，小计行沉底，合计行置顶
     all_df = apply_structural_sort(all_df, cfg)
 
+    report_package = {}
     # 准备展示列名单，首先获取配置中定义的中文列名顺序
     display_cols = list(cfg['columns_map'].values())
     # 重命名列名, rename 会把英文 Key 替换为中文 Value
@@ -263,7 +250,7 @@ def prepare_multi_cursor_report(dfs, cfg):
             tmp_df = add_summary(group_df, cfg)
             if 'calc_func' in cfg:
                 tmp_df = cfg['calc_func'](tmp_df)
-            
+
             report_package[sheet_name] = tmp_df.rename(columns=cfg['columns_map'])[display_cols]
 
     return report_package
@@ -385,20 +372,20 @@ def process_306_data(dfs):
             num = data_map['本月收回当月各项费用'] if '当月' in item else data_map['本年收回当年各项费用']
             den = data_map['本月应收小计'] if '当月' in item else data_map['本年应收小计']
             row_total_val = (num.sum() / den.sum() * 100) if den.sum() != 0 else 0
-        
+
             return {
                 'C1': c1, 'C2': c2, 'FEE_TYPE': item,
                 **{k: f"{v:.2f}%" for k, v in data.to_dict().items()},
-                'ACTUAL_LATEFEE': "", 
-                'SIX_TOTAL': f"{row_total_val:.2f}%"
+                'ACTUAL_LATEFEE': 0, 
+                'FEE_TOTAL': f"{row_total_val:.2f}%"
             }
-        
+
         # --- 情况 C: 普通金额行 (如应收、实收、调整、欠费) ---
         return {
             'C1': c1, 'C2': c2, 'FEE_TYPE': item,
             **data.to_dict(),
             'ACTUAL_LATEFEE': current_late_fee,
-            'SIX_TOTAL': row_total
+            'FEE_TOTAL': row_total
         }
 
     return pd.DataFrame([build_row(*item, data_map) for item in report_structure])
@@ -448,8 +435,8 @@ def process_313_data(dfs):
         res_data = [
             {'收费方式': pay_method, '费用项目': '本月收回当月各项费用', **curr_month},
             {'收费方式': pay_method, '费用项目': '本月收回以前年度各项费用', **prev_years},
-            {'收费方式': pay_method, '费用项目': '小计', **subtotal, 'SIX_TOTAL': subtotal.sum()},
-            {'收费方式': pay_method, '费用项目': '违约金', 'PI1_MONEY': latefee_total, 'SIX_TOTAL': latefee_total}
+            {'收费方式': pay_method, '费用项目': '小计', **subtotal, 'FEE_TOTAL': subtotal.sum()},
+            {'收费方式': pay_method, '费用项目': '违约金', 'PI1_MONEY': latefee_total, 'FEE_TOTAL': latefee_total}
         ]
         return pd.DataFrame(res_data)
 
@@ -469,7 +456,7 @@ def process_313_data(dfs):
     final_df = pd.concat(all_groups, ignore_index=True)
     
     # 补齐应收费用（SIX_TOTAL）计算列
-    final_df['SIX_TOTAL'] = final_df[PI_COLS].sum(axis=1)
+    final_df['FEE_TOTAL'] = final_df[PI_COLS].sum(axis=1)
     
     return final_df
 
@@ -497,3 +484,42 @@ def process_314_data(dfs):
     ).round(2)
     
     return df_main # 最终返回给导出模块的 DataFrame
+
+# 定义计算映射配置，Key 为报表编号，Value 为需要执行的计算逻辑（匿名函数）
+CALC_CONFIG = {
+    '2-8': lambda df: df.assign(ACTUAL_WATER=df['ACC_WATER'].fillna(0) - df['ADJUST_WATER'].fillna(0)).round(2),
+    '3-11': lambda df: df.assign(UNIT_PRICE=np.where(df['ACC_WATER'] != 0, df['FEE_TOTAL'] / df['ACC_WATER'], 0)).round(2),
+    '3-4': lambda df: df.assign(
+            # 本月银行入账 = 需划账费用
+            BANK_IN_MONEY = lambda x: x['PST_ACTUAL_MONEY'],
+            # 集团划账 = 账单金额 + 需划账违约金
+            TOTAL_TRANSFER = lambda x: x['ACC_MONEY'] + x['ACTUAL_LATEFEE']
+        ).sort_values(
+            # 排序：确保银行内部的分公司是连续的，方便后续合并单元格
+            by=['HEADOFFICE_NAME', 'COMPANY_NAME'], 
+            ascending=[True, True]
+        ).round(2),
+    '3-23': lambda df: df.assign(SEVEN_TOTAL=df['FEE_TOTAL'].fillna(0) + df['EXTRA_MONEY'].fillna(0)).round(2),
+    '3-6': process_306_data,
+    '3-13': process_313_data,
+    '3-14': process_314_data
+}
+
+def process_report_logic(dfs, report_id):
+    """
+    dfs: 始终传入 list 类型
+    """
+    if report_id not in CALC_CONFIG:
+        return dfs[0] if dfs else pd.DataFrame()
+
+    calc_func = CALC_CONFIG[report_id]
+
+    # 核心逻辑：判断是否需要“拆箱”，以后有新的多源报表往这加
+    multi_source_reports = ['3-6', '3-13', '3-14']
+
+    if report_id in multi_source_reports:
+        # 喂整个 list
+        return calc_func(dfs) 
+    else:
+        # 自动拆箱，喂单表
+        return calc_func(dfs[0]) if dfs else pd.DataFrame()
