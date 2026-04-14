@@ -4,6 +4,33 @@ import re
 from config import PI_COLS
 
 
+def reconcile_metrics(report_a_id, report_b_id, check_map):
+    """
+    通用对账函数
+    :param report_a_id: 报表 A 的名称/ID (用于打印)
+    :param report_b_id: 报表 B 的名称/ID (用于打印)
+    :param check_map: 字典 { "描述": (值A, 值B) }
+    :return: 是否通过 (bool)
+    """
+    print(f"正在核对 {report_a_id} 和 {report_b_id} 的各项金额是否一致...")
+    status = "✅"
+    errors = []
+
+    for label, (val_a, val_b) in check_map.items():
+        # 统一处理浮点数精度
+        diff = round(abs(val_a - val_b), 2)
+        # 只有当差异大于 0.01 元（1分钱）时，才认为是不匹配
+        if diff >= 0.01:
+            errors.append(f"   ❌ {label} 不匹配: {report_a_id}({val_a:.2f}) vs {report_b_id}({val_b:.2f}), 差异: {diff:.2f}")
+            status = "❌"
+
+    if status == "✅":
+        print(f"   ✅ {report_a_id} 与 {report_b_id} 实收指标完全一致")
+    else:
+        print("\n".join(errors))
+    
+    return status == "✅"
+
 def clean_illegal_chars(val):
     if isinstance(val, str):
         # 匹配所有 Excel 不支持的控制字符
@@ -406,35 +433,36 @@ def process_313_data(dfs):
     
     # 定义内部处理函数：处理每一个收费方式（如：预收、银行）
     def reformat_group(group_df, pay_method):
-        rows = []
-        
         # 1. 提取业务行（假设存储过程中 FEE_ITEM 已经区分了类别）
         # 如果 FEE_ITEM 包含你提到的：当月、当年未报、以前年度等，需要在这里做加总
         
         # 模拟业务逻辑：将组内数据按 FEE_ITEM 分类汇总
         def get_sum(item_name_list):
-            mask = group_df['FEE_ITEM'].isin(item_name_list)
+            mask = group_df['FEE_ITEM'] == item_name_list
             return group_df.loc[mask, PI_COLS + ['ACTUAL_LATEFEE']].sum()
 
         # --- 构造目标行的每一项 ---
         # A. 本月收回当月各项费用
-        curr_month = get_sum(['本月收回当月各项费用']) 
+        curr_month = get_sum('本月收回当月各项费用') 
+
+        # B. 本月收回当年各项费用
+        curr_year = get_sum('本月收回当年各项费用')
         
-        # B. 本月收回以前年度各项费用 (对应你公式中的历史部分)
-        prev_years = get_sum(['本月收回以前年度各项费用'])
+        # C. 本月收回往年各项费用
+        prev_years = get_sum('本月收回以前年度各项费用')
         
-        # C. 违约金行 (提取该组下的违约金总额)
+        # D. 违约金行 (提取该组下的违约金总额)
         latefee_total = group_df['ACTUAL_LATEFEE'].sum()
 
-        # D. 计算小计行 (核心逻辑：对应图一公式)
-        # 小计 = 当月 + 当年各项 + 当年未报 - 当年已报 + 以前年度 + 不划账 
+        # E. 计算小计行，小计 = 当月 + 当年各项 + 当年未报 - 当年已报 + 以前年度 + 不划账 
         # 假设 group_df 已经通过 SQL 的逻辑包含了这些所有行，直接全选 sum 即可
         subtotal = group_df[PI_COLS].sum() 
 
         # --- 组装成新行 ---
         res_data = [
             {'收费方式': pay_method, '费用项目': '本月收回当月各项费用', **curr_month},
-            {'收费方式': pay_method, '费用项目': '本月收回以前年度各项费用', **prev_years},
+            {'收费方式': pay_method, '费用项目': '本月收回当年各项费用', **curr_year},
+            {'收费方式': pay_method, '费用项目': '本月收回往年各项费用', **prev_years},
             {'收费方式': pay_method, '费用项目': '小计', **subtotal, 'FEE_TOTAL': subtotal.sum()},
             {'收费方式': pay_method, '费用项目': '违约金', 'PI1_MONEY': latefee_total, 'FEE_TOTAL': latefee_total}
         ]

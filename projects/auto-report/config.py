@@ -187,7 +187,7 @@ REPORTS = {
             'FEE_TOTAL': '应收费用'
         },
         'sum_cols': [],     # 不需要在这里定义 sum_cols，因为我们会在 calc_func 中自定义计算逻辑
-        'group_by': 'PAY_METHOD', 
+        'group_by': 'PAY_METHOD',
         'merge_cols': ['收费方式'],
         'params': lambda sub, month: [sub, month]
     },

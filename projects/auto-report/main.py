@@ -4,7 +4,7 @@ import os
 from exporters import export_excel_package
 from db_helper import init_client, call_procedure
 from config import REPORTS, DB_CONFIG
-from processors import generate_report_package, process_report_logic, prepare_report_data
+from processors import generate_report_package, process_report_logic, prepare_report_data, reconcile_metrics
 
 
 def fetch_data_from_db(report_id, subcoms=None, bill_month=None):
@@ -14,7 +14,7 @@ def fetch_data_from_db(report_id, subcoms=None, bill_month=None):
 
     if bill_month is None:
         # 获取上个月的年月，格式为 YYYY-MM
-        last_month = datetime.now() - relativedelta(months=1)
+        last_month = datetime.now() - relativedelta(months=2)
         bill_month = last_month.strftime('%Y-%m')
 
         # 获取当前年月，格式为 YYYY-MM
@@ -89,16 +89,14 @@ def reconcile_ss_reports(report_package):
     # --- 1. 3-4 vs 3-14 金额核对 ---
     # 检查3-4中账单金额、需划账费用、集团划账、账户支出、账户存入、纯账户存入
     # 与 3-14 中应收费用、集团划账、应收费用加违约金、账户支出、账户存入、纯账户预存/支出是否一致；
-    print("正在核对 3-4 和 3-14 的各项金额是否一致。。。")
-    status = "✅"
     if df_34 is not None and df_314 is not None:
         # 3-4 账单金额、需划账费用、集团划账、账户支出、账户存入和纯账户存入
         # 3-14 应收费用、集团划账、应收费用加违约金、账户支出、账户存入、纯账户预存/支出
         # 营业网点列只需要第三方代收机构所在行
         include_sites = ['微信', '支付宝', '银联', '利安', '农行', '建行', '光大银行', '广发', '乌鲁木齐银行']
         df_314_filtered = df_314[df_314['SUBCOM_NAME2'].isin(include_sites)]
-        # 1. 准备对比数据集 (封装成字典，Key 是描述，Value 是 (3-4值, 3-14值))
-        check_map = {
+        # 准备对比数据集 (封装成字典，Key 是描述，Value 是 (3-4值, 3-14值))
+        map_34_314 = {
             "应收费用 vs 账单金额": (df_34['ACC_MONEY'].sum(), df_314_filtered['FEE_TOTAL'].sum()),
             "需划账费用 vs 集团划账": (df_34['PST_ACTUAL_MONEY'].sum(), df_314_filtered['TOTAL_TRANSFER'].sum()),
             "集团划账 vs 应收+违约金": (df_34['TOTAL_TRANSFER'].sum(), df_314_filtered['FEE_TOTAL'].sum() + df_314_filtered['ACTUAL_LATEFEE'].sum()),
@@ -107,48 +105,31 @@ def reconcile_ss_reports(report_package):
             "纯账户存入/预存支出": (df_34['PST_PRESTORE_IN_MONEY'].sum(), df_314_filtered['RATE'].sum())
         }
 
-        # 2. 迭代对比
-        errors = []
-        for label, (val_34, val_314) in check_map.items():
-            # 使用 round(2) 避免浮点数精度带来的微小误差导致的报错
-            diff = round(abs(val_34 - val_314), 2)
-            if diff != 0:
-                errors.append(f"   ❌ {label} 不匹配: 3-4({val_34:.2f}) vs 3-14({val_314:.2f}), 差异: {diff:.2f}")
-                status = "❌"
+        reconcile_metrics('3-4', '3-14', map_34_314)
 
-        # 3. 输出结果
-        if status == "✅":
-            print("   ✅ 3-4 与 3-14 实收各项指标完全一致")
-        else:
-            print("\n".join(errors))
-
-    # --- 1. 3-6 vs 3-14 金额核对 ---
-    print("正在核对 3-6 和 3-14 的各项金额是否一致。。。")
-    status = "✅"
+    # --- 2. 3-6 vs 3-14 金额核对 ---
     if df_36 is not None and df_314 is not None:
         # 检查3-14中应收费用、违约金合计与3-6中实际收回小计、违约金是否一致
-        # 1. 准备对比数据集 (封装成字典，Key 是描述，Value 是 (3-6值, 3-14值))
-        check_map = {
+        map_36_314 = {
             "实际收回小计 vs 应收费用+违约金": (df_36[df_36['FEE_TYPE'] == '本月实收小计']['FEE_TOTAL'].sum(), df_314['FEE_TOTAL'].sum()),
             "违约金": (df_36[df_36['FEE_TYPE'] == '当月违约金']['ACTUAL_LATEFEE'].sum(), df_314['ACTUAL_LATEFEE'].sum())
         }
 
-        # 2. 迭代对比
-        errors = []
-        for label, (val_36, val_314) in check_map.items():
-            # 使用 round(2) 避免浮点数精度带来的微小误差导致的报错
-            diff = round(abs(val_36 - val_314), 2)
-            if diff != 0:
-                errors.append(f"   ❌ {label} 不匹配: 3-6({val_36:.2f}) vs 3-14({val_314:.2f}), 差异: {diff:.2f}")
-                status = "❌"
+        reconcile_metrics('3-6', '3-14', map_36_314)
 
-        # 3. 输出结果
-        if status == "✅":
-            print("   ✅ 3-6 与 3-14 实收各项指标完全一致")
-        else:
-            print("\n".join(errors))
+    # --- 3. 3-6 vs 3-13 金额核对 ---
+    if df_36 is not None and df_313 is not None:
+        # 检查3-13中数据（各项当月、当年未报、以前年度）与3-6中对应数据是否一致
+        not_sum = df_313['收费方式'] != '汇总'
+        map_36_313 = {
+            "本月收回当月各项费用": (df_36[df_36['FEE_TYPE'] == '本月收回当月各项费用']['FEE_TOTAL'].sum(), df_313[(df_313['费用项目'] == '本月收回当月各项费用') & not_sum]['FEE_TOTAL'].sum()),
+            "本月收回当年各项费用": (df_36[df_36['FEE_TYPE'] == '本月收回当年各项费用']['FEE_TOTAL'].sum(), df_313[(df_313['费用项目'] == '本月收回当年各项费用') & not_sum]['FEE_TOTAL'].sum()),
+            "本月收回往年各项费用": (df_36[df_36['FEE_TYPE'] == '本月收回往年各项费用']['FEE_TOTAL'].sum(), df_313[(df_313['费用项目'] == '本月收回往年各项费用') & not_sum]['FEE_TOTAL'].sum()),
+            "本月实收小计": (df_36[df_36['FEE_TYPE'] == '本月实收小计']['FEE_TOTAL'].sum(), df_313[(df_313['费用项目'] == '小计') & not_sum]['FEE_TOTAL'].sum()),
+            "违约金": (df_36[df_36['FEE_TYPE'] == '当月违约金']['ACTUAL_LATEFEE'].sum(), df_313[(df_313['费用项目'] == '违约金') & not_sum]['FEE_TOTAL'].sum())
+        }
 
-    return results
+        reconcile_metrics('3-6', '3-13', map_36_313)
 
 def export_report(report_id):
     """导出指定 report_id 的报表，支持动态参数和多游标处理"""
@@ -200,6 +181,9 @@ if __name__ == '__main__':
     # 调用核对函数
     results = reconcile_ss_reports(report_package)
 
+    # 最后核对汇总与明细报表的一致性
+    
+
     exit()
 
     # 导出所有报表
@@ -207,4 +191,4 @@ if __name__ == '__main__':
         if report_id == '3-13':
             export_report(report_id)
             break
-        export_report(report_id)
+        #export_report(report_id)
