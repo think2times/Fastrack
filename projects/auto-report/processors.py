@@ -2,34 +2,8 @@ import pandas as pd
 import numpy as np
 import re
 from config import PI_COLS
+from styles import apply_sheet_style
 
-
-def reconcile_metrics(report_a_id, report_b_id, check_map):
-    """
-    通用对账函数
-    :param report_a_id: 报表 A 的名称/ID (用于打印)
-    :param report_b_id: 报表 B 的名称/ID (用于打印)
-    :param check_map: 字典 { "描述": (值A, 值B) }
-    :return: 是否通过 (bool)
-    """
-    print(f"正在核对 {report_a_id} 和 {report_b_id} 的各项金额是否一致...")
-    status = "✅"
-    errors = []
-
-    for label, (val_a, val_b) in check_map.items():
-        # 统一处理浮点数精度
-        diff = round(abs(val_a - val_b), 2)
-        # 只有当差异大于 0.01 元（1分钱）时，才认为是不匹配
-        if diff >= 0.01:
-            errors.append(f"   ❌ {label} 不匹配: {report_a_id}({val_a:.2f}) vs {report_b_id}({val_b:.2f}), 差异: {diff:.2f}")
-            status = "❌"
-
-    if status == "✅":
-        print(f"   ✅ {report_a_id} 与 {report_b_id} 实收指标完全一致")
-    else:
-        print("\n".join(errors))
-    
-    return status == "✅"
 
 def clean_illegal_chars(val):
     if isinstance(val, str):
@@ -234,20 +208,7 @@ def add_summary(df, cfg, sum_cols=None):
 
     return report_df
 
-def prepare_report_data(dfs, report_id):
-    """
-    处理多游标返回的 DataFrame 列表
-    """
-    # 在合并或组装之前，先把所有原始游标里的数字列该大写的写，该算的算
-    # 此时 dfs 里的数据全是刚从数据库出来的数字，计算 FEE_TOTAL 极其安全
-    dfs = [standard_preprocess(d) for d in (dfs if isinstance(dfs, list) else [dfs])]
-
-    # 处理各个报表的特殊逻辑
-    df = process_report_logic(dfs, report_id)
-
-    return df
-
-def generate_report_package(df, cfg):
+def generate_report_data(df, cfg):
     """
     生成报表数据包，包含合计、组内小计，以及分公司拆分后的 DataFrame
     """
@@ -551,3 +512,158 @@ def process_report_logic(dfs, report_id):
     else:
         # 自动拆箱，喂单表
         return calc_func(dfs[0]) if dfs else pd.DataFrame()
+
+def prepare_report_data(dfs, report_id):
+    """
+    处理多游标返回的 DataFrame 列表
+    """
+    # 在合并或组装之前，先把所有原始游标里的数字列该大写的写，该算的算
+    # 此时 dfs 里的数据全是刚从数据库出来的数字，计算 FEE_TOTAL 极其安全
+    dfs = [standard_preprocess(d) for d in (dfs if isinstance(dfs, list) else [dfs])]
+
+    # 处理各个报表的特殊逻辑
+    df = process_report_logic(dfs, report_id)
+
+    return df
+
+def reconcile_metrics(report_a_id, report_b_id, check_map):
+    """
+    通用对账函数
+    :param report_a_id: 报表 A 的名称/ID (用于打印)
+    :param report_b_id: 报表 B 的名称/ID (用于打印)
+    :param check_map: 字典 { "描述": (值A, 值B) }
+    :return: 是否通过 (bool)
+    """
+    print(f"正在核对 {report_a_id} 和 {report_b_id} 的各项金额是否一致...")
+    status = "✅"
+    errors = []
+
+    for label, (val_a, val_b) in check_map.items():
+        # 统一处理浮点数精度
+        diff = round(abs(val_a - val_b), 2)
+        # 只有当差异大于 0.01 元（1分钱）时，才认为是不匹配
+        if diff >= 0.01:
+            errors.append(f"   ❌ {label} 不匹配: {report_a_id}({val_a:.2f}) vs {report_b_id}({val_b:.2f}), 差异: {diff:.2f}")
+            status = "❌"
+
+    if status == "✅":
+        print(f"   ✅ {report_a_id} 与 {report_b_id} 实收指标完全一致")
+    else:
+        print("\n".join(errors))
+    
+    return status == "✅"
+
+def reconcile_ys_reports(report_package):
+    """
+    核对报表间的数值一致性
+    report_package: 存储了各报表原始 DataFrame 的字典 (Key 为 '3-10', '2-8' 等)
+    """
+    results = []
+    
+    # 获取各个报表的 DataFrame
+    df_310 = report_package.get('3-10')
+    df_28 = report_package.get('2-8')
+    df_37 = report_package.get('3-7')
+
+    # --- 1. 2-8 vs 3-10 水量核对 ---
+    print("正在核对 3-10 和 2-8 的水量是否一致。。。")
+    if df_310 is not None and df_28 is not None:
+        # 2-8 实际水量 (开账 - 减免)
+        df_28 = process_report_logic([df_28], '2-8')  # 先处理 2-8 的计算逻辑，确保有 ACTUAL_WATER 列
+        water_28 = df_28['ACTUAL_WATER'].sum()
+        # 3-10 排除 IC卡购水后的售水量总和
+        water_310 = df_310[df_310['FEE_TYPE'] != 'IC卡购水']['ACC_WATER'].sum()
+        map_28_310 = {
+            "2-8实际水量 vs 3-10非IC卡售水量": (water_28, water_310)
+        }
+
+        results.append(reconcile_metrics('2-8', '3-10', map_28_310))
+
+    # --- 2. 3-7 vs 3-10 合计核对 ---
+    print("正在核对 3-10 和 3-7 的合计金额是否一致。。。")
+    if df_310 is not None and df_37 is not None:
+        map_37_310 = {
+            "3-7合计金额 vs 3-10合计金额": (df_37['FEE_TOTAL'].sum(), df_310['ACC_MONEY'].sum())
+        }
+
+        results.append(reconcile_metrics('3-7', '3-10', map_37_310))
+
+    return all(results) == True
+
+def reconcile_ss_reports(report_package):
+    """
+    核对实收相关报表间的数值一致性
+    report_package: 存储了各报表原始 DataFrame 的字典 (Key 为 '3-4', '3-6', '3-13', '3-14' 等)
+    """
+    results = []
+    
+    # 获取各个报表的 DataFrame
+    df_34 = report_package.get('3-4')
+    df_36 = report_package.get('3-6')
+    df_313 = report_package.get('3-13')
+    df_314 = report_package.get('3-14')
+
+    # --- 1. 3-4 vs 3-14 金额核对 ---
+    # 检查3-4中账单金额、需划账费用、集团划账、账户支出、账户存入、纯账户存入
+    # 与 3-14 中应收费用、集团划账、应收费用加违约金、账户支出、账户存入、纯账户预存/支出是否一致；
+    if df_34 is not None and df_314 is not None:
+        # 3-4 账单金额、需划账费用、集团划账、账户支出、账户存入和纯账户存入
+        # 3-14 应收费用、集团划账、应收费用加违约金、账户支出、账户存入、纯账户预存/支出
+        # 营业网点列只需要第三方代收机构所在行
+        include_sites = ['微信', '支付宝', '银联', '利安', '农行', '建行', '光大银行', '广发', '乌鲁木齐银行']
+        df_314_filtered = df_314[df_314['SUBCOM_NAME2'].isin(include_sites)]
+        # 准备对比数据集 (封装成字典，Key 是描述，Value 是 (3-4值, 3-14值))
+        map_34_314 = {
+            "应收费用 vs 账单金额": (df_34['ACC_MONEY'].sum(), df_314_filtered['FEE_TOTAL'].sum()),
+            "需划账费用 vs 集团划账": (df_34['PST_ACTUAL_MONEY'].sum(), df_314_filtered['TOTAL_TRANSFER'].sum()),
+            "集团划账 vs 应收+违约金": (df_34['TOTAL_TRANSFER'].sum(), df_314_filtered['FEE_TOTAL'].sum() + df_314_filtered['ACTUAL_LATEFEE'].sum()),
+            "账户支出": (df_34['PST_PRESTORE_OUT_MONEY'].sum(), df_314_filtered['PT_PRESTORE_OUT_MONEY'].sum()),
+            "账户存入": (df_34['TURN_PRESTORE_IN_MONEY'].sum(), df_314_filtered['PT_PRESTORE_IN_MONEY'].sum()),
+            "纯账户存入/预存支出": (df_34['PST_PRESTORE_IN_MONEY'].sum(), df_314_filtered['RATE'].sum())
+        }
+
+        results.append(reconcile_metrics('3-4', '3-14', map_34_314))
+
+    # --- 2. 3-6 vs 3-14 金额核对 ---
+    if df_36 is not None and df_314 is not None:
+        # 检查3-14中应收费用、违约金合计与3-6中实际收回小计、违约金是否一致
+        map_36_314 = {
+            "实际收回小计 vs 应收费用+违约金": (df_36[df_36['FEE_TYPE'] == '本月实收小计']['FEE_TOTAL'].sum(), df_314['FEE_TOTAL'].sum()),
+            "违约金": (df_36[df_36['FEE_TYPE'] == '当月违约金']['ACTUAL_LATEFEE'].sum(), df_314['ACTUAL_LATEFEE'].sum())
+        }
+
+        results.append(reconcile_metrics('3-6', '3-14', map_36_314))
+
+    # --- 3. 3-6 vs 3-13 金额核对 ---
+    if df_36 is not None and df_313 is not None:
+        # 检查3-13中数据（各项当月、当年未报、以前年度）与3-6中对应数据是否一致
+        not_sum = df_313['收费方式'] != '汇总'
+        map_36_313 = {
+            "本月收回当月各项费用": (df_36[df_36['FEE_TYPE'] == '本月收回当月各项费用']['FEE_TOTAL'].sum(), df_313[(df_313['费用项目'] == '本月收回当月各项费用') & not_sum]['FEE_TOTAL'].sum()),
+            "本月收回当年各项费用": (df_36[df_36['FEE_TYPE'] == '本月收回当年各项费用']['FEE_TOTAL'].sum(), df_313[(df_313['费用项目'] == '本月收回当年各项费用') & not_sum]['FEE_TOTAL'].sum()),
+            "本月收回往年各项费用": (df_36[df_36['FEE_TYPE'] == '本月收回往年各项费用']['FEE_TOTAL'].sum(), df_313[(df_313['费用项目'] == '本月收回往年各项费用') & not_sum]['FEE_TOTAL'].sum()),
+            "本月实收小计": (df_36[df_36['FEE_TYPE'] == '本月实收小计']['FEE_TOTAL'].sum(), df_313[(df_313['费用项目'] == '小计') & not_sum]['FEE_TOTAL'].sum()),
+            "违约金": (df_36[df_36['FEE_TYPE'] == '当月违约金']['ACTUAL_LATEFEE'].sum(), df_313[(df_313['费用项目'] == '违约金') & not_sum]['FEE_TOTAL'].sum())
+        }
+
+        results.append(reconcile_metrics('3-6', '3-13', map_36_313))
+    return all(results) == True
+
+def reconcile_details_reports(report_package):
+    pass
+
+def export2excel(data_package, config, full_path):
+    """
+    只负责写文件和样式，不负责任何计算
+    data_package: { '全部': df1, '分公司A': df2, ... }
+    """
+    with pd.ExcelWriter(full_path, engine="openpyxl") as writer:
+        for sheet_name, final_df in data_package.items():
+            # 执行非法字符清洗（这一步也可以提前到准备数据阶段）
+            clean_df = final_df.map(clean_illegal_chars)
+            
+            # 写入 Excel，从第4行开始（留出标题空间）
+            clean_df.to_excel(writer, index=False, startrow=3, sheet_name=sheet_name)
+            
+            # 应用样式（styles.py 里的函数）
+            apply_sheet_style(writer.sheets[sheet_name], clean_df, config, sheet_name)
