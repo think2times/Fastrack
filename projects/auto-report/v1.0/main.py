@@ -1,11 +1,10 @@
 import os
-from itertools import chain
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from db_helper import connect2db, call_procedure
 
 from config import REPORTS, DB_CONFIG
-from processors import generate_report_data, prepare_report_data, reconcile_ys_reports, reconcile_ss_reports, reconcile_details_reports, export2excel
+from processors import generate_report_data, prepare_report_data, reconcile_ys_reports, reconcile_ss_reports, export2excel
 
 
 def fetch_data_from_db(conn, report_ids, subcoms=None, bill_month=None):
@@ -70,7 +69,7 @@ if __name__ == '__main__':
         os.makedirs(base_dir)
 
     # 处理每个报表组，获取数据并核对
-    ys_pkg = process_report_group(conn, ['2-8', '3-7', '3-10'], subcoms, bill_month, reconcile_ys_reports)
+    ys_pkg = process_report_group(conn, ['2-8', '3-7', '3-10', '3-11'], subcoms, bill_month, reconcile_ys_reports)
     ss_pkg = process_report_group(conn, ['3-4', '3-6', '3-13', '3-14'], subcoms, bill_month, reconcile_ss_reports)
     details_pkg = {}
     # details_pkg = process_report_group(conn, ['3-15', '3-20', '3-23', '3-47'], subcoms, bill_month, reconcile_details_reports)
@@ -81,6 +80,6 @@ if __name__ == '__main__':
         export_report(r_id, r_data)
 
     # 导出明细报表
-    for r_id in ['3-11', '3-15', '3-20', '3-23', '3-47']:
-        report_package = fetch_data_from_db(conn, [r_id], subcoms, bill_month)[r_id]
-        export_report(r_id, report_package)
+    # for r_id in ['3-15', '3-20', '3-23', '3-47']:
+    #     report_package = fetch_data_from_db(conn, [r_id], subcoms, bill_month)[r_id]
+    #     export_report(r_id, report_package)

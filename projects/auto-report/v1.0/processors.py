@@ -187,11 +187,11 @@ def add_summary(df, cfg, sum_cols=None):
 
     # 特殊逻辑：合计行单价重算 (针对 3-11)
     # 以后新增 3-12, 3-13 报表只要有“单价”列就能自动处理
-    if '单价' in summary_row and '应收费用' in summary_row:
-        total_money = summary_row.get('应收费用', 0)
-        total_water = summary_row.get('水量', 0)
+    if cfg.get('proc') == 'RPT_WLMQ_311':
+        total_money = summary_row.get('FEE_TOTAL', 0)
+        total_water = summary_row.get('ACC_WATER', 0)
         # 防止除以 0
-        summary_row['单价'] = round(total_money / total_water, 2) if total_water != 0 else 0
+        summary_row['UNIT_PRICE'] = round(total_money / total_water, 2) if total_water != 0 else 0
 
     # 使用 report_df 的列名构造，并同步数据类型以消除警告
     summary_df = pd.DataFrame([summary_row], columns=report_df.columns)
@@ -648,9 +648,6 @@ def reconcile_ss_reports(report_package):
 
         results.append(reconcile_metrics('3-6', '3-13', map_36_313))
     return all(results) == True
-
-def reconcile_details_reports(report_package):
-    pass
 
 def export2excel(data_package, config, full_path):
     """
