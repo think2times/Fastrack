@@ -187,8 +187,8 @@ def add_summary(df, cfg, sum_cols=None):
 
     # 特殊逻辑：合计行单价重算 (针对 3-11)
     # 以后新增 3-12, 3-13 报表只要有“单价”列就能自动处理
-    if '单价' in summary_row and '六费合计' in summary_row:
-        total_money = summary_row.get('六费合计', 0)
+    if '单价' in summary_row and '应收费用' in summary_row:
+        total_money = summary_row.get('应收费用', 0)
         total_water = summary_row.get('水量', 0)
         # 防止除以 0
         summary_row['单价'] = round(total_money / total_water, 2) if total_water != 0 else 0

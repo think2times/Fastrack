@@ -55,7 +55,7 @@ if __name__ == '__main__':
     subcoms = ''    # 表示获取全部分公司数据，如果需要指定分公司，可以改成 '011,021,...'
 
     # 获取上个月的年月，格式为 YYYY-MM
-    last_month = datetime.now() - relativedelta(months=2)
+    last_month = datetime.now() - relativedelta(months=1)
     bill_month = last_month.strftime('%Y-%m')
 
     # 获取当前年月，格式为 YYYY-MM
@@ -75,7 +75,12 @@ if __name__ == '__main__':
     details_pkg = {}
     # details_pkg = process_report_group(conn, ['3-15', '3-20', '3-23', '3-47'], subcoms, bill_month, reconcile_details_reports)
 
-    # 导出所有报表
+    # 导出已核对报表
     all_packages = {**ys_pkg, **ss_pkg, **details_pkg}
     for r_id, r_data in all_packages.items():
         export_report(r_id, r_data)
+
+    # 导出明细报表
+    for r_id in ['3-11', '3-15', '3-20', '3-23', '3-47']:
+        report_package = fetch_data_from_db(conn, [r_id], subcoms, bill_month)[r_id]
+        export_report(r_id, report_package)
