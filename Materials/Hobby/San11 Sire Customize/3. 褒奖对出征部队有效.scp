@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<CustomModifyPackage>
+	<PackageName>褒獎對出征中部隊的不滿忠誠武將有效</PackageName>
+	<PackageAuthor>godtype</PackageAuthor>
+	<PackageDiscription>褒獎對出征中部隊的不滿忠誠武將有效。</PackageDiscription>
+	<CustomModifyItems>
+		<CustomModifyItem>
+			<Caption>褒獎對出征中部隊的不滿忠誠武將有效</Caption>
+			<Enabled>TRUE</Enabled>
+			<Codes>
+				<Code>
+					<Description>修改點</Description>
+					<Address>005B58CF</Address>
+					<EnableCode>90 90</EnableCode>
+					<DisableCode>75 37</DisableCode>
+				</Code>
+			</Codes>
+		</CustomModifyItem>
+	</CustomModifyItems>
+</CustomModifyPackage>

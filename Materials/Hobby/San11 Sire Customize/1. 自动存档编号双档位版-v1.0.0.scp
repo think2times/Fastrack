@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomModifyPackage>
+	<PackageName>自动存档编号修改</PackageName>
+	<PackageAuthor>江东旧梦</PackageAuthor>
+	<PackageDiscription>为了方便测试闪退存档。注意会覆盖原有存档（无提示），所以最好不要和自己玩的档编号重合。</PackageDiscription>
+	<CustomModifyItems>
+		<CustomModifyItem>
+			<Caption>自动存档编号修改(20210504)</Caption>
+			<Enabled>TRUE</Enabled>
+			<Codes>
+				<Code>
+					<Description>代码</Description>
+					<Address>00580633</Address><!--长度:5-->
+					<EnableCode>E9 C8 FC 3E 00</EnableCode>
+					<DisableCode>E8 48 DE FF FF</DisableCode>
+				</Code>	
+				<Code>
+					<Description>代码</Description>
+					<Address>9702F4</Address><!--长度:75-->
+					<EnableCode>00 00 00 00 00 00 00 00 00 00 00 00 8B 35 F4 02 97 00 83 FE 01 72 1A C7 05 F4 02 97 00 00 00 00 00 8B 35 F8 02 97 00 E8 60 E1 C0 FF E9 13 03 C1 FF C7 05 F4 02 97 00 01 00 00 00 8B 35 FC 02 97 00 E8 46 E1 C0 FF E9 F9 02 C1 FF</EnableCode>
+					<DisableCode>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</DisableCode>
+				</Code>	
+			</Codes>
+			<Params>
+				<Param>
+					<Name>存档编号1</Name>
+					<Address>9702F8</Address>
+					<Length>4</Length>
+					<Type>Number</Type>
+					<Value>0</Value>
+					<Min>0</Min>
+					<Max>32</Max>
+				</Param>
+				<Param>
+					<Name>存档编号2</Name>
+					<Address>9702FC</Address>
+					<Length>4</Length>
+					<Type>Number</Type>
+					<Value>0</Value>
+					<Min>0</Min>
+					<Max>32</Max>
+				</Param>
+			</Params>
+		</CustomModifyItem>
+	</CustomModifyItems>
+</CustomModifyPackage>

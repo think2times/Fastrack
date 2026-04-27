@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<CustomModifyPackage>
+	<PackageName>出征输送界面新增【魅力】列及对【部队能力】小窗口坐标调整（20240517）</PackageName>
+	<PackageAuthor>ZhengHe</PackageAuthor>
+	<PackageDiscription>【单特技版本】：出征及输送界面新增【魅力】列并修改出征界面选将后弹出的【部队能力】窗口坐标。建议：【横坐标】设为【800】；【纵坐标】设为【150】。</PackageDiscription>
+	<CustomModifyItems>	
+		<CustomModifyItem>
+			<Caption>出征及输送界面新增【魅力】列</Caption>
+			<Enabled>TRUE</Enabled>
+			<Codes>
+				<Code>
+					<Description>代码</Description>
+					<Address>008BD390</Address><!--长度:5-->
+					<EnableCode>51 00 92 00 0E</EnableCode>
+					<DisableCode>08 CD 8B 00 0D</DisableCode>
+				</Code>
+				<Code>
+					<Description>代码</Description>
+					<Address>008BD39C</Address><!--长度:5-->
+					<EnableCode>51 00 92 00 0E</EnableCode>
+					<DisableCode>08 CD 8B 00 0D</DisableCode>
+				</Code>	
+				<Code>
+					<Description>代码</Description>
+					<Address>00920051</Address><!--长度:112-->
+					<EnableCode>01 00 00 00 4A 00 00 00 44 00 00 00 45 00 00 00 46 00 00 00 47 00 00 00 48 00 00 00 74 00 00 00 75 00 00 00 76 00 00 00 77 00 00 00 78 00 00 00 79 00 00 00 2A 00 00 00</EnableCode>
+					<DisableCode>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</DisableCode>
+				</Code>	
+			</Codes>
+		</CustomModifyItem>
+		<CustomModifyItem>
+			<Caption>坐标修改</Caption>
+			<Enabled>TRUE</Enabled>
+			<Params>
+				<Param>
+					<Name>横坐标</Name>
+					<Address>005FFD94</Address>
+					<Length>4</Length>
+					<Type>Number</Type>
+					<Value>666</Value>
+					<Min>0</Min>
+					<Max>65535</Max>
+				</Param>
+				<Param>
+					<Name>纵坐标</Name>
+					<Address>005FFD9C</Address>
+					<Length>4</Length>
+					<Type>Number</Type>
+					<Value>188</Value>
+					<Min>0</Min>
+					<Max>65535</Max>
+				</Param>
+			</Params>
+		</CustomModifyItem>
+	</CustomModifyItems>
+</CustomModifyPackage>

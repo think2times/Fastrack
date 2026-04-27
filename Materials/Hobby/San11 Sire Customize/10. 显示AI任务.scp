@@ -1,0 +1,84 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CustomModifyPackage>
+  <PackageName>新拓展包、地形补丁、战场迷雾（自定义包版）、55号武将事件万能函数、出贼避免重复武将、出征界面坐标、道具种类描述修改、封官显示魅力、国库宝物可视化、爵位加能力及窗体加长、军师预测准确率、特技化光环系统、破城吸收科技、道具种类描述修改、新拓展包、爵位加能力及窗体加长</PackageName>
+  <PackageAuthor>大家、季子来归（羊羊）、退休老码农、天照之火、江东旧梦、DlineV、测试、一名one家、v神、梦溪比潭、阳明</PackageAuthor>
+  <PackageDiscription>自定义包&amp;本补丁是基于水军补丁代码加以少许简单修改而成，著作权归 季子来归 所有，维护更新由 江东旧梦 负责。应用后将覆盖SIRE集成的水军补丁功能。【注意！】各地形的移动力消耗遵循全局文件的设定。&amp;本自定义包是由退休老码农提供的源代码加以简单少许修改而成。著作权归 退休老码农 所有，此自定义包由 江东旧梦 负责整理更新。第一行的参数指各对象的视野范围。&amp;测试&amp;出贼之前进行判断，如果相同头像编号的贼已经出现在地图上，则不会再出这个贼。注意需要在剧本或存档中设定贼将所属军团为相应的贼军军团，否则任何情况都不会出贼。&amp;修改出征界面选将后弹出的部队能力窗口坐标&amp;道具种类描述修改&amp;封官界面指挥改魅力&amp;国库宝物可视化+宝物cg上限扩充&amp;爵位加能力及窗体加长&amp;准确率=基础值+max{（智力-阈值1），0}+max{（智力-阈值2），0}&amp;允许为光环效果设置解锁特技。光环独立化会让所有附加光环从基础光环中独立，且固定范围。攻防光环拆分使原基础光环仅提供防御力，原计策识破率光环改成攻击力光环。每个加成特技都会使光环范围扩大一格。&amp;作为自定义包的范例，没有任何实际功能，使用940000起始的64个字节。&amp;道具种类描述修改&amp;自定义包&amp;爵位加能力及窗体加长</PackageDiscription>
+  <CustomModifyItems>
+    <CustomModifyItem Origin="4★界面优化+功勋系统0911（v2.5）">
+      <Caption>【显示AI任务】</Caption>
+      <Enabled>TRUE</Enabled>
+      <Codes>
+        <Code>
+          <Description>武将任务1</Description>
+          <Address>004C9E81</Address>
+          <EnableCode>EB</EnableCode>
+          <DisableCode>75</DisableCode>
+        </Code>
+        <Code>
+          <Description>武将任务2</Description>
+          <Address>004C9EF4</Address>
+          <EnableCode>EB</EnableCode>
+          <DisableCode>75</DisableCode>
+        </Code>
+        <Code>
+          <Description>武将任务3</Description>
+          <Address>004C9F75</Address>
+          <EnableCode>EB</EnableCode>
+          <DisableCode>75</DisableCode>
+        </Code>
+        <Code>
+          <Description>武将任务4</Description>
+          <Address>004C9708</Address>
+          <EnableCode>EB</EnableCode>
+          <DisableCode>75</DisableCode>
+        </Code>
+        <Code>
+          <Description>部队任务1</Description>
+          <Address>004CD1AB</Address>
+          <EnableCode>EB 28</EnableCode>
+          <DisableCode>8B 16</DisableCode>
+        </Code>
+        <Code>
+          <Description>部队任务2</Description>
+          <Address>004CCF37</Address>
+          <EnableCode>EB 28</EnableCode>
+          <DisableCode>8B 16</DisableCode>
+        </Code>
+        <Code>
+          <Description>部队任务3</Description>
+          <Address>004CD277</Address>
+          <EnableCode>EB 5B</EnableCode>
+          <DisableCode>8B 16</DisableCode>
+        </Code>
+        <Code>
+          <Description>部队任务4</Description>
+          <Address>004CCFC5</Address>
+          <EnableCode>EB 5A</EnableCode>
+          <DisableCode>8B 16</DisableCode>
+        </Code>
+      </Codes>
+      <Params>
+        <Param>
+          <Name>武将</Name>
+          <Address></Address>
+          <Length>4</Length>
+          <Type>ValueList</Type>
+          <Value>0</Value>
+          <ValueList>
+            <Item name="是">0</Item>
+          </ValueList>
+        </Param>
+        <Param>
+          <Name>部队</Name>
+          <Address></Address>
+          <Length>4</Length>
+          <Type>ValueList</Type>
+          <Value>0</Value>
+          <ValueList>
+            <Item name="是">0</Item>
+          </ValueList>
+        </Param>
+      </Params>
+    </CustomModifyItem>
+  </CustomModifyItems>
+</CustomModifyPackage>

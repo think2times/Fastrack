@@ -54,11 +54,12 @@ if __name__ == '__main__':
     subcoms = ''    # 表示获取全部分公司数据，如果需要指定分公司，可以改成 '011,021,...'
 
     # 获取上个月的年月，格式为 YYYY-MM
-    last_month = datetime.now() - relativedelta(months=1)
-    bill_month = last_month.strftime('%Y-%m')
-
-    # 获取当前年月，格式为 YYYY-MM
-    # bill_month = datetime.now().strftime('%Y-%m')
+    # 根据日期确定账期，如果是1-25号，则账期为上个月；如果是26号以后，则账期为当前月
+    now = datetime.now().strftime('%d')
+    if int(now) <= 25:
+         bill_month = (datetime.now() - relativedelta(months=1)).strftime('%Y-%m')
+    else:
+         bill_month = datetime.now().strftime('%Y-%m')
 
     # 连接数据库，使用本地驱动而不是内置的 Thin 驱动
     lib_dir = r'F:\app\pluto\product\instantclient_11_2'
