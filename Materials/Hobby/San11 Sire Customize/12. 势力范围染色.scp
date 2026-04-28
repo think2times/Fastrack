@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomModifyPackage>
+	<PackageName>地图调色与地格染色</PackageName>
+	<PackageAuthor>Stefan_Ding</PackageAuthor>
+	<PackageDiscription>基础颜色=kx+b,鲜艳度,色调色差,明暗等,开启此项会降5帧。&#x000D;
+地格染各种颜色:用开关键切换是否显示,用切换键切换颜色、&#x000D;
+颜色切换次序:所属势力色50%-100%-所属据点-所属地方。按键ID见下表。&#x000D;
+1 Left mouse button&#x000D;
+2 Right mouse button&#x000D;
+3 Control-break processing&#x000D;
+4 Middle mouse button (three-button mouse)&#x000D;
+5 X1 mouse button&#x000D;
+6 X2 mouse button&#x000D;
+7 Undefined&#x000D;
+8 BACKSPACE key&#x000D;
+9 TAB key&#x000D;
+11 Reserved&#x000D;
+12 CLEAR key&#x000D;
+13 ENTER key&#x000D;
+15 Undefined&#x000D;
+16 SHIFT key&#x000D;
+17 CTRL key&#x000D;
+18 ALT key&#x000D;
+19 PAUSE key&#x000D;
+20 CAPS LOCK key&#x000D;
+21 IME Kana mode&#x000D;
+21 IME Hanguel mode (maintained for compatibility; use VK_HANGUL)&#x000D;
+21 IME Hangul mode&#x000D;
+22 IME On&#x000D;
+23 IME Junja mode&#x000D;
+24 IME final mode&#x000D;
+25 IME Hanja mode&#x000D;
+25 IME Kanji mode&#x000D;
+26 IME Off&#x000D;
+27 ESC key&#x000D;
+28 IME convert&#x000D;
+29 IME nonconvert&#x000D;
+30 IME accept&#x000D;
+31 IME mode change request&#x000D;
+32 SPACEBAR&#x000D;
+33 PAGE UP key&#x000D;
+34 PAGE DOWN key&#x000D;
+35 END key&#x000D;
+36 HOME key&#x000D;
+37 LEFT ARROW key&#x000D;
+38 UP ARROW key&#x000D;
+39 RIGHT ARROW key&#x000D;
+40 DOWN ARROW key&#x000D;
+41 SELECT key&#x000D;
+42 PRINT key&#x000D;
+43 EXECUTE key&#x000D;
+44 PRINT SCREEN key&#x000D;
+45 INS key&#x000D;
+46 DEL key&#x000D;
+47 HELP key&#x000D;
+48 0 key&#x000D;
+49 1 key&#x000D;
+50 2 key&#x000D;
+51 3 key&#x000D;
+52 4 key&#x000D;
+53 5 key&#x000D;
+54 6 key&#x000D;
+55 7 key&#x000D;
+56 8 key&#x000D;
+57 9 key&#x000D;
+64 Undefined&#x000D;
+65 A key&#x000D;
+66 B key&#x000D;
+67 C key&#x000D;
+68 D key&#x000D;
+69 E key&#x000D;
+70 F key&#x000D;
+71 G key&#x000D;
+72 H key&#x000D;
+73 I key&#x000D;
+74 J key&#x000D;
+75 K key&#x000D;
+76 L key&#x000D;
+77 M key&#x000D;
+78 N key&#x000D;
+79 O key&#x000D;
+80 P key&#x000D;
+81 Q key&#x000D;
+82 R key&#x000D;
+83 S key&#x000D;
+84 T key&#x000D;
+85 U key&#x000D;
+86 V key&#x000D;
+87 W key&#x000D;
+88 X key&#x000D;
+89 Y key&#x000D;
+90 Z key&#x000D;
+91 Left Windows key (Natural keyboard)&#x000D;
+92 Right Windows key (Natural keyboard)&#x000D;
+93 Applications key (Natural keyboard)&#x000D;
+94 Reserved&#x000D;
+95 Computer Sleep key&#x000D;
+96 Numeric keypad 0 key&#x000D;
+97 Numeric keypad 1 key&#x000D;
+98 Numeric keypad 2 key&#x000D;
+99 Numeric keypad 3 key&#x000D;
+100 Numeric keypad 4 key&#x000D;
+101 Numeric keypad 5 key&#x000D;
+102 Numeric keypad 6 key&#x000D;
+103 Numeric keypad 7 key&#x000D;
+104 Numeric keypad 8 key&#x000D;
+105 Numeric keypad 9 key&#x000D;
+106 Multiply key&#x000D;
+107 Add key&#x000D;
+108 Separator key&#x000D;
+109 Subtract key&#x000D;
+110 Decimal key&#x000D;
+111 Divide key&#x000D;
+112 F1 key&#x000D;
+113 F2 key&#x000D;
+114 F3 key&#x000D;
+115 F4 key&#x000D;
+116 F5 key&#x000D;
+117 F6 key&#x000D;
+118 F7 key&#x000D;
+119 F8 key&#x000D;
+120 F9 key&#x000D;
+121 F10 key&#x000D;
+122 F11 key&#x000D;
+123 F12 key&#x000D;
+124 F13 key&#x000D;
+125 F14 key&#x000D;
+126 F15 key&#x000D;
+127 F16 key&#x000D;
+128 F17 key&#x000D;
+129 F18 key&#x000D;
+130 F19 key&#x000D;
+131 F20 key&#x000D;
+132 F21 key&#x000D;
+133 F22 key&#x000D;
+134 F23 key&#x000D;
+135 F24 key&#x000D;
+143 Unassigned&#x000D;
+144 NUM LOCK key&#x000D;
+145 SCROLL LOCK key&#x000D;
+150 OEM specific&#x000D;
+159 Unassigned&#x000D;
+160 Left SHIFT key&#x000D;
+161 Right SHIFT key&#x000D;
+162 Left CONTROL key&#x000D;
+163 Right CONTROL key&#x000D;
+	</PackageDiscription>
+	<CustomModifyItems>
+		<CustomModifyItem>
+			<Caption>调整地图基础颜色</Caption>
+			<Enabled>false</Enabled>
+			<Codes>
+				<Code>
+					<Description>代码</Description>
+					<Address>0041DC0B</Address><!--长度:5-->
+					<EnableCode>E9 60 9C 41 07</EnableCode>
+					<DisableCode>E9 60 9C 41 07</DisableCode>
+				</Code>	
+				<Code>
+					<Description>代码</Description>
+					<Address>0041DC7B</Address><!--长度:5-->
+					<EnableCode>E9 F0 9B 41 07</EnableCode>
+					<DisableCode>E9 F0 9B 41 07</DisableCode>
+				</Code>	
+				<Code>
+					<Description>代码</Description>
+					<Address>07837500</Address><!--长度:1024-->
+					<EnableCode>01 00 00 00 00 00 00 40 00 00 00 40 00 00 00 40 C4 FF FF FF C4 FF FF FF C4 FF FF FF 46 00 00 00 47 00 00 00 FE FF FF FF 00 00 00 00 00 00 00 00 00 00 00 00 FF FF FF FF 00 00 00 00 FF 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 60 BB 00 00 00 00 FF 34 9D 1C 75 83 07 FF 15 6C E5 74 00 A9 01 00 00 00 0F 84 51 01 00 00 83 FB 01 0F 84 59 00 00 00 F7 15 24 75 83 07 83 3D 24 75 83 07 01 0F 85 19 00 00 00 A1 2C 75 83 07 A3 FC 58 8A 00 A1 30 75 83 07 A3 00 59 8A 00 E9 1C 01 00 00 A1 FC 58 8A 00 A3 2C 75 83 07 A1 00 59 8A 00 A3 30 75 83 07 C7 05 FC 58 8A 00 00 00 00 00 C7 05 00 59 8A 00 00 00 00 00 E9 EF 00 00 00 FF 05 28 75 83 07 83 3D 28 75 83 07 04 0F 8D 27 00 00 00 83 3D 28 75 83 07 01 0F 84 24 00 00 00 83 3D 28 75 83 07 02 0F 84 44 00 00 00 83 3D 28 75 83 07 03 0F 84 7B 00 00 00 C7 05 28 75 83 07 00 00 00 00 C7 05 FC 58 8A 00 00 00 00 00 C7 05 00 59 8A 00 00 00 00 00 C7 05 2C 75 83 07 00 00 00 00 C7 05 30 75 83 07 00 00 00 00 E9 7E 00 00 00 83 3D 24 75 83 07 01 0F 85 14 00 00 00 C7 05 FC 58 8A 00 01 00 00 00 C7 05 00 59 8A 00 00 00 00 00 C7 05 2C 75 83 07 01 00 00 00 C7 05 30 75 83 07 00 00 00 00 C7 05 D0 E7 FA 06 00 00 00 00 E9 3A 00 00 00 83 3D 24 75 83 07 01 0F 85 14 00 00 00 C7 05 FC 58 8A 00 00 00 00 00 C7 05 00 59 8A 00 01 00 00 00 C7 05 2C 75 83 07 00 00 00 00 C7 05 30 75 83 07 01 00 00 00 E9 00 00 00 00 43 83 FB 01 0F 8E 8D FE FF FF 61 E8 9D AE C9 F8 E9 E2 98 D6 F8 83 3D 24 75 83 07 01 0F 85 A8 00 00 00 83 3D 28 75 83 07 02 0F 8D 9B 00 00 00 60 A3 40 75 83 07 89 0D 44 75 83 07 C1 E1 10 01 C1 E8 78 11 0B F9 3B 05 34 75 83 07 0F 84 78 00 00 00 A3 34 75 83 07 50 B9 58 19 20 07 E8 DC 95 C5 F8 8B C8 E8 85 07 C5 F8 50 B9 58 19 20 07 E8 6A 93 C5 F8 83 F8 00 0F 84 14 00 00 00 8B 40 44 8B 04 85 24 E4 FA 06 A3 3C 75 83 07 E9 0A 00 00 00 C7 05 3C 75 83 07 00 00 00 00 A1 40 75 83 07 8B 0D 44 75 83 07 69 C0 C8 00 00 00 01 C8 8D 04 80 8B 0C 85 6C 0E FB 06 C1 E9 05 83 E1 7F A1 3C 75 83 07 89 04 8D 90 E5 FA 06 61 69 C0 C8 00 00 00 E9 A8 FC BD F8 83 3D 24 75 83 07 01 0F 85 B4 00 00 00 83 3D 28 75 83 07 02 0F 8D A7 00 00 00 60 81 FF 90 03 00 00 0F 8F 8F 00 00 00 83 FF 70 0F 8C 86 00 00 00 3D 8F 03 00 00 0F 8F 7B 00 00 00 83 F8 70 0F 8C 72 00 00 00 C1 E8 02 83 E8 1C B9 01 00 00 00 21 C1 0F 84 03 00 00 00 83 EF 02 81 FF 90 03 00 00 0F 8D 50 00 00 00 83 FF 70 0F 8C 47 00 00 00 C1 EF 02 83 EF 1C 69 C0 C8 00 00 00 01 F8 8D 04 80 8B 0C 85 6C 0E FB 06 C1 E9 05 83 E1 7F 83 3C 8D 90 E5 FA 06 00 0F 84 1B 00 00 00 8B 04 8D 90 E5 FA 06 A3 3C 75 83 07 C7 05 38 75 83 07 01 00 00 00 E9 0A 00 00 00 C7 05 38 75 83 07 00 00 00 00 61 69 D2 01 04 00 00 E9 28 65 BE F8 8B 74 24 0C 91 89 0E E9 00 00 00 00 8B 4C 24 10 89 3D 50 75 83 07 BF 00 00 00 00 0F B6 44 3E 01 83 3D 00 75 83 07 01 0F 85 4F 00 00 00 E8 05 00 00 00 E9 45 00 00 00 A3 48 75 83 07 DB 05 48 75 83 07 D8 0C BD 04 75 83 07 DB 1D 48 75 83 07 A1 48 75 83 07 03 04 BD 10 75 83 07 3D FF 00 00 00 0F 8E 06 00 00 00 B8 FF 00 00 00 C3 83 F8 00 0F 8D 06 00 00 00 B8 00 00 00 00 C3 C3 83 3D 38 75 83 07 00 0F 84 42 00 00 00 83 3D 24 75 83 07 01 0F 85 35 00 00 00 8B D7 F7 DA 83 3D</EnableCode>
+					<DisableCode>00 00 00 00 00 00 00 40 00 00 00 40 00 00 00 40 C4 FF FF FF C4 FF FF FF C4 FF FF FF 46 00 00 00 47 00 00 00 FE FF FF FF 00 00 00 00 00 00 00 00 00 00 00 00 FF FF FF FF 00 00 00 00 FF 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 60 BB 00 00 00 00 FF 34 9D 1C 75 83 07 FF 15 6C E5 74 00 A9 01 00 00 00 0F 84 51 01 00 00 83 FB 01 0F 84 59 00 00 00 F7 15 24 75 83 07 83 3D 24 75 83 07 01 0F 85 19 00 00 00 A1 2C 75 83 07 A3 FC 58 8A 00 A1 30 75 83 07 A3 00 59 8A 00 E9 1C 01 00 00 A1 FC 58 8A 00 A3 2C 75 83 07 A1 00 59 8A 00 A3 30 75 83 07 C7 05 FC 58 8A 00 00 00 00 00 C7 05 00 59 8A 00 00 00 00 00 E9 EF 00 00 00 FF 05 28 75 83 07 83 3D 28 75 83 07 04 0F 8D 27 00 00 00 83 3D 28 75 83 07 01 0F 84 24 00 00 00 83 3D 28 75 83 07 02 0F 84 44 00 00 00 83 3D 28 75 83 07 03 0F 84 7B 00 00 00 C7 05 28 75 83 07 00 00 00 00 C7 05 FC 58 8A 00 00 00 00 00 C7 05 00 59 8A 00 00 00 00 00 C7 05 2C 75 83 07 00 00 00 00 C7 05 30 75 83 07 00 00 00 00 E9 7E 00 00 00 83 3D 24 75 83 07 01 0F 85 14 00 00 00 C7 05 FC 58 8A 00 01 00 00 00 C7 05 00 59 8A 00 00 00 00 00 C7 05 2C 75 83 07 01 00 00 00 C7 05 30 75 83 07 00 00 00 00 C7 05 D0 E7 FA 06 00 00 00 00 E9 3A 00 00 00 83 3D 24 75 83 07 01 0F 85 14 00 00 00 C7 05 FC 58 8A 00 00 00 00 00 C7 05 00 59 8A 00 01 00 00 00 C7 05 2C 75 83 07 00 00 00 00 C7 05 30 75 83 07 01 00 00 00 E9 00 00 00 00 43 83 FB 01 0F 8E 8D FE FF FF 61 E8 9D AE C9 F8 E9 E2 98 D6 F8 83 3D 24 75 83 07 01 0F 85 A8 00 00 00 83 3D 28 75 83 07 02 0F 8D 9B 00 00 00 60 A3 40 75 83 07 89 0D 44 75 83 07 C1 E1 10 01 C1 E8 78 11 0B F9 3B 05 34 75 83 07 0F 84 78 00 00 00 A3 34 75 83 07 50 B9 58 19 20 07 E8 DC 95 C5 F8 8B C8 E8 85 07 C5 F8 50 B9 58 19 20 07 E8 6A 93 C5 F8 83 F8 00 0F 84 14 00 00 00 8B 40 44 8B 04 85 24 E4 FA 06 A3 3C 75 83 07 E9 0A 00 00 00 C7 05 3C 75 83 07 00 00 00 00 A1 40 75 83 07 8B 0D 44 75 83 07 69 C0 C8 00 00 00 01 C8 8D 04 80 8B 0C 85 6C 0E FB 06 C1 E9 05 83 E1 7F A1 3C 75 83 07 89 04 8D 90 E5 FA 06 61 69 C0 C8 00 00 00 E9 A8 FC BD F8 83 3D 24 75 83 07 01 0F 85 B4 00 00 00 83 3D 28 75 83 07 02 0F 8D A7 00 00 00 60 81 FF 90 03 00 00 0F 8F 8F 00 00 00 83 FF 70 0F 8C 86 00 00 00 3D 8F 03 00 00 0F 8F 7B 00 00 00 83 F8 70 0F 8C 72 00 00 00 C1 E8 02 83 E8 1C B9 01 00 00 00 21 C1 0F 84 03 00 00 00 83 EF 02 81 FF 90 03 00 00 0F 8D 50 00 00 00 83 FF 70 0F 8C 47 00 00 00 C1 EF 02 83 EF 1C 69 C0 C8 00 00 00 01 F8 8D 04 80 8B 0C 85 6C 0E FB 06 C1 E9 05 83 E1 7F 83 3C 8D 90 E5 FA 06 00 0F 84 1B 00 00 00 8B 04 8D 90 E5 FA 06 A3 3C 75 83 07 C7 05 38 75 83 07 01 00 00 00 E9 0A 00 00 00 C7 05 38 75 83 07 00 00 00 00 61 69 D2 01 04 00 00 E9 28 65 BE F8 8B 74 24 0C 91 89 0E E9 00 00 00 00 8B 4C 24 10 89 3D 50 75 83 07 BF 00 00 00 00 0F B6 44 3E 01 83 3D 00 75 83 07 01 0F 85 4F 00 00 00 E8 05 00 00 00 E9 45 00 00 00 A3 48 75 83 07 DB 05 48 75 83 07 D8 0C BD 04 75 83 07 DB 1D 48 75 83 07 A1 48 75 83 07 03 04 BD 10 75 83 07 3D FF 00 00 00 0F 8E 06 00 00 00 B8 FF 00 00 00 C3 83 F8 00 0F 8D 06 00 00 00 B8 00 00 00 00 C3 C3 83 3D 38 75 83 07 00 0F 84 42 00 00 00 83 3D 24 75 83 07 01 0F 85 35 00 00 00 8B D7 F7 DA 83 3D</DisableCode>
+				</Code>	
+				<Code>
+					<Description>代码</Description>
+					<Address>07837900</Address><!--长度:90-->
+					<EnableCode>28 75 83 07 00 0F 84 19 00 00 00 83 3D 28 75 83 07 01 0F 85 17 00 00 00 0F B6 82 3E 75 83 07 E9 0B 00 00 00 0F B6 92 3E 75 83 07 01 D0 D1 E8 C1 E1 08 09 C1 47 83 FF 02 0F 8E 41 FF FF FF 8B 44 24 08 89 08 8B 4C 24 14 8B 54 24 18 89 48 04 89 50 08 8B 3D 50 75 83 07 5E C3</EnableCode>
+					<DisableCode>28 75 83 07 00 0F 84 19 00 00 00 83 3D 28 75 83 07 01 0F 85 17 00 00 00 0F B6 82 3E 75 83 07 E9 0B 00 00 00 0F B6 92 3E 75 83 07 01 D0 D1 E8 C1 E1 08 09 C1 47 83 FF 02 0F 8E 41 FF FF FF 8B 44 24 08 89 08 8B 4C 24 14 8B 54 24 18 89 48 04 89 50 08 8B 3D 50 75 83 07 5E C3</DisableCode>
+				</Code>	
+			</Codes>
+			<Params>
+				<Param>
+					<Name>R缩放</Name>
+					<Address>07837504</Address>
+					<Length>4</Length>
+					<Type>Float</Type>
+					<Value>1.3</Value>
+					<Min>-10.0</Min>
+					<Max>10.0</Max>
+				</Param>
+				<Param>
+					<Name>R加减</Name>
+					<Address>07837510</Address>
+					<Length>4</Length>
+					<Type>Number</Type>
+					<Value>-40</Value>
+					<Min>-300</Min>
+					<Max>300</Max>
+				</Param>
+				<Param>
+					<Name>G缩放</Name>
+					<Address>07837508</Address>
+					<Length>4</Length>
+					<Type>Float</Type>
+					<Value>1.3</Value>
+					<Min>-10.0</Min>
+					<Max>10.0</Max>
+				</Param>
+				<Param>
+					<Name>G加减</Name>
+					<Address>07837514</Address>
+					<Length>4</Length>
+					<Type>Number</Type>
+					<Value>-40</Value>
+					<Min>-300</Min>
+					<Max>300</Max>
+				</Param>
+				<Param>
+					<Name>B缩放</Name>
+					<Address>0783750C</Address>
+					<Length>4</Length>
+					<Type>Float</Type>
+					<Value>1.3</Value>
+					<Min>-10.0</Min>
+					<Max>10.0</Max>
+				</Param>
+				<Param>
+					<Name>B加减</Name>
+					<Address>07837518</Address>
+					<Length>4</Length>
+					<Type>Number</Type>
+					<Value>-40</Value>
+					<Min>-300</Min>
+					<Max>300</Max>
+				</Param>
+			</Params>
+		</CustomModifyItem>
+		<CustomModifyItem>
+			<Caption>地格染色功能(可热键切换)</Caption>
+			<Enabled>true</Enabled>
+			<Codes>
+				<Code>
+					<Description>代码</Description>
+					<Address>005A0FB5</Address><!--长度:5-->
+					<EnableCode>E9 9A 65 29 07</EnableCode>
+					<DisableCode>E8 B6 15 F3 FF</DisableCode>
+				</Code>	
+				<Code>
+					<Description>代码</Description>
+					<Address>0041743A</Address><!--长度:6-->
+					<EnableCode>E9 99 02 42 07 90</EnableCode>
+					<DisableCode>69 C0 C8 00 00 00</DisableCode>
+				</Code>	
+				<Code>
+					<Description>代码</Description>
+					<Address>0041DD86</Address><!--长度:5-->
+					<EnableCode>E9 0D 9A 41 07</EnableCode>
+					<DisableCode>69 D2 01 04 00</DisableCode>
+				</Code>	
+				<Code>
+					<Description>代码</Description>
+					<Address>07837004</Address><!--长度:5-->
+					<EnableCode>FE FF FF FF</EnableCode>
+					<DisableCode>00 00 00 00</DisableCode>
+				</Code>	
+			</Codes>
+			<Params>
+				<Param>
+					<Name>开关键(默认F)</Name>
+					<Address>0783751C</Address>
+					<Length>4</Length>
+					<Type>Number</Type>
+					<Value>70</Value>
+					<Min>0</Min>
+					<Max>1000</Max>
+				</Param>
+				<Param>
+					<Name>切换键(默认G)</Name>
+					<Address>07837520</Address>
+					<Length>4</Length>
+					<Type>Number</Type>
+					<Value>71</Value>
+					<Min>0</Min>
+					<Max>1000</Max>
+				</Param>
+			</Params>
+		</CustomModifyItem>
+	</CustomModifyItems>
+</CustomModifyPackage>
+
+
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomModifyPackage>
+	<PackageName>封官显示魅力</PackageName>
+	<PackageAuthor>天照之火</PackageAuthor>
+	<PackageDiscription>封官界面指挥改魅力</PackageDiscription>
+	<CustomModifyItems>
+		<CustomModifyItem>
+			<Caption>封官显示魅力</Caption>
+			<Enabled>TRUE</Enabled>
+			<Codes>
+				<Code>
+					<Description>代码</Description>
+					<Address>008BA4C4</Address>
+					<EnableCode>44 00 00 00 45 00 00 00 46 00 00 00 47 00 00 00 48 00 00 00</EnableCode>
+					<DisableCode>4a 00 00 00 44 00 00 00 45 00 00 00 46 00 00 00 47 00 00 00</DisableCode>
+				</Code>
+			</Codes>
+		</CustomModifyItem>
+	</CustomModifyItems>
+</CustomModifyPackage>

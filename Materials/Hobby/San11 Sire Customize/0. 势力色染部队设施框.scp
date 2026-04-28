@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomModifyPackage>
+	<PackageName>势力色染部队设施框</PackageName>
+	<PackageAuthor>Stefan_Ding</PackageAuthor>
+	<PackageDiscription>部队与设施框,染成势力色,开启血条变色用于分辨军事设施归属。&#x000D;
+编辑BIN图片4873-9的右下2张图,可DIY染色区域。自定义包"据点显示气力条",也受血条变色影响,"信息血条框位置长度"可调位置。&#x000D;
+</PackageDiscription>
+	<CustomModifyItems>
+		<CustomModifyItem>
+			<Caption>信息框染色</Caption>
+			<Enabled>true</Enabled>
+			<Codes>
+				<Code>
+					<Description>代码</Description>
+					<Address>00632EF2</Address><!--长度:5-->
+					<EnableCode>E9 F7 16 20 07</EnableCode>
+					<DisableCode>E9 F7 16 20 07</DisableCode>
+				</Code>	
+				<Code>
+					<Description>代码</Description>
+					<Address>00633360</Address><!--长度:5-->
+					<EnableCode>E9 9A 12 20 07</EnableCode>
+					<DisableCode>E9 9A 12 20 07</DisableCode>
+				</Code>	
+				<Code>
+					<Description>代码</Description>
+					<Address>0063258A</Address><!--长度:5-->
+					<EnableCode>E9 81 20 20 07</EnableCode>
+					<DisableCode>E9 81 20 20 07</DisableCode>
+				</Code>	
+				<Code>
+					<Description>代码</Description>
+					<Address>07834500</Address><!--长度:352-->
+					<EnableCode>01 00 00 00 80 00 00 00 80 00 00 00 FF 00 00 00 80 80 80 80 80 80 80 80 80 80 80 80 00 00 00 00 01 00 00 00 9F 86 01 00 00 00 00 00 8B 01 FF 50 40 3B 05 24 45 83 07 0F 85 01 00 00 00 C3 A3 24 45 83 07 83 F8 00 0F 8D 23 00 00 00 C7 05 14 45 83 07 FF FF FF FF C7 05 1C 45 83 07 80 80 80 80 C7 05 10 45 83 07 FF FF FF FF E9 58 00 00 00 50 B9 58 19 20 07 E8 26 C5 C5 F8 8B 40 44 8B 04 85 24 E4 FA 06 A3 14 45 83 07 A3 1C 45 83 07 53 BB 00 00 00 00 80 BB 14 45 83 07 A0 0F 87 0C 00 00 00 C6 83 10 45 83 07 FF E9 07 00 00 00 C6 83 10 45 83 07 00 0F B6 83 14 45 83 07 E9 00 00 00 00 43 83 FB 02 7E CE 5B 53 8A 1D 04 45 83 07 88 1D 17 45 83 07 8A 1D 08 45 83 07 88 1D 1F 45 83 07 8A 1D 0C 45 83 07 88 1D 13 45 83 07 5B C3 8B CE E8 37 FF FF FF E8 36 60 C4 F8 E9 F8 E8 DF F8 8B CD E8 26 FF FF FF E8 25 60 C4 F8 E9 55 ED DF F8 81 7C 24 1C A9 26 63 00 0F 8C 21 00 00 00 83 3D 20 45 83 07 01 0F 84 0A 00 00 00 A1 18 45 83 07 E9 5A DF DF F8 A1 14 45 83 07 E9 50 DF DF F8 83 3D 00 45 83 07 01 0F 84 0A 00 00 00 A1 18 45 83 07 E9 39 DF DF F8 A1 1C 45 83 07 E9 2F DF DF F8</EnableCode>
+					<DisableCode>01 00 00 00 80 00 00 00 80 00 00 00 FF 00 00 00 80 80 80 80 80 80 80 80 80 80 80 80 00 00 00 00 00 00 00 00 9F 86 01 00 00 00 00 00 8B 01 FF 50 40 3B 05 24 45 83 07 0F 85 01 00 00 00 C3 A3 24 45 83 07 83 F8 00 0F 8D 23 00 00 00 C7 05 14 45 83 07 FF FF FF FF C7 05 1C 45 83 07 80 80 80 80 C7 05 10 45 83 07 FF FF FF FF E9 58 00 00 00 50 B9 58 19 20 07 E8 26 C5 C5 F8 8B 40 44 8B 04 85 24 E4 FA 06 A3 14 45 83 07 A3 1C 45 83 07 53 BB 00 00 00 00 80 BB 14 45 83 07 A0 0F 87 0C 00 00 00 C6 83 10 45 83 07 FF E9 07 00 00 00 C6 83 10 45 83 07 00 0F B6 83 14 45 83 07 E9 00 00 00 00 43 83 FB 02 7E CE 5B 53 8A 1D 04 45 83 07 88 1D 17 45 83 07 8A 1D 08 45 83 07 88 1D 1F 45 83 07 8A 1D 0C 45 83 07 88 1D 13 45 83 07 5B C3 8B CE E8 37 FF FF FF E8 36 60 C4 F8 E9 F8 E8 DF F8 8B CD E8 26 FF FF FF E8 25 60 C4 F8 E9 55 ED DF F8 81 7C 24 1C A9 26 63 00 0F 8C 21 00 00 00 83 3D 20 45 83 07 01 0F 84 0A 00 00 00 A1 18 45 83 07 E9 5A DF DF F8 A1 14 45 83 07 E9 50 DF DF F8 83 3D 00 45 83 07 01 0F 84 0A 00 00 00 A1 18 45 83 07 E9 39 DF DF F8 A1 1C 45 83 07 E9 2F DF DF F8</DisableCode>
+				</Code>	
+			</Codes>
+			<Params>
+				<Param>
+					<Name>信息框深度</Name>
+					<Address>07834504</Address>
+					<Length>4</Length>
+					<Type>Number</Type>
+					<Value>180</Value>
+					<Min>0</Min>
+					<Max>255</Max>
+				</Param>		
+			</Params>
+		</CustomModifyItem>
+		<CustomModifyItem>
+		<Caption>血条染色</Caption>
+			<Enabled>true</Enabled>
+			<Codes>
+				<Code>
+					<Description>代码</Description>
+					<Address>07834500</Address><!--长度:442-->
+					<EnableCode>01 00 00 00</EnableCode>
+					<DisableCode>00 00 00 00</DisableCode>
+				</Code>	
+				<Code>
+					<Description>代码</Description>
+					<Address>00632F9D</Address><!--长度:12-->
+					<EnableCode>FF 35 10 45 83 07 FF 35 10 45 83 07</EnableCode>
+					<DisableCode>B8 B5 B5 3A FF 50 B9 D1 CF BA FF 51</DisableCode>
+				</Code>	
+				<Code>
+					<Description>代码</Description>
+					<Address>0063317A</Address><!--长度:12-->
+					<EnableCode>FF 35 10 45 83 07 FF 35 10 45 83 07</EnableCode>
+					<DisableCode>B8 B5 B5 3A FF 50 B9 D1 CF BA FF 51</DisableCode>
+				</Code>	
+				<Code>
+					<Description>代码</Description>
+					<Address>0063360C</Address><!--长度:12-->
+					<EnableCode>FF 35 10 45 83 07 FF 35 10 45 83 07</EnableCode>
+					<DisableCode>B8 3A CA 7E FF 50 B9 B8 E0 C7 FF 51</DisableCode>
+				</Code>	
+				<Code>
+					<Description>代码</Description>
+					<Address>009121A3</Address><!--长度:12-->
+					<EnableCode>FF 35 10 45 83 07 FF 35 10 45 83 07</EnableCode>
+					<DisableCode>B8 3A 8A FE FF 50 B9 3A 8A FE FF 51</DisableCode>
+				</Code>	
+			</Codes>
+			<Params>
+				<Param>
+					<Name>血条框深度</Name>
+					<Address>07834508</Address>
+					<Length>1</Length>
+					<Type>Number</Type>
+					<Value>128</Value>
+					<Min>0</Min>
+					<Max>255</Max>
+				</Param>
+				<Param>
+					<Name>血条深度</Name>
+					<Address>0783450C</Address>
+					<Length>4</Length>
+					<Type>Number</Type>
+					<Value>255</Value>
+					<Min>0</Min>
+					<Max>255</Max>
+				</Param>			
+			</Params>
+		</CustomModifyItem>
+	</CustomModifyItems>
+</CustomModifyPackage>

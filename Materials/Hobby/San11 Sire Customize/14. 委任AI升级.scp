@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomModifyPackage>
+	<PackageName>委任AI使用电脑AI决策</PackageName>
+	<PackageAuthor>御林</PackageAuthor>
+	<PackageDiscription>让玩家委任的军团AI使用与电脑AI相同的决策函数，消除两者智商差异。
+补丁1: 在004C9EE5将AI类型判断的条件跳转NOP掉，使标志位始终=1(电脑AI模式)。
+补丁2: 在004C7E32将决策分派的条件跳转改为无条件跳转，强制调用电脑AI决策函数(004C7DA0)。</PackageDiscription>
+	<CustomModifyItems>
+		<CustomModifyItem>
+			<Caption>委任AI = 电脑AI决策</Caption>
+			<Enabled>true</Enabled>
+			<Codes>
+				<Code>
+					<Description>强制AI类型标志=1(电脑AI)</Description>
+					<Address>004C9EE5</Address>
+					<EnableCode>90 90</EnableCode>
+					<DisableCode>75 05</DisableCode>
+				</Code>
+				<Code>
+					<Description>强制调用电脑AI决策函数</Description>
+					<Address>004C7E32</Address>
+					<EnableCode>EB 07</EnableCode>
+					<DisableCode>75 07</DisableCode>
+				</Code>
+			</Codes>
+			<Params>
+			</Params>
+		</CustomModifyItem>
+	</CustomModifyItems>
+</CustomModifyPackage>
