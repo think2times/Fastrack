@@ -2,7 +2,7 @@ import oracledb
 import pandas as pd
 
 
-class DatabaseStreamer:
+class DataStreamer:
     """
     统一封装器：无论报表大小，外界只管 for chunk in streamer
     """
@@ -43,17 +43,17 @@ class DatabaseStreamer:
         try:
             for idx in out_cursor_indices:
                 rs = full_params[idx].getvalue()
-                if not rs: continue
+                if not rs: 
+                    continue
                 
                 cols = [col[0] for col in rs.description]
-                while True:
-                    rows = rs.fetchmany(self.chunk_size)
-                    if not rows: break
-                    # 返回 (游标索引, DataFrame)
-                    yield idx, pd.DataFrame(rows, columns=cols)
+                try: # 针对单个游标的读取
+                    while True:
+                        rows = rs.fetchmany(self.chunk_size)
+                        if not rows: break
+                        yield idx, pd.DataFrame(rows, columns=cols)
+                finally:
+                    # 读完一个游标，立刻释放一个，不需要等整个循环结束
+                    rs.close()
         finally:
-            # 这里的资源释放需要非常小心，需遍历关闭所有游标
-            # 确保游标关闭，防止 ORA-01000: maximum open cursors exceeded
-            for idx in out_cursor_indices:
-                full_params[idx].close()
             cursor.close()

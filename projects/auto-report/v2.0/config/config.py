@@ -48,7 +48,7 @@ REPORTS = {
         'sum_cols': ['TOTAL_COUNT', 'READ_COUNT', 'READ_WATER', 'ACC_WATER', 'ADJUST_WATER', 'ACTUAL_WATER'],
         'sum_first': True,
         # 定义该存储过程需要的参数“值”列表（不含最后的游标）
-        'params': lambda sub, month: [sub, month, month, '']
+        'params': lambda sub, month: [sub, month, month, ''],
     },
     '3-10': {
         'proc_name': 'RPT_WLMQ_310',
@@ -63,7 +63,6 @@ REPORTS = {
             'ACC_MONEY': '应收费用'
         },
         'sum_cols': ['ACC_COUNT', 'ACC_WATER', 'ACC_MONEY'] + BASE_FEE_COLS,
-        'params': lambda sub, month: [sub, month]
     },
     '3-7': {
         'proc_name': 'RPT_WLMQ_307',
@@ -80,7 +79,6 @@ REPORTS = {
         'group_by': "PARENT_SUBCOM_NAME",   # 按此列分组计算小计
         'merge_cols': ['分公司'],
         'sum_cols': ['ACC_WATER', 'FEE_TOTAL'] + BASE_FEE_COLS,
-        'params': lambda sub, month: [sub, month]
     },
     '3-11': {
         'proc_name': 'RPT_WLMQ_311',
@@ -102,7 +100,6 @@ REPORTS = {
         'sum_cols': ['ACC_COUNT', 'ACC_WATER', 'FEE_TOTAL'] + BASE_FEE_COLS,
         'sum_first': True, # 合计行在第一行
         'split_by': 'PARENT_SUBCOM_NAME',
-        'params': lambda sub, month: [sub, month]
     },
     '3-4': {
         'proc_name': 'RPT_WLMQ_304',
@@ -133,7 +130,6 @@ REPORTS = {
             row.update({'集团划账': row.get('账单金额', 0) + row.get('需划账违约金', 0)}),
             row # 注意：update返回None，所以要用元组并返回row本身
         )[1],
-        'params': lambda sub, month: [sub, month]
     },
     '3-14': {
         'proc_name': 'RPT_WLMQ_012',
@@ -151,9 +147,9 @@ REPORTS = {
             'RATE': "纯账户预存/支出",
             'TOTAL_TRANSFER': "集团划账" # 计算列
         },
+        'multi_cursors': 2,  # 启用多游标模式，个数表示游标个数
         'sum_cols': ['FEE_TOTAL', 'ACTUAL_LATEFEE', 'PT_PRESTORE_OUT_MONEY', 'PT_PRESTORE_IN_MONEY', 'RATE', 'TOTAL_TRANSFER'] + BASE_FEE_COLS,
         'sum_first': True,
-        'params': lambda sub, month: [sub, month]
     },
     '3-6': {
         'proc_name': 'RPT_WLMQ_306',
@@ -168,10 +164,10 @@ REPORTS = {
             **BASE_FEE_MAP,
             'FEE_TOTAL': "应收费用"
         },
+        'multi_cursors': 4,  # 启用多游标模式，个数表示游标个数
         'sum_cols': [],   # 禁用框架合计行
         'group_by': '',   # 禁用通用小计，改用下面的特殊逻辑
         'merge_cols': ['统计时间', '费用类型'],  # 按统计账期合并单元格
-        'params': lambda sub, month: [sub, month]
     },
     '3-13': {
         'proc_name': 'RPT_WLMQ_313',
@@ -185,10 +181,10 @@ REPORTS = {
             **BASE_FEE_MAP,
             'FEE_TOTAL': '应收费用'
         },
+        'multi_cursors': 2,  # 启用多游标模式，个数表示游标个数
         'sum_cols': [],     # 不需要在这里定义 sum_cols，因为我们会在 calc_func 中自定义计算逻辑
         'group_by': 'PAY_METHOD',
         'merge_cols': ['收费方式'],
-        'params': lambda sub, month: [sub, month]
     },
     '3-23': {
         'proc_name': 'RPT_WLMQ_014',
@@ -215,7 +211,7 @@ REPORTS = {
         },
         'sum_cols': ['ACC_WATER', 'FEE_TOTAL', 'EXTRA_MONEY', 'SEVEN_TOTAL'] + BASE_FEE_COLS,
         'sum_first': True,
-        'params': lambda sub, month: [sub, month, '']
+        'params_extra': 1,  # 表示除了默认的 [sub, month] 之外，还需要额外补一个空字符串占位
     },
     '3-47': {
         'proc_name': 'RPT_WLMQ_047',
@@ -232,7 +228,6 @@ REPORTS = {
             'USER_NAME': "操作人",
             'PST_TIME': "操作时间"
         },
-        'params': lambda sub, month: [sub, month]
     },
     '3-15': {
         'proc_name': 'RPT_WLMQ_315',
@@ -263,7 +258,6 @@ REPORTS = {
         },
         'sum_cols': ['ACC_WATER', 'FEE_TOTAL', 'ACTUAL_LATEFEE', 'PST_PRESTORE_OUT_MONEY', 'PST_PRESTORE_IN_MONEY', 'PST_ACTUAL_MONEY'] + BASE_FEE_COLS,
         'sum_first': True,
-        'params': lambda sub, month: [sub, month]
     },
     '3-20': {
         'proc_name': 'RPT_WLMQ_013',
@@ -285,6 +279,6 @@ REPORTS = {
         },
         'sum_cols': ['ACC_WATER', 'FEE_TOTAL'] + BASE_FEE_COLS,
         'sum_first': True,
-        'params': lambda sub, month: [sub, month, '']
+        'params_extra': 1,
     },
 }
