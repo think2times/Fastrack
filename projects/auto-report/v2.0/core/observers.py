@@ -1,6 +1,9 @@
 import pandas as pd
 from abc import ABC, abstractmethod
 
+from config.config import REPORTS
+
+
 class DataObserver(ABC):
     @abstractmethod
     def on_next(self, idx, chunk):
@@ -14,18 +17,22 @@ class DataObserver(ABC):
 
 # 核对观察者：负责算总数
 class AuditObserver(DataObserver):
-    def __init__(self, indices):
+    def __init__(self, cfg):
         """
-        indices: 游标索引列表
+        cfg: 报表配置
         """
-        self.indices = indices
-        self.results = {idx: 0 for idx in indices}
+        self.cfg = cfg
+        self.results = {}
 
-    def on_next(self, idx, chunk):
-        # 只有在 indices 中的 idx 才会处理
-        if idx in self.indices:
-            # 假设所有报表都要核对 ACC_MONEY
-            self.results[idx] += chunk['ACC_MONEY'].sum()
+    def on_next(self, chunk):
+        # 确定数据源（如果有多个游标，这里可以根据 idx 来区分）
+        if self.cfg.get('multi_cursors', 1) > 1:
+            cursor_indices = [i for i in range(self.cfg['multi_cursors'])]
+        else:
+            # 获取需要汇总的列，进行累加
+            if self.cfg.get('sum_cols'):
+                for col in self.cfg['sum_cols']:
+                    self.results[col] = self.results.get(col, 0) + chunk[col].sum()
 
     def on_completed(self):
         return self.results
