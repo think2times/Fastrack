@@ -39,8 +39,8 @@
 					<DisableCode>E8 2E C3 FF FF</DisableCode>
 				</Code>	
 				<Code>
-					<Description>代码</Description>
-					<Address>07716950</Address><!--长度:97-->
+					<Description>显示战力/士气修改</Description>
+    					<Address>07716950</Address><!--长度:97-->
 					<EnableCode>A4 68 AE F0 00 00 00 00 BE D4 A4 4F 00 00 00 00 64 00 00 00 50 69 71 07 58 69 71 07 E8 CF A1 F2 F8 8B BE A4 01 00 00 0F B6 97 A6 00 00 00 FF 35 60 69 71 07 52 8D 44 24 28 68 C8 9C 7E 00 50 E8 7C B3 D5 F8 83 C4 10 83 C8 FF 50 8D 4C 24 30 51 68 2E 1C 00 00 8B CE E8 94 A1 F2 F8 E9 61 DE F2 F8</EnableCode>
 					<DisableCode>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</DisableCode>
 				</Code>	

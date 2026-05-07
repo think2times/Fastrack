@@ -1,11 +1,14 @@
 import os
 import oracledb
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 
-from config import DB_CONFIG, REPORTS
+from config.config import DB_CONFIG, REPORTS
 
-from report_engine import ReportEngine
-from database_streamer import DatabaseStreamer
-from observers import AuditObserver, ExportObserver
+from core.engine import ReportEngine
+from core.streamer import DataStreamer
+from core.observers import AuditObserver, ExportObserver
+from utils.factory import TaskFactory
 
 
 def connect2db(lib_dir, db_config):
@@ -15,9 +18,23 @@ def connect2db(lib_dir, db_config):
     # 设置数据库客户端库路径
     oracledb.init_oracle_client(lib_dir=lib_dir)
 
-    return oracledb.connect(db_config)
+    return oracledb.connect(**db_config)
 
 if __name__ == "__main__":
+    # 定义基础目录
+    base_dir = r'F:\NewSystem\Reports'
+
+    # 指定报表查询范围
+    subcoms = ''    # 表示获取全部分公司数据，如果需要指定分公司，可以改成 '011,021,...'
+
+    # 获取上个月的年月，格式为 YYYY-MM
+    # 根据日期确定账期，如果是1-25号，则账期为上个月；如果是26号以后，则账期为当前月
+    today = datetime.now().strftime('%d')
+    if int(today) <= 25:
+         bill_month = (datetime.now() - relativedelta(months=1)).strftime('%Y-%m')
+    else:
+         bill_month = datetime.now().strftime('%Y-%m')
+         
     # 连接数据库，使用本地驱动而不是内置的 Thin 驱动
     lib_dir = r'F:\app\pluto\product\instantclient_11_2'
     # 连接数据库，设置环境变量，确保中文字符正确显示
@@ -28,17 +45,6 @@ if __name__ == "__main__":
 
     # 迭代报表配置，生成报表
     for r_id, cfg in REPORTS.items():
-        # 创建数据流对象
-        streamer = DatabaseStreamer(conn, cfg['proc_name'], cfg['params'])
-        # 创建观察者对象
-        observers = [AuditObserver(cfg['sum_columns']), ExportObserver(cfg['export_path'], cfg['sheet_name'])]
+        factory = TaskFactory(conn, sub_com=subcoms, month=bill_month)
 
-        # 运行报表引擎
-        engine = ReportEngine(streamer)
-        results = engine.run(observers)
-        print(f"Report {r_id} completed. Audit results: {results['AuditObserver']}")
-
-        # 将结果存入统一的结果池
-        report_pool[r_id] = results
-    
     # 所有的 for 循环结束后，进行跨表逻辑核对
