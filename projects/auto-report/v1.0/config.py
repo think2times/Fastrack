@@ -1,5 +1,5 @@
-import numpy as np
 from datetime import datetime
+from dateutil.relativedelta import relativedelta
 
 
 # 1. 数据库配置
@@ -10,7 +10,13 @@ DB_CONFIG = {
 }
 
 # 2. 定义所有报表的元数据
-year_month = f"{datetime.now().strftime('%Y年%m月')}"
+# 获取上个月的年月，格式为 YYYY年-MM月
+# 根据日期确定账期，如果是1-25号，则账期为上个月；如果是26号以后，则账期为当前月
+now = datetime.now().strftime('%d')
+if int(now) <= 25:
+    year_month = f"{(datetime.now() - relativedelta(months=1)).strftime('%Y年%m月')}"
+else:
+    year_month = f"{datetime.now().strftime('%Y年%m月')}"
 # 明确要累加的 6 个费用项
 PI_COLS = ['PI1_MONEY', 'PI2_MONEY', 'PI3_MONEY', 'PI4_MONEY', 'PI5_MONEY', 'PI6_MONEY']
 
