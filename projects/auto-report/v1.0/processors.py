@@ -31,7 +31,7 @@ def standard_preprocess(df):
         # 我们只对 PI1_MONEY 这一列是数值类型的行进行计算
         is_numeric_row = pd.to_numeric(df[existing_pi_cols[0]], errors='coerce').notnull()
 
-        # 只有数值行才计算 SIX_TOTAL，其他行（如收回率行）保持原样或设为 0
+        # 只有数值行才计算 FEE_TOTAL，其他行（如收回率行）保持原样或设为 0
         df.loc[is_numeric_row, 'FEE_TOTAL'] = df.loc[is_numeric_row, existing_pi_cols].fillna(0).sum(axis=1)
 
     # 3. 只对数值型列（整数、浮点数）进行四舍五入

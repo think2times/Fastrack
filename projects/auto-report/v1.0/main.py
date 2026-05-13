@@ -32,7 +32,7 @@ def process_report_group(conn, report_ids, subcoms, bill_month, reconcile_func):
         print(f"✅ {report_ids} 核对通过")
     else:
         print(f"❌ {report_ids} 核对存在差异，请查阅日志")
-        
+
     return package
 
 def export_report(report_id, report_package):
