@@ -1,7 +1,8 @@
+import os
 import pandas as pd
+from time import time
 from abc import ABC, abstractmethod
-
-from config.config import REPORTS
+from utils.style import apply_xlsxwriter_style
 
 
 class DataObserver(ABC):
@@ -21,43 +22,59 @@ class AuditObserver(DataObserver):
         """
         cfg: 报表配置
         """
-        self.cfg = cfg
-        self.results = {}
-
-    def on_next(self, chunk):
-        # 确定数据源（如果有多个游标，这里可以根据 idx 来区分）
-        if self.cfg.get('multi_cursors', 1) > 1:
-            cursor_indices = [i for i in range(self.cfg['multi_cursors'])]
-        else:
-            # 获取需要汇总的列，进行累加
-            if self.cfg.get('sum_cols'):
-                for col in self.cfg['sum_cols']:
-                    self.results[col] = self.results.get(col, 0) + chunk[col].sum()
-
-    def on_completed(self):
-        return self.results
-
-# 导出观察者：负责写Excel
-class ExportObserver(DataObserver):
-    def __init__(self, file_path, index_to_sheet):
-        """
-        index_to_sheet: {0: '汇总表', 1: '明细表'}
-        """
-        self.writer = pd.ExcelWriter(file_path, engine='xlsxwriter')
-        self.index_to_sheet = index_to_sheet
-        self.curr_rows = {idx: 0 for idx in index_to_sheet.keys()}
+        self.sum_cols = cfg.get('sum_cols') or []
+        self.total_results = {col: 0 for col in self.sum_cols}
 
     def on_next(self, idx, chunk):
-        if idx in self.index_to_sheet:
-            sheet_name = self.index_to_sheet[idx]
-            is_first = (self.curr_rows[idx] == 0)
-            
-            chunk.to_excel(self.writer, sheet_name=sheet_name, 
-                           startrow=self.curr_rows[idx], 
-                           index=False, header=is_first)
-            
-            self.curr_rows[idx] += len(chunk)
+        # 确定数据源（如果有多个游标，这里可以根据 idx 来区分）
+        # 获取需要汇总的列，进行累加
+        
+        for col in self.sum_cols:
+            self.total_results[col] += chunk[col].sum()
 
     def on_completed(self):
-        self.writer.close()
-        return f"文件已保存至 {self.writer}"
+        return self.total_results
+
+# 导出观察者：负责写Excel
+class ExportObserver:
+    def __init__(self, cfg):
+        self.cfg = cfg
+
+        # 定义基础目录
+        base_dir = r'F:\NewSystem\Reports'
+        self.file_path = os.path.join(base_dir, self.cfg['folder'], self.cfg['file_name'])
+        self.columns_map = cfg.get('columns_map')
+        # 用一个列表把所有的 chunk 攒起来
+        self.all_chunks = []
+
+    def on_next(self, idx, chunk):
+        if not chunk.empty:
+            # 翻译列名
+            chunk.columns = [c.upper().strip() for c in chunk.columns]
+            if self.columns_map:
+                up_map = {k.upper().strip(): v for k, v in self.columns_map.items()}
+                chunk = chunk.rename(columns=up_map)
+            
+            # 先不写磁盘，存进列表
+            self.all_chunks.append(chunk)
+
+    def on_completed(self):
+        if not self.all_chunks:
+            return
+        
+        # 合并所有数据
+        final_df = pd.concat(self.all_chunks, ignore_index=True)
+
+        # 处理空值，将 NaN 替换为空字符串
+        final_df = final_df.fillna("")
+
+        # 写入 Excel
+        t0 = time()
+        with pd.ExcelWriter(self.file_path, engine='xlsxwriter') as writer:
+            workbook = writer.book
+            worksheet = workbook.add_worksheet('Sheet1')
+            
+            # 统一应用样式函数，传入最终的 DataFrame 和配置
+            apply_xlsxwriter_style(workbook, worksheet, final_df, self.cfg)
+            
+        print(f"Excel 导出成功，总行数: {len(final_df)}, 耗时: {time() - t0:.2f} 秒")

@@ -1,4 +1,5 @@
 from datetime import datetime
+import numpy as np
 
 
 # 1. 数据库配置
@@ -26,7 +27,7 @@ BASE_FEE_MAP = {
 # 自动推导需要合计的六费列名
 BASE_FEE_COLS = list(BASE_FEE_MAP.keys())
 
-REPORTS = {
+REPORTS_CONFIG = {
     '2-8': {
         'proc_name': 'RPT_WLMQ_208',
         'title': '抄表统册用水信息',
@@ -281,4 +282,21 @@ REPORTS = {
         'sum_first': True,
         'params_extra': 1,
     },
+}
+
+# 定义计算映射配置，Key 为报表编号，Value 为需要执行的计算逻辑（匿名函数）
+CALC_CONFIG = {
+    '2-8': lambda df: df.assign(ACTUAL_WATER=df['ACC_WATER'].fillna(0) - df['ADJUST_WATER'].fillna(0)).round(2),
+    '3-11': lambda df: df.assign(UNIT_PRICE=np.where(df['ACC_WATER'] != 0, df['FEE_TOTAL'] / df['ACC_WATER'], 0)).round(2),
+    '3-4': lambda df: df.assign(
+            # 本月银行入账 = 需划账费用
+            BANK_IN_MONEY = lambda x: x['PST_ACTUAL_MONEY'],
+            # 集团划账 = 账单金额 + 需划账违约金
+            TOTAL_TRANSFER = lambda x: x['ACC_MONEY'] + x['ACTUAL_LATEFEE']
+        ).sort_values(
+            # 排序：确保银行内部的分公司是连续的，方便后续合并单元格
+            by=['HEADOFFICE_NAME', 'COMPANY_NAME'], 
+            ascending=[True, True]
+        ).round(2),
+    '3-23': lambda df: df.assign(SEVEN_TOTAL=df['FEE_TOTAL'].fillna(0) + df['EXTRA_MONEY'].fillna(0)).round(2),
 }

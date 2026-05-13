@@ -1,4 +1,4 @@
-from config.config import REPORTS
+from config.config import CALC_CONFIG, REPORTS_CONFIG
 
 from core.engine import ReportEngine
 from core.streamer import DataStreamer
@@ -12,8 +12,8 @@ class TaskFactory:
         self.month = month
 
     def create_task(self, report_id):
-        # 1. 从配置字典中获取配置 (假设已导入报表字典)
-        cfg = REPORTS.get(report_id)
+        # 1. 从配置字典中获取配置
+        cfg = REPORTS_CONFIG.get(report_id)
         
         # 2. 核心：极简参数处理逻辑
         if cfg is None:
@@ -28,18 +28,24 @@ class TaskFactory:
             final_params = [self.sub_com, self.month] + ([''] * extra_count)
 
         # 3. 实例化流对象
+        calc_func = CALC_CONFIG.get(report_id)  # 获取对应的计算函数
+
+        # 4. 创建带计算逻辑的引擎
+        engine = ReportEngine(calc_func=calc_func)
+
         streamer = DataStreamer(self.conn, cfg['proc_name'], final_params)
 
-        # 4. 组装观察者 (这里可以根据 cfg 里的 group_by 自动判断实例化哪个类)
+        # 5. 组装观察者 (这里可以根据 cfg 里的 group_by 自动判断实例化哪个类)
         observers = self._build_observers(cfg)
 
-        return ReportEngine(streamer), observers
+        return engine, streamer, observers
 
     def _build_observers(self, cfg):
         obs_list = []
 
         # 添加审计观察者
         obs_list.append(AuditObserver(cfg))
+
         # 添加导出观察者
-        obs_list.append(ExportObserver(cfg['file_name'], cfg['columns_map']))
+        obs_list.append(ExportObserver(cfg))
         return obs_list
