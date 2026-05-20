@@ -39,12 +39,11 @@ if __name__ == "__main__":
 
     # 迭代报表配置，生成报表
     for r_id, cfg in REPORTS_CONFIG.items():
-        if r_id == '3-47':
-            print(f"创建报表任务：{r_id}")
+        if r_id in ['2-8', '3-10', '3-14', '3-11']:
+            print(f"把{r_id}报表添加到任务列表。")
             factory = TaskFactory(conn, sub_com=subcoms, month=bill_month)
             engine, streamer, observers = factory.create_task(r_id)
             tasks.append((engine, streamer, observers))
-
 
     # 所有的 for 循环结束后，进行跨表逻辑核对
     for engine, streamer, observers in tasks:

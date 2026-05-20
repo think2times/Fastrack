@@ -39,15 +39,15 @@ REPORTS_CONFIG = {
             'BOOK_NAME': '统册名称',
             'TOTAL_COUNT': '应抄户数',
             'READ_COUNT': '实抄户数',
-            'BILLING_MONTH': '抄表时间',
             'READ_WATER': '抄见水量',
             'ACC_WATER': '开账水量',
             'ADJUST_WATER': '减免水量',
             'ACTUAL_WATER': '实际水量',
-            'METER_READER': '抄表员'
+            'METER_READER': '抄表员',
+            'BILLING_MONTH': '抄表日期',
         },
         'sum_cols': ['TOTAL_COUNT', 'READ_COUNT', 'READ_WATER', 'ACC_WATER', 'ADJUST_WATER', 'ACTUAL_WATER'],
-        'sum_first': True,
+        'sum_position': 'top',
         # 定义该存储过程需要的参数“值”列表（不含最后的游标）
         'params': lambda sub, month: [sub, month, month, ''],
     },
@@ -64,6 +64,7 @@ REPORTS_CONFIG = {
             'ACC_MONEY': '应收费用'
         },
         'sum_cols': ['ACC_COUNT', 'ACC_WATER', 'ACC_MONEY'] + BASE_FEE_COLS,
+        'sum_position': 'bottom',
     },
     '3-7': {
         'proc_name': 'RPT_WLMQ_307',
@@ -80,6 +81,7 @@ REPORTS_CONFIG = {
         'group_by': "PARENT_SUBCOM_NAME",   # 按此列分组计算小计
         'merge_cols': ['分公司'],
         'sum_cols': ['ACC_WATER', 'FEE_TOTAL'] + BASE_FEE_COLS,
+        'sum_position': 'top',
     },
     '3-11': {
         'proc_name': 'RPT_WLMQ_311',
@@ -99,7 +101,7 @@ REPORTS_CONFIG = {
             'UNIT_PRICE': "单价"
         },
         'sum_cols': ['ACC_COUNT', 'ACC_WATER', 'FEE_TOTAL'] + BASE_FEE_COLS,
-        'sum_first': True, # 合计行在第一行
+        'sum_position': 'top', # 合计行在第一行
         'split_by': 'PARENT_SUBCOM_NAME',
     },
     '3-4': {
@@ -126,7 +128,7 @@ REPORTS_CONFIG = {
             'BANK_IN_MONEY', 'ACC_MONEY', 'PST_ACTUAL_MONEY', 'ACTUAL_LATEFEE', 
             'PST_PRESTORE_OUT_MONEY', 'TURN_PRESTORE_IN_MONEY', 'PST_PRESTORE_IN_MONEY', 'TOTAL_TRANSFER'
         ],
-        'sum_first': True,
+        'sum_position': 'top',
         'subtotal_hooks': lambda row: (
             row.update({'集团划账': row.get('账单金额', 0) + row.get('需划账违约金', 0)}),
             row # 注意：update返回None，所以要用元组并返回row本身
@@ -150,7 +152,7 @@ REPORTS_CONFIG = {
         },
         'multi_cursors': 2,  # 启用多游标模式，个数表示游标个数
         'sum_cols': ['FEE_TOTAL', 'ACTUAL_LATEFEE', 'PT_PRESTORE_OUT_MONEY', 'PT_PRESTORE_IN_MONEY', 'RATE', 'TOTAL_TRANSFER'] + BASE_FEE_COLS,
-        'sum_first': True,
+        'sum_position': 'top',
     },
     '3-6': {
         'proc_name': 'RPT_WLMQ_306',
@@ -159,7 +161,7 @@ REPORTS_CONFIG = {
         'file_name': f"{year_month}实收报表.xlsx",
         'columns_map': {
             # 基础维度
-            'C1': '统计时间',            # 对应“本月/本年”合并列
+            'C1': '统计日期',            # 对应“本月/本年”合并列
             'C2': '费用类型',            # 对应“应收金额/实际收回”合并列
             'FEE_TYPE': "费用项目",
             **BASE_FEE_MAP,
@@ -168,7 +170,7 @@ REPORTS_CONFIG = {
         'multi_cursors': 4,  # 启用多游标模式，个数表示游标个数
         'sum_cols': [],   # 禁用框架合计行
         'group_by': '',   # 禁用通用小计，改用下面的特殊逻辑
-        'merge_cols': ['统计时间', '费用类型'],  # 按统计账期合并单元格
+        'merge_cols': ['统计日期', '费用类型'],  # 按统计账期合并单元格
     },
     '3-13': {
         'proc_name': 'RPT_WLMQ_313',
@@ -196,22 +198,22 @@ REPORTS_CONFIG = {
             'SUBCOM_NAME': "站点",
             'CARD_ID': "用户号",
             'CARD_NAME': "用户名称",
-            'FEE_TYPE': "业务类型",
             'PRICE': "用水性质",
             'BILLING_MONTH': "账期",
-            'ACC_WATER': "水量",
             'LAST_READING': "上次表底",
             'READING': "本次表底",
+            'FEE_TYPE': "业务类型",
+            'ACC_WATER': "水量",
             **BASE_FEE_MAP,
             'FEE_TOTAL': "应收费用",
-            'EXTRA_MONEY': "损耗分摊费",
-            'SEVEN_TOTAL': "七费合计",
+            'PI9_MONEY': "损耗分摊费",
+            'ACC_MONEY': "七费合计",
             'BOOK_ID': "抄表册",
             'METER_READER': "抄表员",
-            'CHECK_TIME': "计费日期"
+            'CHECK_TIME': "计费日期",
         },
-        'sum_cols': ['ACC_WATER', 'FEE_TOTAL', 'EXTRA_MONEY', 'SEVEN_TOTAL'] + BASE_FEE_COLS,
-        'sum_first': True,
+        'sum_cols': ['ACC_WATER', 'FEE_TOTAL', 'PI9_MONEY', 'ACC_MONEY'] + BASE_FEE_COLS,
+        'sum_position': 'top',
         'params_extra': 1,  # 表示除了默认的 [sub, month] 之外，还需要额外补一个空字符串占位
     },
     '3-47': {
@@ -227,7 +229,7 @@ REPORTS_CONFIG = {
             'PST_MONEY': "变动金额",
             'FEE_TYPE': "支付途径",
             'USER_NAME': "操作人",
-            'PST_TIME': "操作时间"
+            'PST_TIME': "操作日期"
         },
     },
     '3-15': {
@@ -240,10 +242,11 @@ REPORTS_CONFIG = {
             'CARD_ID': "表卡编号",
             'CARD_NAME': "表卡名称",
             'CUSTOMER_TYPE': '客户类型',
+            'FEE_TYPE': "业务类型",
+            'BILLING_MONTH': "账期",
             'LAST_READING': "上次表底",
             'READING': "本次表底",
-            'CHECK_TIME': '开账日期',
-            'BILLING_MONTH': "账期",
+            'CHECK_TIME': '计费日期',
             'ACC_WATER': "水量",
             **BASE_FEE_MAP,
             'FEE_TOTAL': "应收费用",
@@ -251,14 +254,13 @@ REPORTS_CONFIG = {
             'PST_PRESTORE_OUT_MONEY': "账户支出",
             'PST_PRESTORE_IN_MONEY': "账户存入",
             'PST_ACTUAL_MONEY': "实际缴费额",
-            'PAY_TIME': "收费时间",
             'CASHIER': "收费员",
-            'FEE_TYPE': "业务类型",
+            'PAY_TIME': "收费日期",
             'PAY_METHOD': "缴费方式",
             'PAY_SUBCOM': '缴费网点'
         },
         'sum_cols': ['ACC_WATER', 'FEE_TOTAL', 'ACTUAL_LATEFEE', 'PST_PRESTORE_OUT_MONEY', 'PST_PRESTORE_IN_MONEY', 'PST_ACTUAL_MONEY'] + BASE_FEE_COLS,
-        'sum_first': True,
+        'sum_position': 'top',
     },
     '3-20': {
         'proc_name': 'RPT_WLMQ_013',
@@ -269,17 +271,17 @@ REPORTS_CONFIG = {
             'BOOK_ID': "抄表册",
             'CARD_ID': "表卡编号",
             'CARD_NAME': "表卡名称",
-            'CARD_ADDRESS': "地址",
-            'CHECK_TIME': "计费日期",
+            'CARD_ADDRESS': "表卡地址",
             'BILLING_MONTH': "账期",
             'LAST_READING': "上次表底",
             'READING': "本次表底",
+            'CHECK_TIME': "计费日期",
             'ACC_WATER': "水量",
             **BASE_FEE_MAP,
             'FEE_TOTAL': "应收费用"
         },
         'sum_cols': ['ACC_WATER', 'FEE_TOTAL'] + BASE_FEE_COLS,
-        'sum_first': True,
+        'sum_position': 'top',
         'params_extra': 1,
     },
 }
@@ -298,5 +300,12 @@ CALC_CONFIG = {
             by=['HEADOFFICE_NAME', 'COMPANY_NAME'], 
             ascending=[True, True]
         ).round(2),
-    '3-23': lambda df: df.assign(SEVEN_TOTAL=df['FEE_TOTAL'].fillna(0) + df['EXTRA_MONEY'].fillna(0)).round(2),
+    '3-14': lambda df: df.assign(
+            # 集团划账 = 应收费用 + 违约金 - 账户支出 + 账户存入 + 纯账户预存/支出
+            TOTAL_TRANSFER = df['FEE_TOTAL'] 
+            + df['ACTUAL_LATEFEE'].fillna(0) 
+            - df['PT_PRESTORE_OUT_MONEY'].fillna(0) 
+            + df['PT_PRESTORE_IN_MONEY'].fillna(0) 
+            + df['RATE'].fillna(0)
+        ).round(2),
 }

@@ -2,7 +2,7 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
 
-def apply_xlsxwriter_style(workbook, worksheet, df, config):
+def apply_xlsxwriter_style(workbook, worksheet, df, config, sum_row_index=None):
     """
     专门负责第二版 (xlsxwriter) 的样式美化
     """
@@ -19,13 +19,39 @@ def apply_xlsxwriter_style(workbook, worksheet, df, config):
     data_fmt = workbook.add_format({
         'border': 1, 'align': 'center', 'valign': 'vcenter'
     })
-    datetime_fmt = workbook.add_format({
-        'num_format': 'yyyy-mm-dd hh:mm:ss', # 强制显示为时间格式
+
+    # 合计行基础格式
+    sum_base_cfg = {
+        'bold': True,
+        'bg_color': '#F2F2F2', # 浅灰色背景区别于普通行
+        'border': 1,
+        'align': 'center',
+        'valign': 'vcenter',
+        'num_format': '#,##0' # 保证金额格式正确
+    }
+
+    # 合计行文字格式（用于第一列“合计”字样）
+    sum_text_fmt = workbook.add_format(sum_base_cfg)
+
+    # 金额：千分位+2位小数
+    money_cfg = {'num_format': '#,##0.00', 'border': 1, 'align': 'center', 'valign': 'vcenter'}
+    money_fmt = workbook.add_format({**money_cfg, 'border': 1})
+    sum_money_fmt = workbook.add_format({**sum_base_cfg, **money_cfg})
+
+    # 数量格式 (户数、水量)
+    count_cfg = {'num_format': '#,##0', 'border': 1, 'align': 'center', 'valign': 'vcenter'}
+    count_fmt = workbook.add_format({**count_cfg, 'border': 1})
+    sum_count_fmt = workbook.add_format({**sum_base_cfg, **count_cfg})
+
+    # 日期格式
+    date_cfg = {'num_format': 'yyyy/mm/dd'}
+    date_fmt = workbook.add_format({
+        **date_cfg,
         'border': 1,
         'align': 'center',
         'valign': 'vcenter'
     })
-    
+
     left_fmt = workbook.add_format({'font_size': 11, 'align': 'left', 'valign': 'vcenter'})
     right_fmt = workbook.add_format({'font_size': 11, 'align': 'right', 'valign': 'vcenter'})
 
@@ -67,23 +93,48 @@ def apply_xlsxwriter_style(workbook, worksheet, df, config):
     # xlsxwriter 建议手动写入表头以便应用格式
     for col_num, value in enumerate(df.columns.values):
         worksheet.write(3, col_num, value, header_fmt)
+        worksheet.set_row(3, 25) # 设置表头行高
 
     # 6. 写入数据与列宽计算
     is_large_data = len(df) > 10000
     col_widths = [len(str(c)) for c in df.columns] # 初始宽度设为列名长度
 
+    # 数据从第 5 行开始写入，索引为 4
+    data_start_row = 4
     for row_num, row_data in enumerate(df.values):
-        actual_row = row_num + 4 # 数据从第 5 行开始写入
+        actual_row = row_num + data_start_row
+        is_sum_row = (row_num == sum_row_index)
+
+        # 如果是合计行，可以稍微设高一点点，使其更醒目
+        if row_num == sum_row_index:
+            worksheet.set_row(actual_row, 25)
+        else:
+            worksheet.set_row(actual_row, 22.5) # 普通数据行高
+
         for col_num, cell_value in enumerate(row_data):
             col_name = df.columns[col_num]
-            
-            # 判断是否是时间列（根据你的 columns_map 里的中文名判断）
-            if "时间" in col_name:
-                worksheet.write(actual_row, col_num, cell_value, datetime_fmt)
+
+            # 检查当前值是否是数字
+            is_numeric = isinstance(cell_value, (int, float, complex)) and not isinstance(cell_value, bool)
+
+            if is_numeric:
+                # 1. 处理日期
+                if "日期" in col_name:
+                    fmt = date_fmt
+
+                # 2. 处理费用、单价、回收率、转账（两位小数）
+                elif any(key in col_name for key in ['金', '费', '税', '价', '率', '账户', '转账']):
+                    fmt = sum_money_fmt if is_sum_row else money_fmt
+
+                # 3. 处理户数、水量（整数）
+                else:
+                    fmt = sum_count_fmt if is_sum_row else count_fmt
             else:
-                worksheet.write(actual_row, col_num, cell_value, data_fmt)
-        
-        # 如果不是大数据模式，动态计算列宽
+                fmt = sum_text_fmt if is_sum_row else data_fmt
+
+            worksheet.write(actual_row, col_num, cell_value, fmt)
+
+        # 如果数据量不大，动态计算列宽
         if not is_large_data:
             for i, val in enumerate(row_data):
                 str_val = str(val or "")
@@ -92,10 +143,11 @@ def apply_xlsxwriter_style(workbook, worksheet, df, config):
                 if length > col_widths[i]:
                     col_widths[i] = length
 
-    # 7. 统一设置列宽
+    # 7. 设置列宽
     if is_large_data:
-        worksheet.set_column(0, max_col - 1, 18) # 大数据给统一宽度
+        worksheet.set_column(0, max_col - 1, 18) # 数据量较大时给统一宽度
     else:
+        # 限制最大宽度，防止内容过多导致列太长
         for i, width in enumerate(col_widths):
             final_width = min(max(width + 4, 10), 50)
             worksheet.set_column(i, i, final_width)

@@ -31,7 +31,7 @@ class TaskFactory:
         calc_func = CALC_CONFIG.get(report_id)  # 获取对应的计算函数
 
         # 4. 创建带计算逻辑的引擎
-        engine = ReportEngine(calc_func=calc_func)
+        engine = ReportEngine(cfg=cfg, calc_func=calc_func)
 
         streamer = DataStreamer(self.conn, cfg['proc_name'], final_params)
 
