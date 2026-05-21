@@ -1,6 +1,11 @@
-from datetime import datetime
 import numpy as np
+from datetime import datetime
 
+from utils.processor import process_37_report
+
+
+# 0. 定义基础目录
+BASE_DIR = r'F:\NewSystem\Reports'
 
 # 1. 数据库配置
 DB_CONFIG = {
@@ -50,6 +55,9 @@ REPORTS_CONFIG = {
         'sum_position': 'top',
         # 定义该存储过程需要的参数“值”列表（不含最后的游标）
         'params': lambda sub, month: [sub, month, month, ''],
+        'processor': lambda buffers: buffers[0].assign(
+            ACTUAL_WATER = lambda x: (x['ACC_WATER'].fillna(0) - x['ADJUST_WATER'].fillna(0)).round(2)
+        ),
     },
     '3-10': {
         'proc_name': 'RPT_WLMQ_310',
@@ -64,7 +72,7 @@ REPORTS_CONFIG = {
             'ACC_MONEY': '应收费用'
         },
         'sum_cols': ['ACC_COUNT', 'ACC_WATER', 'ACC_MONEY'] + BASE_FEE_COLS,
-        'sum_position': 'bottom',
+        'sum_position': 'top',
     },
     '3-7': {
         'proc_name': 'RPT_WLMQ_307',
@@ -82,6 +90,7 @@ REPORTS_CONFIG = {
         'merge_cols': ['分公司'],
         'sum_cols': ['ACC_WATER', 'FEE_TOTAL'] + BASE_FEE_COLS,
         'sum_position': 'top',
+        'processor': lambda buffers: process_37_report(buffers[0]),
     },
     '3-11': {
         'proc_name': 'RPT_WLMQ_311',
@@ -103,6 +112,9 @@ REPORTS_CONFIG = {
         'sum_cols': ['ACC_COUNT', 'ACC_WATER', 'FEE_TOTAL'] + BASE_FEE_COLS,
         'sum_position': 'top', # 合计行在第一行
         'split_by': 'PARENT_SUBCOM_NAME',
+        'processor': lambda buffers: buffers[0].assign(
+            UNIT_PRICE = lambda x: np.where(x['ACC_WATER'] != 0, x['FEE_TOTAL'] / x['ACC_WATER'], 0).round(2)
+        ),
     },
     '3-4': {
         'proc_name': 'RPT_WLMQ_304',
@@ -133,6 +145,16 @@ REPORTS_CONFIG = {
             row.update({'集团划账': row.get('账单金额', 0) + row.get('需划账违约金', 0)}),
             row # 注意：update返回None，所以要用元组并返回row本身
         )[1],
+        'processor': lambda df: df.assign(
+            # 本月银行入账 = 需划账费用
+            BANK_IN_MONEY = lambda x: x['PST_ACTUAL_MONEY'],
+            # 集团划账 = 账单金额 + 需划账违约金
+            TOTAL_TRANSFER = lambda x: x['ACC_MONEY'] + x['ACTUAL_LATEFEE']
+        ).sort_values(
+            # 排序：确保银行内部的分公司是连续的，方便后续合并单元格
+            by=['HEADOFFICE_NAME', 'COMPANY_NAME'], 
+            ascending=[True, True]
+        ).round(2),
     },
     '3-14': {
         'proc_name': 'RPT_WLMQ_012',
@@ -150,9 +172,20 @@ REPORTS_CONFIG = {
             'RATE': "纯账户预存/支出",
             'TOTAL_TRANSFER': "集团划账" # 计算列
         },
-        'multi_cursors': 2,  # 启用多游标模式，个数表示游标个数
         'sum_cols': ['FEE_TOTAL', 'ACTUAL_LATEFEE', 'PT_PRESTORE_OUT_MONEY', 'PT_PRESTORE_IN_MONEY', 'RATE', 'TOTAL_TRANSFER'] + BASE_FEE_COLS,
         'sum_position': 'top',
+        'multi_cursors': 2,  # 启用多游标模式，个数表示游标个数
+        # 只要第一个游标的数据
+        'processor': lambda buffers: (
+            buffers[0].assign(
+                # 集团划账 = 应收费用 + 违约金 - 账户支出 + 账户存入 + 纯账户预存/支出
+                TOTAL_TRANSFER = lambda x: (x['FEE_TOTAL'] 
+                + x['ACTUAL_LATEFEE'].fillna(0) 
+                - x['PT_PRESTORE_OUT_MONEY'].fillna(0) 
+                + x['PT_PRESTORE_IN_MONEY'].fillna(0) 
+                + x['RATE'].fillna(0)).round(2)
+            )
+        ),
     },
     '3-6': {
         'proc_name': 'RPT_WLMQ_306',
@@ -284,28 +317,4 @@ REPORTS_CONFIG = {
         'sum_position': 'top',
         'params_extra': 1,
     },
-}
-
-# 定义计算映射配置，Key 为报表编号，Value 为需要执行的计算逻辑（匿名函数）
-CALC_CONFIG = {
-    '2-8': lambda df: df.assign(ACTUAL_WATER=df['ACC_WATER'].fillna(0) - df['ADJUST_WATER'].fillna(0)).round(2),
-    '3-11': lambda df: df.assign(UNIT_PRICE=np.where(df['ACC_WATER'] != 0, df['FEE_TOTAL'] / df['ACC_WATER'], 0)).round(2),
-    '3-4': lambda df: df.assign(
-            # 本月银行入账 = 需划账费用
-            BANK_IN_MONEY = lambda x: x['PST_ACTUAL_MONEY'],
-            # 集团划账 = 账单金额 + 需划账违约金
-            TOTAL_TRANSFER = lambda x: x['ACC_MONEY'] + x['ACTUAL_LATEFEE']
-        ).sort_values(
-            # 排序：确保银行内部的分公司是连续的，方便后续合并单元格
-            by=['HEADOFFICE_NAME', 'COMPANY_NAME'], 
-            ascending=[True, True]
-        ).round(2),
-    '3-14': lambda df: df.assign(
-            # 集团划账 = 应收费用 + 违约金 - 账户支出 + 账户存入 + 纯账户预存/支出
-            TOTAL_TRANSFER = df['FEE_TOTAL'] 
-            + df['ACTUAL_LATEFEE'].fillna(0) 
-            - df['PT_PRESTORE_OUT_MONEY'].fillna(0) 
-            + df['PT_PRESTORE_IN_MONEY'].fillna(0) 
-            + df['RATE'].fillna(0)
-        ).round(2),
 }

@@ -1,4 +1,4 @@
-from config.config import CALC_CONFIG, REPORTS_CONFIG
+from config.config import REPORTS_CONFIG
 
 from core.engine import ReportEngine
 from core.streamer import DataStreamer
@@ -27,11 +27,8 @@ class TaskFactory:
             extra_count = cfg.get('params_extra', 0)
             final_params = [self.sub_com, self.month] + ([''] * extra_count)
 
-        # 3. 实例化流对象
-        calc_func = CALC_CONFIG.get(report_id)  # 获取对应的计算函数
-
         # 4. 创建带计算逻辑的引擎
-        engine = ReportEngine(cfg=cfg, calc_func=calc_func)
+        engine = ReportEngine(cfg=cfg)
 
         streamer = DataStreamer(self.conn, cfg['proc_name'], final_params)
 

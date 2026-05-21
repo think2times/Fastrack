@@ -1,37 +1,48 @@
 from config.config import PI_COLS
 
 import pandas as pd
-from typing import cast
+from typing import Any, cast
 
 
 class ReportEngine:
-    def __init__(self, cfg, calc_func=None):
+    def __init__(self, cfg):
         """
         :param cfg: 报表配置
-        :param calc_func: 对应 CALC_CONFIG 中的 lambda 函数
         """
         self.cfg = cfg
-        self.calc_func = calc_func
 
     def run(self, streamer, observers):
         has_multiple_cursors = self.cfg.get('multi_cursor', 0)
 
-        # 0. 统一包装为带索引的迭代器，输出格式为 (cursor_idx, chunk)
-        indexed_streamer = streamer if has_multiple_cursors else ((0, chunk) for chunk in streamer)
+        for item in streamer:
+            # 1. 显式初始化，并标注类型为 Any 避免推导冲突
+            cursor_idx: int = 0
+            raw_data: Any = None
+            
+            # 2. 统一包装为带索引的迭代器：单游标转为 (0, df)，多游标保持 (cursor_idx, df)
+            if has_multiple_cursors:
+                # 针对多游标：item 是 (idx, dataframe)
+                cursor_idx, raw_data = item
+            else:
+                # 针对单游标：item 直接是 dataframe
+                cursor_idx, raw_data = 0, item
 
-        for cursor_idx, chunk in indexed_streamer:
-            # 1. 一站式处理：清洗 + 基础算 + 特有算 + 精度控制
-            _, data = 0, chunk
-            if isinstance(chunk, tuple) and len(chunk) == 2:
-                _, data = chunk
+            # 3. 检查 data 是否被误包成了元组 (由于某些驱动版本差异)
+            if isinstance(raw_data, tuple) and len(raw_data) == 2:
+                # 如果发现 data 居然还是 (0, df)，二次拆包
+                _, raw_data = raw_data
+            
+            # 4. 将 raw_data 强行转换为 DataFrame 类型
+            data = cast(pd.DataFrame, raw_data)
 
+            # 5. 一站式处理：清洗 + 基础计算 + 特有逻辑 + 精度控制
             processed_chunk = self._prepare_data(data)
 
-            # 2. 分发给观察者（此时列名仍为英文，方便 Observer 计算合计行）
+            # 6. 分发给观察者（此时列名仍为英文，方便 Observer 计算合计行）
             for obs in observers:
                 obs.on_next(cursor_idx, processed_chunk)
 
-        # 3. 统一结束通知
+        # 7. 统一结束通知
         for obs in observers:
             obs.on_completed()
 
@@ -59,15 +70,7 @@ class ReportEngine:
             # 仅对数值行执行横向求和
             df.loc[is_numeric_row, 'FEE_TOTAL'] = df.loc[is_numeric_row, existing_pi_cols].fillna(0).sum(axis=1)
 
-        # --- 阶段 3：报表特有计算 (calc_func) ---
-        # 执行类似 3-23 报表的 EXTRA_MONEY 或 SEVEN_TOTAL 计算
-        if self.calc_func and callable(self.calc_func):
-            # 此时执行的是 df.assign(...) 逻辑
-            # 强制转换类型，消除 "object is not assignable to DataFrame" 报错
-            result = self.calc_func(df)
-            df = cast(pd.DataFrame, result)
-
-        # --- 阶段 4：精度处理 ---
+        # --- 阶段 3：精度处理 ---
         # 只对数值型列（整数、浮点数）进行四舍五入，避免时间戳或字符串被误伤
         numeric_cols = df.select_dtypes(include=['number']).columns
         for col in numeric_cols:
