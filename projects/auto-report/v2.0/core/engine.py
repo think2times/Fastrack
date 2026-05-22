@@ -1,7 +1,6 @@
-from config.config import PI_COLS
-
 import pandas as pd
 from typing import Any, cast
+from config.config import PI_COLS
 
 
 class ReportEngine:
@@ -12,7 +11,7 @@ class ReportEngine:
         self.cfg = cfg
 
     def run(self, streamer, observers):
-        has_multiple_cursors = self.cfg.get('multi_cursor', 0)
+        has_multiple_cursors = self.cfg.get('multi_cursors', 0)
 
         for item in streamer:
             # 1. 显式初始化，并标注类型为 Any 避免推导冲突

@@ -2,8 +2,9 @@ import os
 import pandas as pd
 from time import time
 from abc import ABC, abstractmethod
-from config.config import BASE_DIR
-from utils.style import apply_xlsxwriter_style
+from config.config import BASE_DIR, REPORTS_CONFIG
+from utils.style import set_excel_style
+from utils.processor import insert_sum_row
 
 
 class DataObserver(ABC):
@@ -49,10 +50,10 @@ class AuditObserver(DataObserver):
 
 # 导出观察者：负责写Excel
 class ExportObserver:
-    def __init__(self, cfg):
-        self.cfg = cfg
+    def __init__(self, r_id):
+        self.r_id = r_id
+        self.cfg = REPORTS_CONFIG.get(r_id, {})
         self.file_path = os.path.join(BASE_DIR, self.cfg['folder'], self.cfg['file_name'])
-        self.sum_row_index = None # 记录合计行索引，样式函数会用到
         self.cursor_buffers = {} # 用于多游标数据的临时存储，key: 游标索引，value: list of chunks
 
     def on_next(self, cursor_idx, chunk):
@@ -69,21 +70,23 @@ class ExportObserver:
         if not self.cursor_buffers:
             return
         
-        # 1. 汇总每个游标的完整 DataFrame
-        final_buffers = {}
-        for idx, chunks in self.cursor_buffers.items():
-            final_buffers[idx] = pd.concat(chunks, ignore_index=True)
+        # 1. 汇总每个游标的完整 DataFrame，并按顺序转为列表
+        # 这样保证了 buffers[0] 永远是第一个游标，buffers[1] 是第二个
+        ordered_buffers = [
+            pd.concat(self.cursor_buffers[idx], ignore_index=True) 
+            for idx in sorted(self.cursor_buffers.keys())
+        ]
 
         # 2. 执行配置中的特殊逻辑
         processor = self.cfg.get('processor', None)
         if processor:
             # --- 情况 A: 存在多个游标且需要跨游标处理数据 ---
             # 传入所有 buffers，在 processor 内部进行 pd.merge 和 计算
-            final_df = processor(final_buffers)
+            final_df = processor(ordered_buffers)
         else:
             # --- 情况 B: 只有一个游标或只需要一个游标的数据 ---
             # 默认只取第一个游标，或者按需 concat
-            final_df = pd.concat(list(final_buffers.values()), ignore_index=True)
+            final_df = pd.concat(ordered_buffers, ignore_index=True)
 
         # 3. 处理空值
         # 确保是一个独立的 DataFrame 副本，避免 SettingWithCopy 风险
@@ -99,39 +102,17 @@ class ExportObserver:
 
         # 4. 获取配置中定义的英文列名列表，过滤掉原始数据中多余的列，并严格按照配置的顺序排列
         mapping = self.cfg.get('columns_map', {})
-        ordered_cols = [col for col in mapping.keys() if col in final_df.columns]
-        final_df = final_df[ordered_cols]
+        proc_name = self.cfg.get('proc_name', '')
+        if proc_name not in ['RPT_WLMQ_306', 'RPT_WLMQ_313']:
+            # 过滤掉不在 mapping 中的列，确保最终输出的 DataFrame 只有配置中定义的列    
+            ordered_cols = [col for col in mapping.keys() if col in final_df.columns]
+            final_df = final_df[ordered_cols]
 
-        # 5. 获取配置：哪些列需要合计，合计放哪里
+        # 5. 根据配置插入小计行、合计行等
+        group_by_col = self.cfg.get('group_by', None)
         sum_cols = self.cfg.get('sum_cols', [])
-        sum_pos = self.cfg.get('sum_position', 'none') # top, bottom, 或 none
-        if sum_pos != 'none' and sum_cols:
-            # 构造合计行
-            sum_row = {col: '' for col in final_df.columns} # 先创建一个空行
-            sum_row[final_df.columns[0]] = '合计' # 第一列写上“合计”字样
-
-            for col in sum_cols:
-                if col in final_df.columns:
-                    # 确保只对数值列求和，避免因为非数值列（如字符串列）导致求和出错
-                    sum_row[col] = pd.to_numeric(final_df[col], errors='coerce').sum()
-
-            # 创建一个 DataFrame 来存储合计行，列名要和 final_df 一致
-            sum_df = pd.DataFrame([sum_row], columns=final_df.columns)
-
-            # 特例处理：对于 3-11 报表，合计行还需要计算单价（总费用 / 累计水量），注意除数不能为0
-            if self.cfg.get('proc_name') == 'RPT_WLMQ_311':
-                sum_df['UNIT_PRICE'] = sum_df['FEE_TOTAL'] / sum_df['ACC_WATER'] if sum_df['ACC_WATER'].iloc[0] != 0 else 0
-
-            # 将合计行插入到第一行或最后一行，根据需求调整
-            if sum_pos == 'top':
-                final_df = pd.concat([sum_df, final_df], ignore_index=True)
-                # 记录合计行所在的索引，方便样式函数加粗
-                self.sum_row_index = 0
-            else:
-                final_df = pd.concat([final_df, sum_df], ignore_index=True)
-                self.sum_row_index = len(final_df) - 1
-        else:
-            self.sum_row_index = None # 没有合计行
+        sum_position = self.cfg.get('sum_position', 'none')
+        final_df, sum_row_index = insert_sum_row(final_df, sum_cols, sum_position, proc_name, group_by_col)
 
         # 所有计算结束后，最后统一重命名为中文列名，确保和样式函数中的列名一致
         final_df = final_df.rename(columns=mapping)
@@ -143,6 +124,6 @@ class ExportObserver:
             worksheet = workbook.add_worksheet('Sheet1')
 
             # 统一应用样式函数，传入最终的 DataFrame 和配置
-            apply_xlsxwriter_style(workbook, worksheet, final_df, self.cfg, self.sum_row_index)
+            set_excel_style(workbook, worksheet, final_df, self.cfg, sum_row_index)
 
-        print(f"Excel 导出成功，总行数: {len(final_df)}, 耗时: {time() - t0:.2f} 秒")
+        print(f"{self.r_id} 报表导出成功，总行数: {len(final_df)}, 耗时: {time() - t0:.2f} 秒")

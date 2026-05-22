@@ -1,7 +1,8 @@
 import numpy as np
 from datetime import datetime
+from dateutil.relativedelta import relativedelta
 
-from utils.processor import process_37_report
+from utils.processor import process_306_data, process_313_data
 
 
 # 0. 定义基础目录
@@ -15,7 +16,17 @@ DB_CONFIG = {
 }
 
 # 2. 定义所有报表的元数据
+# 定义账期
 year_month = f"{datetime.now().strftime('%Y年%m月')}"
+time = datetime.now()
+create_time = time.strftime('%Y-%m-%d')
+# 根据日期确定账期，如果是1-25号，则账期为上个月；如果是26号以后，则账期为当前月
+today = datetime.now().strftime('%d')
+if int(today) <= 25:
+    year_month = (time - relativedelta(months=1)).strftime('%Y年%m月')
+else:
+    year_month = time.strftime('%Y年%m月')
+
 # 明确要累加的 6 个费用项
 PI_COLS = ['PI1_MONEY', 'PI2_MONEY', 'PI3_MONEY', 'PI4_MONEY', 'PI5_MONEY', 'PI6_MONEY']
 
@@ -42,6 +53,7 @@ REPORTS_CONFIG = {
             'ROW_INDEX': '序号',
             'BOOK_ID': '统册编号',
             'BOOK_NAME': '统册名称',
+            'BILLING_MONTH': '账期',
             'TOTAL_COUNT': '应抄户数',
             'READ_COUNT': '实抄户数',
             'READ_WATER': '抄见水量',
@@ -49,7 +61,6 @@ REPORTS_CONFIG = {
             'ADJUST_WATER': '减免水量',
             'ACTUAL_WATER': '实际水量',
             'METER_READER': '抄表员',
-            'BILLING_MONTH': '抄表日期',
         },
         'sum_cols': ['TOTAL_COUNT', 'READ_COUNT', 'READ_WATER', 'ACC_WATER', 'ADJUST_WATER', 'ACTUAL_WATER'],
         'sum_position': 'top',
@@ -87,10 +98,9 @@ REPORTS_CONFIG = {
             'FEE_TOTAL': "应收费用"
         },
         'group_by': "PARENT_SUBCOM_NAME",   # 按此列分组计算小计
-        'merge_cols': ['分公司'],
+        'merge_cols': [0],              # 按配置指定需要合并单元格的列（这里是第一列，即分公司列）
         'sum_cols': ['ACC_WATER', 'FEE_TOTAL'] + BASE_FEE_COLS,
         'sum_position': 'top',
-        'processor': lambda buffers: process_37_report(buffers[0]),
     },
     '3-11': {
         'proc_name': 'RPT_WLMQ_311',
@@ -135,17 +145,13 @@ REPORTS_CONFIG = {
             'TOTAL_TRANSFER': "集团划账"
         },
         'group_by': 'HEADOFFICE_NAME', # 按银行分组并合并单元格
-        'merge_cols': ['银行', '分公司'],   # 指定需要合并的中文列名
+        'merge_cols': [0, 1],   # 指定需要合并单元格的列（这里是第一列和第二列，即银行和分公司列）
         'sum_cols': [
             'BANK_IN_MONEY', 'ACC_MONEY', 'PST_ACTUAL_MONEY', 'ACTUAL_LATEFEE', 
             'PST_PRESTORE_OUT_MONEY', 'TURN_PRESTORE_IN_MONEY', 'PST_PRESTORE_IN_MONEY', 'TOTAL_TRANSFER'
         ],
         'sum_position': 'top',
-        'subtotal_hooks': lambda row: (
-            row.update({'集团划账': row.get('账单金额', 0) + row.get('需划账违约金', 0)}),
-            row # 注意：update返回None，所以要用元组并返回row本身
-        )[1],
-        'processor': lambda df: df.assign(
+        'processor': lambda buffers: buffers[0].assign(
             # 本月银行入账 = 需划账费用
             BANK_IN_MONEY = lambda x: x['PST_ACTUAL_MONEY'],
             # 集团划账 = 账单金额 + 需划账违约金
@@ -201,9 +207,11 @@ REPORTS_CONFIG = {
             'FEE_TOTAL': "应收费用"
         },
         'multi_cursors': 4,  # 启用多游标模式，个数表示游标个数
-        'sum_cols': [],   # 禁用框架合计行
+        'sum_cols': ['FEE_TOTAL'] + BASE_FEE_COLS,
+        'sum_position': 'none', # 该报表不需要框架自动插入的合计行，因为在 processor 内部会自己计算并插入
         'group_by': '',   # 禁用通用小计，改用下面的特殊逻辑
-        'merge_cols': ['统计日期', '费用类型'],  # 按统计账期合并单元格
+        'merge_cols': [0, 1],  # 按统计账期合并单元格
+        'processor': lambda buffers: process_306_data(buffers, PI_COLS) # 传入整个 buffers 以便在 processor 内部进行跨游标计算
     },
     '3-13': {
         'proc_name': 'RPT_WLMQ_313',
@@ -218,9 +226,11 @@ REPORTS_CONFIG = {
             'FEE_TOTAL': '应收费用'
         },
         'multi_cursors': 2,  # 启用多游标模式，个数表示游标个数
-        'sum_cols': [],     # 不需要在这里定义 sum_cols，因为我们会在 calc_func 中自定义计算逻辑
+        'sum_cols': ['FEE_TOTAL'] + BASE_FEE_COLS,
+        'sum_position': 'none', # 该报表不需要框架自动插入的合计行，因为在 processor 内部会自己计算并插入
         'group_by': 'PAY_METHOD',
-        'merge_cols': ['收费方式'],
+        'merge_cols': [0],
+        'processor': lambda buffers: process_313_data(buffers, PI_COLS), # 只处理第二个游标的数据，传入整个 buffers 以便在 processor 内部进行跨游标计算
     },
     '3-23': {
         'proc_name': 'RPT_WLMQ_014',
