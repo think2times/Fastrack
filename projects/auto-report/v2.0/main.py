@@ -5,6 +5,7 @@ from dateutil.relativedelta import relativedelta
 
 from config.config import DB_CONFIG, REPORTS_CONFIG
 from utils.factory import TaskFactory
+from utils.reconciler import run_full_reconciliation
 
 
 def connect2db(lib_dir, db_config):
@@ -33,16 +34,40 @@ if __name__ == "__main__":
     # 连接数据库，设置环境变量，确保中文字符正确显示
     conn = connect2db(lib_dir, DB_CONFIG)
 
-    # 创建统一的结果集
-    report_pool = {}
-    tasks = []
+    # --- 步骤 1: 生成所有报表数据 ---
+    all_report_results = {}  # 格式: { r_id: {0: df} }
+    task_registry = []
 
-    # 迭代报表配置，生成报表
     for r_id, cfg in REPORTS_CONFIG.items():
+        # if r_id not in ['3-14', '3-6']:
+        #     continue
         factory = TaskFactory(r_id, conn, sub_com=subcoms, month=bill_month)
         engine, streamer, observers = factory.create_task()
-        tasks.append((engine, streamer, observers))
 
-    # 所有的 for 循环结束后，进行跨表逻辑核对
-    for engine, streamer, observers in tasks:
-        engine.run(streamer, observers)
+        # 仅生成数据，暂不导出
+        processed_dict = engine.generate_data(streamer)
+
+        # 为了方便核对逻辑，我们取 0 号位作为该报表的主 DataFrame
+        all_report_results[r_id] = processed_dict.get(0)
+
+        # 暂存起来，后面导出用
+        task_registry.append({
+            'r_id': r_id,
+            'engine': engine,
+            'observers': observers,
+            'data': processed_dict
+        })
+
+    # --- 步骤 2: 执行核对 (Reconciler) ---
+    if not run_full_reconciliation(all_report_results):
+        ans = input("\n⚠️ 对账未通过，是否强制导出？(y/n): ")
+        if ans.lower() != 'y':
+            print("停止导出。")
+            exit()
+
+    # --- 步骤 3: 核对通过后，正式执行导出 ---
+    for task in task_registry:
+        print(f"正在导出: {task['r_id']}...")
+        task['engine'].run_observers(task['data'], task['observers'])
+
+    print("✅ 全部完成！")

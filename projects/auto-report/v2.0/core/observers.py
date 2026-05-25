@@ -47,6 +47,15 @@ class AuditObserver(DataObserver):
     def on_completed(self):
         return self.total_results
 
+    def save_final_result(self, final_df=None):
+        """
+        补齐方法接口。
+        审计观察者可能不需要导出 Excel，所以这里可以只记录日志或执行简单的核查。
+        """
+        print(f"🔍 AuditObserver: 正在对成品数据进行最后的合规性检查...")
+        # 如果审计逻辑也需要基于 final_df 运行，可以在这里写
+        pass
+
 
 # 导出观察者：负责写Excel
 class ExportObserver:
@@ -127,3 +136,37 @@ class ExportObserver:
             set_excel_style(workbook, worksheet, final_df, self.cfg, sum_row_index)
 
         print(f"{self.r_id} 报表导出成功，总行数: {len(final_df)}, 耗时: {time() - t0:.2f} 秒")
+
+    def save_final_result(self, final_df):
+            """
+            新增方法：跳过所有计算逻辑，直接进行样式处理和导出。
+            """
+            # --- 步骤 1: 处理空值与列名过滤 (复用你原来的逻辑) ---
+            final_df = final_df.copy()
+            numeric_cols = final_df.select_dtypes(include=['number']).columns
+            non_numeric_cols = final_df.select_dtypes(exclude=['number']).columns
+            final_df[numeric_cols] = final_df[numeric_cols].fillna(0)
+            final_df[non_numeric_cols] = final_df[non_numeric_cols].fillna("")
+
+            mapping = self.cfg.get('columns_map', {})
+            proc_name = self.cfg.get('proc_name', '')
+
+            # 306/313 的特殊过滤逻辑
+            if proc_name not in ['RPT_WLMQ_306', 'RPT_WLMQ_313']:
+                ordered_cols = [col for col in mapping.keys() if col in final_df.columns]
+                final_df = final_df[ordered_cols]
+
+            # --- 步骤 2: 插入合计行 ---
+            sum_cols = self.cfg.get('sum_cols', [])
+            sum_position = self.cfg.get('sum_position', 'none')
+            group_by_col = self.cfg.get('group_by', None)
+            final_df, sum_row_index = insert_sum_row(final_df, sum_cols, sum_position, proc_name, group_by_col)
+
+            # --- 步骤 3: 写入 Excel ---
+            final_df = final_df.rename(columns=mapping)
+            with pd.ExcelWriter(self.file_path, engine='xlsxwriter') as writer:
+                workbook = writer.book
+                worksheet = workbook.add_worksheet('Sheet1')
+                set_excel_style(workbook, worksheet, final_df, self.cfg, sum_row_index)
+
+            print(f"✅ {self.r_id} 报表已直接导出成品。")
