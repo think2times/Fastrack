@@ -39,8 +39,8 @@ if __name__ == "__main__":
     task_registry = []
 
     for r_id, cfg in REPORTS_CONFIG.items():
-        if r_id not in ['3-14', '3-47']:
-            continue
+        # if r_id not in ['3-14', '3-47']:
+        #     continue
         factory = TaskFactory(r_id, conn, sub_com=subcoms, month=bill_month)
         engine, streamer, observers = factory.create_task()
 
