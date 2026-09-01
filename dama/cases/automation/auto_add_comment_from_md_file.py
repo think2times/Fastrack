@@ -86,7 +86,7 @@ def parse_md_to_oracle_sql_v4(md_content):
 
 def batch_process(md_dir, output_sql="oracle_comments_fixed.sql"):
     all_sqls = ["-- Oracle 11g 自动生成注释脚本\n"]
-    for md_file in glob.glob(os.path.join(md_dir, "*.md")):
+    for md_file in glob.glob(os.path.join(md_dir, "数据字典 - 营销系统 - v1.16.md")):
         with open(md_file, "r", encoding="utf-8") as f:
             sql = parse_md_to_oracle_sql_v4(f.read())
             if sql:

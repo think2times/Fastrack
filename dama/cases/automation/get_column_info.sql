@@ -1,4 +1,4 @@
-SELECT 
+ SELECT 
    -- T.TABLE_NAME                                    AS 表名,
    -- T.COMMENTS                                      AS 中文表名,
     C.COLUMN_NAME                                   AS 字段名,
