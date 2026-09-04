@@ -1,0 +1,4 @@
+标题,知识,标签,字段召回,应用范围,类型,状态,版本
+标题1,启用,嵌入到问句,,"{""users"":[],""roles"":[{""id"":""EVERYONE"",""name"":""EveryOne"",""alias"":""EveryOne"",""deleted"":false}],""groups"":[]}",CODE,ENABLE,V2
+标题2,禁用,不参与字段检索,,"{""users"":[],""roles"":[{""id"":""EVERYONE"",""name"":""EveryOne"",""alias"":""EveryOne"",""deleted"":false}],""groups"":[]}",DYNAMIC,DISABLE,V2
+标题3,必选,小表检索,,"{""users"":[],""roles"":[{""id"":""EVERYONE"",""name"":""EveryOne"",""alias"":""EveryOne"",""deleted"":false}],""groups"":[]}",PLAIN,MUST_SELECT,V2
