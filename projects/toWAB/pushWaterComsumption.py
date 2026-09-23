@@ -4,6 +4,7 @@ import base64
 import hashlib
 import logging
 import requests
+import oracledb
 from datetime import datetime, timedelta
 from cryptography.hazmat.primitives import padding
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
@@ -27,8 +28,12 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
 
-# 启用 oracledb 的 Thin 模式（无需安装 Oracle 客户端）
-oracledb.init_oracle_client = None
+# ==================== 核心修改：启用 Thick 模式 ====================
+try:
+    # Windows 系统下，将路径替换为您实际解压 Instant Client 的文件夹路径
+    oracledb.init_oracle_client(lib_dir=r"F:\app\pluto\product\instantclient_19_32")
+except Exception as e:
+    print(f"初始化 Oracle 客户端失败，请检查 lib_dir 路径: {e}")
 
 def derive_key(password: str, fixed_salt: str) -> bytes:
     """第一步：通过 PBKDF2 派生 32 字节密钥"""
@@ -112,17 +117,17 @@ def load_sql_from_file(file_path="query.sql"):
         logging.error(f"读取 SQL 文件失败: {str(e)}")
         return None
 
-def fetch_data_from_oracle(begin_date, begin_end_date):
+def fetch_data_from_oracle():
     """从 Oracle 数据库动态拉取水表数据（使用外部 SQL 文件）"""
     datas_list = []
     
     # 1. 加载外部 SQL
-    sql = load_sql_from_file("query.sql")
+    sql = load_sql_from_file("get_water_comsumption.sql")
     if not sql:
         return datas_list
         
     try:
-        # 2. 连接 Oracle (Thin 模式)
+        # 2. 连接 Oracle (Thick 模式)
         connection = oracledb.connect(
             user=ORACLE_USER,
             password=ORACLE_PASSWORD,
@@ -130,21 +135,21 @@ def fetch_data_from_oracle(begin_date, begin_end_date):
         )
         cursor = connection.cursor()
         
-        # 3. 执行读取到的 SQL，并传入时间参数
-        cursor.execute(sql, {"b_date": begin_date, "e_date": begin_end_date})
+        # 3. 直接执行 SQL（无需再传参）
+        cursor.execute(sql)
         
         for row in cursor:
             datas_list.append({
                 "REGION_ID": str(row[0] or ""),
-                "RTU_ID": str(row[1] or ""),
-                "BEGIN_DATE": str(row[2] or begin_date),
-                "END_DATE": str(row[3] or begin_end_date),
-                "WATER": str(row[4] or "0")
+                "CARD_ID": str(row[1] or ""),
+                "LAST_READING": str(row[2] or ""),
+                "READING": str(row[3] or ""),
+                "READ_WATER": str(row[4] or "0")
             })
             
         cursor.close()
         connection.close()
-        logging.info(f"从 Oracle 成功读取到 {len(datas_list)} 条水表数据。")
+        logging.info(f"从 Oracle 成功读取到合并后的有效数据共 {len(datas_list)} 条。")
     except Exception as e:
         logging.error(f"Oracle 数据库读取异常: {str(e)}")
         
@@ -206,25 +211,21 @@ def push_water_data(token: str, all_datas: list):
 # ==================== 4. 主控逻辑（定时任务入口） ====================
 def main():
     logging.info("===== 每月定时任务开始执行（Oracle 模式） =====")
-    
-    # 1. 自动计算上个月的时间段
-    begin_date, end_date = get_last_month_range()
-    logging.info(f"本次统计时间区间: {begin_date} 至 {end_date}")
-    
-    # 2. 从 Oracle 批量获取动态数据
-    all_datas = fetch_data_from_oracle(begin_date, end_date)
+
+    # 1. 从 Oracle 批量获取动态数据
+    all_datas = fetch_data_from_oracle()
     if not all_datas:
         logging.warning("未查询到任何有效数据，任务终止。")
         return
-        
-    # 3. 获取 Token
+
+    # 2. 获取 Token
     token = get_token()
     if not token:
         logging.error("终止流程：未获取到有效的 Token。")
         return
-        
-    # 4. 拿着 Token 和数据开始分批推送
-    push_water_data_in_batches(token, all_datas)
+
+    # 3. 拿着 Token 和数据开始分批推送
+    push_water_data(token, all_datas)
     
     logging.info("===== 每月定时任务执行结束 =====\n")
 

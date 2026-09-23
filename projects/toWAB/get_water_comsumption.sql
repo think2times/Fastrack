@@ -1,46 +1,42 @@
 WITH mapped_data AS
- (SELECT -- 1. Í³Ò»ÏÈ½« SUBCOM_CODE Ó³ÉäÎª±ê×¼µÄ 6 Î»ÐÐÕþÇø»®´úÂë
-         CASE r.SUBCOM_CODE
-           WHEN '011' THEN
-            '650102' -- ÌìÉ½Çø
-           WHEN '021' THEN
-            '650104' -- ÐÂÊÐÇø
-           WHEN '031' THEN
-            '650105' -- Ë®Ä¥¹µÇø
-           WHEN '032' THEN
-            '650105' -- Ë®Ä¥ºÓ
-           WHEN '041' THEN
-            '650106' -- Í·ÍÍºÓÇø
-           WHEN '051' THEN
-            '650103' -- É³ÒÀ°Í¿ËÇø
-           WHEN '061' THEN
-            '650109' -- Ã×¶«Çø
-           WHEN '062' THEN
-            '650109' -- Ã×¶«¹©ÅÅË®
-           ELSE
-            '650101' -- Ä¬ÈÏÖµ
-         END AS REGION_ID,
-         r.card_id,
-         r.last_reading,
-         r.reading,
-         r.read_water 
+ (SELECT -- 1. ç»Ÿä¸€å…ˆå°† SUBCOM_CODE æ˜ å°„ä¸ºæ ‡å‡†çš„ 6 ä½è¡Œæ”¿åŒºåˆ’ä»£ç 
+   CASE r.SUBCOM_CODE
+     WHEN '011' THEN
+      '650102' -- å¤©å±±åŒº
+     WHEN '021' THEN
+      '650104' -- æ–°å¸‚åŒº
+     WHEN '031' THEN
+      '650105' -- æ°´ç£¨æ²ŸåŒº
+     WHEN '032' THEN
+      '650105' -- æ°´ç£¨æ²³
+     WHEN '041' THEN
+      '650106' -- å¤´å±¯æ²³åŒº
+     WHEN '051' THEN
+      '650103' -- æ²™ä¾å·´å…‹åŒº
+     WHEN '061' THEN
+      '650109' -- ç±³ä¸œåŒº
+     WHEN '062' THEN
+      '650109' -- ç±³ä¸œä¾›æŽ’æ°´
+     ELSE
+      '650101' -- é»˜è®¤å€¼
+   END AS REGION_ID,
+   r.card_id,
+   r.last_reading,
+   r.reading,
+   r.read_water
     FROM csm.mr_record r
    WHERE r.record_state <> -1
-        -- Ö±½ÓÔÚ SQL ÖÐ×Ô¶¯»ñÈ¡ÉÏ¸öÔÂµÄÄêÔÂ£¨ÎÞÐè Python ´«²Î£©
-        -- ×¢Òâ£ºÈç¹ûÄúµÄ billing_month ÊÇÊý×ÖÀàÐÍ£¨Èç 202608£©£¬ÓÃÏÂÃæÕâÐÐ£º
      AND r.billing_month =
          TO_NUMBER(TO_CHAR(ADD_MONTHS(TRUNC(SYSDATE, 'MM'), -1), 'YYYYMM'))
-  -- Èç¹ûÄúµÄ billing_month ÊÇ×Ö·û´®ÀàÐÍ£¨Èç '202608'£©£¬Çë½â¿ªÏÂÃæÕâÐÐµÄ×¢ÊÍ²¢×¢ÊÍµôÉÏÃæÒ»ÐÐ£º
-  -- AND r.billing_month = TO_CHAR(ADD_MONTHS(TRUNC(SYSDATE, 'MM'), -1), 'YYYYMM')
-  )
--- µÚÒ»²¿·Ö£ºË®Á¿´óÓÚ 1700 µÄÓÃ»§£¬±£³ÖÃ÷Ï¸Êý¾Ý²»±ä
+     AND r.card_id = '3007950901')
+-- ç¬¬ä¸€éƒ¨åˆ†ï¼šæ°´é‡å¤§äºŽ 1700 çš„ç”¨æˆ·ï¼Œä¿æŒæ˜Žç»†æ•°æ®ä¸å˜
 SELECT REGION_ID, r.card_id, r.last_reading, r.reading, r.read_water
   FROM mapped_data r
  WHERE r.read_water > 1700
 
 UNION ALL
 
--- µÚ¶þ²¿·Ö£ºË®Á¿Ð¡ÓÚµÈÓÚ 1700 µÄÓÃ»§£¬°´Çø»ã×Ü´ò°ü
+-- ç¬¬äºŒéƒ¨åˆ†ï¼šæ°´é‡å°äºŽç­‰äºŽ 1700 çš„ç”¨æˆ·ï¼ŒæŒ‰åŒºæ±‡æ€»æ‰“åŒ…
 SELECT REGION_ID,
        '1000' || REGION_ID AS card_id,
        NULL AS last_reading,
@@ -48,4 +44,4 @@ SELECT REGION_ID,
        SUM(read_water) AS read_water
   FROM mapped_data r
  WHERE r.read_water <= 1700
- GROUP BY REGION_ID;
+ GROUP BY REGION_ID
