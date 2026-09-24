@@ -141,10 +141,10 @@ def fetch_data_from_oracle():
         for row in cursor:
             datas_list.append({
                 "REGION_ID": str(row[0] or ""),
-                "CARD_ID": str(row[1] or ""),
-                "LAST_READING": str(row[2] or ""),
-                "READING": str(row[3] or ""),
-                "READ_WATER": str(row[4] or "0")
+                "RTU_ID": str(row[1] or ""),
+                "BEGIN_DATE": str(row[2] or ""),
+                "END_DATE": str(row[3] or ""),
+                "WATER": str(row[4] or "0")
             })
             
         cursor.close()
