@@ -1,5 +1,6 @@
 import os
 import time
+import json
 import base64
 import hashlib
 import logging
@@ -19,7 +20,7 @@ ORACLE_USER = "CSM_PUBLIC"
 ORACLE_PASSWORD = "*2tQ}Ek,7mPh"
 ORACLE_DSN = "172.16.16.11:1521/CSM_BM"      # 格式: "IP:端口/服务名或SID"
 
-BATCH_SIZE = 500                        # 每批推送的数据条数
+BATCH_SIZE = 100                        # 每批推送的数据条数
 
 # 配置日志记录到本地文件
 logging.basicConfig(
@@ -96,7 +97,7 @@ def get_token():
                 if result_list and len(result_list) > 0:
                     token = result_list[0].get("token")
                     return token
-                    # logging.info(message)
+                    logging.info(message)
                 else:
                     logging.error(f"提示信息: {message}，但返回结果为空")
                     return None
@@ -156,57 +157,75 @@ def fetch_data_from_oracle():
     return datas_list
 
 def push_water_data(token: str, all_datas: list):
-    # 拼接 URL: 服务名/方法名
     url = f"{BASE_URL}/EIDSApi_WB/ReceiveDataAPI/ReceiveWaterData"
+    logging.info(f"[调用日志] 开始执行 push_water_data，调用参数: 接口地址={url}")
 
     total = len(all_datas)
-
     if total == 0:
         logging.warning("没有需要推送的水表数据。")
         return
 
-    # 按 BATCH_SIZE 进行切片循环
+    current_token = token  # 用变量存当前 token，支持动态更新
+
     for i in range(0, total, BATCH_SIZE):
         batch = all_datas[i:i + BATCH_SIZE]
         batch_num = (i // BATCH_SIZE) + 1
         
-        payload = {
-            "token": token,
-            "EntityData": [
-                {
-                    "Datas": batch
-                }
-            ]
-        }
-    
-        # Headers 参数
-        headers = {
-            "Content-Type": "application/json",
-            "token": token,
-            "registerCode": REGISTER_CODE
-        }
-    
-        # Body 参数（根据您的表格数据按需修改变量）
-        payload = {
-                "token": token,
+        # 最多允许重试 1 次（防止因为 Token 刚刷新又失败陷入死循环）
+        retry_count = 0
+        max_retries = 1
+        
+        while retry_count <= max_retries:
+            headers = {
+                "Content-Type": "application/json",
+                "token": current_token,
+                "registerCode": REGISTER_CODE
+            }
+        
+            payload = {
+                "token": "holdetime",
                 "EntityData": [
                     {
                         "Datas": batch
                     }
                 ]
             }
-    
-        try:
-            response = requests.post(url, headers=headers, json=payload, timeout=60)
-            if response.status_code == 200:
-                logging.info(f"第 {batch_num} 批数据推送成功（包含 {len(batch)} 条），响应: {response.text}")
-            else:
-                logging.warning(f"第 {batch_num} 批数据推送失败，状态码: {response.status_code}, 响应: {response.text}")
-        except Exception as e:
-            logging.error(f"第 {batch_num} 批数据请求异常: {str(e)}")
+            
+            payload_str = json.dumps(payload, ensure_ascii=False)
+            preview_payload = payload_str if len(payload_str) < 500 else payload_str[:500] + "... [内容过长已折叠]"
+
+            logging.info("=" * 40)
+            logging.info(f"[API 调用参数详情] - 第 {batch_num} 批次 (尝试次数: {retry_count + 1})")
+            logging.info(f"  - 目标接口 URL : {url}")
+            logging.info(f"  - 本批次数据量 : {len(batch)} 条")
+            logging.info("=" * 40)
         
-        # 批次之间稍微暂停 0.5 秒，避免对目标接口造成瞬时并发压力
-        time.sleep(0.5)
+            try:
+                response = requests.post(url, headers=headers, json=payload, timeout=60, proxies={"http": None, "https": None})
+                
+                # 【核心判断】检查是否是 Token 过期（根据你们接口实际返回的状态码或文本调整）
+                # 常见：状态码 401，或者响应内容包含 "token"、"失效"、"过期" 等字样
+                if response.status_code == 401 or "token" in response.text.lower() and ("过期" in response.text or "失效" in response.text or "invalid" in response.text):
+                    if retry_count < max_retries:
+                        logging.warning(f"检测到 Token 可能已过期（响应: {response.text}），正在尝试重新获取 Token...")
+                        # ⚠️ 请换成你实际获取新 Token 的函数
+                        current_token = get_token() 
+                        retry_count += 1
+                        continue # 重新循环当前批次
+                
+                if response.status_code == 200:
+                    logging.info(f"第 {batch_num} 批数据推送成功（包含 {len(batch)} 条）, 响应: {response.text}")
+                    break # 成功则跳出 while 重试循环，进入下一批次
+                else:
+                    logging.warning(f"第 {batch_num} 批数据推送失败，状态码: {response.status_code}, 响应: {response.text}")
+                    break
+                    
+            except Exception as e:
+                logging.error(f"第 {batch_num} 批数据请求异常: {str(e)}")
+                break
+        
+        # 批次之间暂停时间可以适当缩短一点（比如从 0.5 秒改为 0.1 秒），加快整体推送速度，减少 Token 占用时间
+        time.sleep(0.1)
 
 # ==================== 4. 主控逻辑（定时任务入口） ====================
 def main():
