@@ -11,7 +11,7 @@ from cryptography.hazmat.primitives import padding
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 
 # ==================== 1. 全局配置区（配置在最外层） ====================
-BASE_URL = "http://111.40.31.237:12223"  # 统一的基础域名
+BASE_URL = "http://221.181.22.218:9710"  # 统一的基础域名
 REGISTER_CODE = "NjUwMTAw"     # 统一的注册码
 FIXED_SALT = "a3f8d9c2e1b4a7c6d5f0e9b8a7c6d5f4"           # 统一的密钥盐值
 
